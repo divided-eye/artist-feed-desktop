@@ -1,0 +1,53 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ArtistFeed.App.ViewModels"
+        x:Class="ArtistFeed.App.Views.SettingsWindow"
+        x:DataType="vm:SettingsViewModel"
+        Title="Settings — Artist Feed"
+        Width="620" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="20" Spacing="18">
+    <Grid ColumnDefinitions="*,Auto">
+      <TextBlock Classes="h2" Text="Settings" VerticalAlignment="Center" />
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+        <TextBlock Text="{Binding SavedNote}" Classes="muted" VerticalAlignment="Center" />
+        <Button Content="Save" Classes="primary" Classes.clean="{Binding !Dirty}" Command="{Binding SaveCommand}" />
+        <Button Content="Close" Click="CloseClicked" />
+      </StackPanel>
+    </Grid>
+    <StackPanel Spacing="6">
+      <TextBlock Classes="h3" Text="Sites" />
+      <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
+                 Text="A site switched off is gone from the app: no button for it at the top, no column in Tracked Artists, and no checks for new posts. The pages you track there are kept, so switching it back on brings them back. At least one site has to stay on." />
+      <ItemsControl ItemsSource="{Binding Sites}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="18" /></ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:SiteToggle">
+            <CheckBox IsChecked="{Binding On}">
+              <StackPanel Orientation="Horizontal" Spacing="7">
+                <Ellipse Width="8" Height="8" Fill="{Binding Dot}" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Label}" />
+              </StackPanel>
+            </CheckBox>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <TextBlock Classes="error" Text="{Binding Error}" TextWrapping="Wrap" />
+    </StackPanel>
+    <StackPanel Spacing="6">
+      <TextBlock Classes="h3" Text="Your data" />
+      <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
+                 Text="Your artists, feed and settings are kept in one file, feed.db, in this folder. Import from the web version brings over everything from the web version's data/feed.db (stop it first with docker compose stop); it takes over the next time you open the app." />
+      <SelectableTextBlock Text="{Binding DatabasePath}" FontFamily="Consolas, Menlo, monospace" FontSize="12" TextWrapping="Wrap" />
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Button Content="Open data folder" Command="{Binding OpenDataFolderCommand}" />
+        <Button Content="Import from the web version…" Command="{Binding ImportDatabaseCommand}" />
+      </StackPanel>
+      <TextBlock Text="{Binding ImportNote}" Foreground="{StaticResource Accent}" TextWrapping="Wrap" FontSize="13" />
+    </StackPanel>
+    <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
+               Text="Changes to Sites take effect when you press Save." />
+  </StackPanel>
+</Window>

@@ -1,0 +1,32 @@
+# Builds ready-to-run copies for Windows, macOS and Linux: run it from the Actions tab
+# (Build → Run workflow), or push a tag such as v1. The builds appear under the run's Artifacts.
+name: Build
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Test
+        run: dotnet test tests/ArtistFeed.Tests
+      - name: Publish
+        run: |
+          for rid in win-x64 osx-arm64 osx-x64 linux-x64; do
+            dotnet publish src/ArtistFeed.App -c Release -r $rid --self-contained true \
+              -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none \
+              -o publish/ArtistFeed-$rid
+          done
+      - uses: actions/upload-artifact@v4
+        with: { name: ArtistFeed-windows, path: publish/ArtistFeed-win-x64 }
+      - uses: actions/upload-artifact@v4
+        with: { name: ArtistFeed-mac-apple-silicon, path: publish/ArtistFeed-osx-arm64 }
+      - uses: actions/upload-artifact@v4
+        with: { name: ArtistFeed-mac-intel, path: publish/ArtistFeed-osx-x64 }
+      - uses: actions/upload-artifact@v4
+        with: { name: ArtistFeed-linux, path: publish/ArtistFeed-linux-x64 }

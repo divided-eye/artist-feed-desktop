@@ -1,0 +1,199 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ArtistFeed.App.ViewModels"
+        x:Class="ArtistFeed.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        x:Name="Root"
+        Title="Artist Feed"
+        Width="1320" Height="880" MinWidth="720" MinHeight="480"
+        WindowStartupLocation="CenterScreen">
+  <DockPanel>
+    <!-- ===== top bar ===== -->
+    <Border DockPanel.Dock="Top" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+      <StackPanel Margin="16,10,16,10" Spacing="8">
+        <Grid ColumnDefinitions="*,Auto">
+          <WrapPanel Grid.Column="0" Orientation="Horizontal" ItemSpacing="8" LineSpacing="8">
+            <TextBlock VerticalAlignment="Center" FontSize="17" FontWeight="Bold" Margin="0,0,6,0">
+              <Run Text="artist" /><Run Text="/" Foreground="{StaticResource Accent}" /><Run Text="feed" />
+              <Run Text="{Binding Version}" FontSize="11" FontWeight="Normal" Foreground="{StaticResource Muted}" />
+            </TextBlock>
+            <ItemsControl ItemsSource="{Binding Chips}" VerticalAlignment="Center">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="6" /></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:SiteChip">
+                  <ToggleButton Classes="chip" IsChecked="{Binding IsChecked, Mode=OneWay}"
+                                Command="{Binding #Root.((vm:MainViewModel)DataContext).PickSiteCommand}" CommandParameter="{Binding}"
+                                ToolTip.Tip="{Binding Label}">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                      <Ellipse Width="8" Height="8" Fill="{Binding Dot}" IsVisible="{Binding HasDot}" VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding Label}" />
+                    </StackPanel>
+                  </ToggleButton>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ComboBox ItemsSource="{Binding Artists}" SelectedItem="{Binding Artist}" MinWidth="170" MaxWidth="260"
+                      ToolTip.Tip="Filter by artist" />
+            <TextBox Text="{Binding Search}" Watermark="Search" Width="220"
+                     ToolTip.Tip="Search titles, artists, labels and track names">
+              <TextBox.InnerRightContent>
+                <Button Classes="ghost small" Content="✕" Click="ClearSearch" IsVisible="{Binding Search, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                        ToolTip.Tip="Clear" />
+              </TextBox.InnerRightContent>
+            </TextBox>
+            <ToggleButton IsChecked="{Binding Focus}" Content="Focus Feed"
+                          ToolTip.Tip="Show only the artists ticked in the Focus column of Tracked Artists. Click again to show everyone." />
+            <StackPanel Orientation="Horizontal" Spacing="0">
+              <ToggleButton IsChecked="{Binding IsGrid, Mode=OneWay}" Command="{Binding ShowGridCommand}" Content="Grid" CornerRadius="8,0,0,8" />
+              <ToggleButton IsChecked="{Binding IsList, Mode=OneWay}" Command="{Binding ShowListCommand}" Content="List" CornerRadius="0,8,8,0" />
+            </StackPanel>
+          </WrapPanel>
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto">
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <TextBlock Classes="muted" Text="{Binding Status}" ToolTip.Tip="{Binding StatusTip}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Classes="error" Text="{Binding Error}" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+            <TextBlock Classes="muted" Text="Show" VerticalAlignment="Center" />
+            <ComboBox ItemsSource="{Binding MaxOptions}" SelectedItem="{Binding Max}" ToolTip.Tip="Limit how many results are shown (and exported)" Margin="0,0,8,0" />
+            <Button Content="Tracked Artists" Command="{Binding OpenTrackedArtistsCommand}"
+                    ToolTip.Tip="Add, edit or remove the artists and labels in your feed, and their Bandcamp, SoundCloud and YouTube pages" />
+            <Button Content="Settings" Command="{Binding OpenSettingsCommand}" ToolTip.Tip="Which sites the app uses, and where your data is kept" />
+          </StackPanel>
+        </Grid>
+        <WrapPanel Orientation="Horizontal" ItemSpacing="8" LineSpacing="8">
+          <Button Content="Refresh Feed" Command="{Binding RefreshCommand}" IsEnabled="{Binding !RefreshDisabled}"
+                  ToolTip.Tip="Check every tracked artist for new posts now" />
+          <Button Content="Export Feed" Command="{Binding ExportCommand}" ToolTip.Tip="Save every track that matches the current filters as a spreadsheet (CSV)" />
+          <TextBlock Classes="muted" Text="Filter" VerticalAlignment="Center" Margin="4,0,0,0" />
+          <ComboBox ItemsSource="{Binding Years}" SelectedItem="{Binding Year}" Classes.on="{Binding Year.Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Filter by year" />
+          <ComboBox ItemsSource="{Binding Labels}" SelectedItem="{Binding Label}" MaxWidth="220" Classes.on="{Binding Label.Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Filter by label" />
+          <ComboBox ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}" Classes.on="{Binding Kind.Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Filter by type" />
+          <ComboBox ItemsSource="{Binding LengthOptions}" SelectedItem="{Binding Length}" Classes.on="{Binding Length.Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Filter by track length" />
+          <ComboBox ItemsSource="{Binding Ranges}" SelectedItem="{Binding Range}" Classes.on="{Binding Range.Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Filter by date" />
+          <CalendarDatePicker SelectedDate="{Binding Since}" IsVisible="{Binding ShowRangeBox}" Watermark="From" ToolTip.Tip="From this date" />
+          <TextBlock Classes="muted" Text="to" VerticalAlignment="Center" IsVisible="{Binding ShowRangeBox}" />
+          <CalendarDatePicker SelectedDate="{Binding Until}" IsVisible="{Binding ShowRangeBox}" Watermark="To" ToolTip.Tip="Up to and including this date" />
+          <ComboBox ItemsSource="{Binding DateBys}" SelectedItem="{Binding DateBy}" IsVisible="{Binding ShowDateBy}" ToolTip.Tip="Which date the date filter uses" />
+          <CheckBox IsChecked="{Binding PreviewOnly}" Content="Hide no-preview tracks"
+                    ToolTip.Tip="Leave out Bandcamp tracks that can't be listened to yet, such as the unreleased tracks of a pre-order" />
+          <CheckBox IsChecked="{Binding ShowHidden}" ToolTip.Tip="Show the items you have hidden, so you can put them back">
+            <TextBlock><Run Text="Show hidden (" /><Run Text="{Binding HiddenCount}" /><Run Text=")" /></TextBlock>
+          </CheckBox>
+          <Button Classes="small" Content="Clear filters" Command="{Binding ClearFiltersCommand}" IsVisible="{Binding HasFilters}" VerticalAlignment="Center" />
+        </WrapPanel>
+      </StackPanel>
+    </Border>
+
+    <!-- ===== player ===== -->
+    <Border x:Name="Dock" DockPanel.Dock="Bottom" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0"
+            IsVisible="False">
+      <DockPanel Margin="16,8,16,10">
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <TextBlock x:Name="DockTitle" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="700" />
+            <TextBlock x:Name="DockHint" Classes="muted small" VerticalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+            <Button x:Name="DockLink" Classes="small" Click="OpenPlaying" />
+            <Button Classes="small" Content="Close player" Command="{Binding ClosePlayerCommand}" />
+          </StackPanel>
+        </Grid>
+        <Panel x:Name="PlayerHost" Height="166" />
+      </DockPanel>
+    </Border>
+
+    <!-- ===== the feed ===== -->
+    <Panel>
+      <ScrollViewer x:Name="GridScroll" IsVisible="{Binding IsGrid}" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="16" Spacing="16">
+          <ItemsControl ItemsSource="{Binding Posts}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" ItemSpacing="16" LineSpacing="16" /></ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:PostCardViewModel">
+                <Border Classes="card" Width="200" Classes.playing="{Binding IsPlaying}" Classes.played="{Binding IsPlayed}" Classes.hidden="{Binding IsHidden}">
+                  <Grid RowDefinitions="200,Auto">
+                    <Button Grid.Row="0" Classes="link fade" Padding="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                            Command="{Binding #Root.((vm:MainViewModel)DataContext).PlayCardCommand}" CommandParameter="{Binding}"
+                            ToolTip.Tip="{Binding PlayGlyph, StringFormat='{}{0} Play or open'}">
+                      <Panel Background="{StaticResource Panel2}">
+                        <TextBlock Text="{Binding Letter}" FontSize="64" FontWeight="Bold" Foreground="#3a3f48"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Image Source="{Binding Cover}" Stretch="UniformToFill" />
+                        <Border Classes="badge" Background="{Binding BadgeBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8">
+                          <TextBlock Text="{Binding SourceLabel}" FontSize="11" FontWeight="SemiBold" Foreground="White" />
+                        </Border>
+                        <Border Width="34" Height="34" CornerRadius="17" Background="#cc0f1012" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="8">
+                          <TextBlock Text="{Binding PlayGlyph}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" />
+                        </Border>
+                      </Panel>
+                    </Button>
+                    <StackPanel Grid.Row="1" Classes="fade" Margin="10,8,10,10" Spacing="2">
+                      <Button Classes="link" Command="{Binding #Root.((vm:MainViewModel)DataContext).OpenCommand}" CommandParameter="{Binding Post.Url}"
+                              ToolTip.Tip="{Binding Post.Url}" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="178" />
+                      </Button>
+                      <TextBlock Classes="muted small" Text="{Binding Who}" TextTrimming="CharacterEllipsis" />
+                      <TextBlock Classes="muted small" Text="{Binding Details}" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <Button Grid.Row="0" Classes="small hidebtn" Content="{Binding HideGlyph}" ToolTip.Tip="{Binding HideTip}"
+                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6" Background="#cc0f1012"
+                            Command="{Binding #Root.((vm:MainViewModel)DataContext).ToggleHiddenCardCommand}" CommandParameter="{Binding}" />
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Button Content="Load more" HorizontalAlignment="Center" Command="{Binding LoadMoreCommand}" IsVisible="{Binding CanLoadMore}" />
+        </StackPanel>
+      </ScrollViewer>
+
+      <DockPanel IsVisible="{Binding IsList}">
+        <Button DockPanel.Dock="Bottom" Content="Load more" HorizontalAlignment="Center" Margin="8" Command="{Binding LoadMoreCommand}" IsVisible="{Binding CanLoadMore}" />
+        <DataGrid x:Name="List" ItemsSource="{Binding Rows}" IsReadOnly="True" CanUserSortColumns="True" CanUserReorderColumns="True"
+                  CanUserResizeColumns="True" SelectionMode="Single" HeadersVisibility="Column" Margin="8,4,8,0"
+                  Sorting="ListSorting" LoadingRow="ListLoadingRow" DoubleTapped="ListDoubleTapped">
+          <DataGrid.Columns>
+            <DataGridTemplateColumn Header="" Width="44" CanUserSort="False" CanUserResize="False">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="vm:TrackRowViewModel">
+                  <Button Classes="small link" Content="{Binding PlayGlyph}" HorizontalAlignment="Center"
+                          Command="{Binding #Root.((vm:MainViewModel)DataContext).PlayRowCommand}" CommandParameter="{Binding}"
+                          ToolTip.Tip="Play, or open on the site" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn Header="Artist" Binding="{Binding Artist}" Width="170" Tag="artist" SortMemberPath="artist" />
+            <DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="140" Tag="label" SortMemberPath="label" />
+            <DataGridTextColumn Header="Release" Binding="{Binding Release}" Width="190" Tag="release" SortMemberPath="release" />
+            <DataGridTextColumn Header="Track" Binding="{Binding Track}" Width="*" MinWidth="160" Tag="track" SortMemberPath="track" />
+            <DataGridTextColumn Header="Length" Binding="{Binding Duration}" Width="86" Tag="duration" SortMemberPath="duration" />
+            <DataGridTextColumn Header="Released" Binding="{Binding Released}" Width="118" Tag="date" SortMemberPath="date" />
+            <DataGridTextColumn Header="Posted" Binding="{Binding Posted}" Width="118" Tag="posted" SortMemberPath="posted" />
+            <DataGridTextColumn Header="Site" Binding="{Binding Site}" Width="110" CanUserSort="False" />
+            <DataGridTemplateColumn Header="" Width="40" CanUserSort="False" CanUserResize="False">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="vm:TrackRowViewModel">
+                  <Button Classes="small ghost" Content="{Binding HideGlyph}" HorizontalAlignment="Center"
+                          Command="{Binding #Root.((vm:MainViewModel)DataContext).ToggleHiddenRowCommand}" CommandParameter="{Binding}"
+                          ToolTip.Tip="Hide this track from the list, or put it back" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+          </DataGrid.Columns>
+        </DataGrid>
+      </DockPanel>
+
+      <StackPanel IsVisible="{Binding IsEmpty}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6" Margin="24">
+        <TextBlock Text="{Binding EmptyTitle}" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" />
+        <TextBlock Classes="muted" Text="{Binding EmptyText}" HorizontalAlignment="Center" />
+      </StackPanel>
+    </Panel>
+  </DockPanel>
+</Window>

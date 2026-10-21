@@ -1,0 +1,36 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ArtistFeed.App.App"
+             RequestedThemeVariant="Dark">
+  <Application.Resources>
+    <ResourceDictionary>
+      <Color x:Key="BgColor">#0f1012</Color>
+      <Color x:Key="PanelColor">#17191d</Color>
+      <Color x:Key="Panel2Color">#1f2227</Color>
+      <Color x:Key="LineColor">#2a2e35</Color>
+      <Color x:Key="TextColor">#eceef1</Color>
+      <Color x:Key="MutedColor">#8d95a1</Color>
+      <Color x:Key="AccentColor">#d9f25c</Color>
+      <Color x:Key="DangerColor">#ff6b6b</Color>
+      <SolidColorBrush x:Key="Bg" Color="{StaticResource BgColor}" />
+      <SolidColorBrush x:Key="Panel" Color="{StaticResource PanelColor}" />
+      <SolidColorBrush x:Key="Panel2" Color="{StaticResource Panel2Color}" />
+      <SolidColorBrush x:Key="Line" Color="{StaticResource LineColor}" />
+      <SolidColorBrush x:Key="Text" Color="{StaticResource TextColor}" />
+      <SolidColorBrush x:Key="Muted" Color="{StaticResource MutedColor}" />
+      <SolidColorBrush x:Key="Accent" Color="{StaticResource AccentColor}" />
+      <SolidColorBrush x:Key="Danger" Color="{StaticResource DangerColor}" />
+      <SolidColorBrush x:Key="OnAccent" Color="#14160a" />
+      <!-- Fluent's own accent follows the app's -->
+      <Color x:Key="SystemAccentColor">#d9f25c</Color>
+      <Color x:Key="SystemAccentColorDark1">#c4dc4f</Color>
+      <Color x:Key="SystemAccentColorDark2">#aec444</Color>
+      <Color x:Key="SystemAccentColorLight1">#e2f57f</Color>
+    </ResourceDictionary>
+  </Application.Resources>
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+    <StyleInclude Source="avares://ArtistFeed/Styles.axaml" />
+  </Application.Styles>
+</Application>

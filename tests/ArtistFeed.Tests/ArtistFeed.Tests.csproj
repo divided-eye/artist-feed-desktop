@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
+    <NoWarn>$(NoWarn);xUnit1051;CS8620</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageReference Include="Avalonia.Headless.XUnit" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Skia" Version="12.1.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ArtistFeed.Core\ArtistFeed.Core.csproj" />
+    <ProjectReference Include="..\..\src\ArtistFeed.App\ArtistFeed.App.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data/*.json;Data/*.db" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

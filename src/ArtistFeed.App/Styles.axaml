@@ -1,0 +1,170 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20"><Button Classes="primary" Content="Save" /></Border>
+  </Design.PreviewWith>
+
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{StaticResource Bg}" />
+    <Setter Property="Foreground" Value="{StaticResource Text}" />
+    <Setter Property="FontSize" Value="14" />
+  </Style>
+
+  <Style Selector="TextBlock.muted">
+    <Setter Property="Foreground" Value="{StaticResource Muted}" />
+  </Style>
+  <Style Selector="TextBlock.small">
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="TextBlock.error, SelectableTextBlock.error">
+    <Setter Property="Foreground" Value="{StaticResource Danger}" />
+  </Style>
+  <Style Selector="TextBlock.h2">
+    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+  <Style Selector="TextBlock.h3">
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Margin" Value="0,0,0,4" />
+  </Style>
+
+  <!-- Buttons: a quiet panel by default; .primary is the accent; .small is compact. -->
+  <Style Selector="Button, ToggleButton">
+    <Setter Property="Background" Value="{StaticResource Panel}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="12,6" />
+    <Setter Property="Foreground" Value="{StaticResource Text}" />
+  </Style>
+  <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource Panel2}" />
+    <Setter Property="BorderBrush" Value="#444a55" />
+    <Setter Property="Foreground" Value="{StaticResource Text}" />
+  </Style>
+  <Style Selector="Button.primary, ToggleButton:checked">
+    <Setter Property="Background" Value="{StaticResource Accent}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+    <Setter Property="Foreground" Value="{StaticResource OnAccent}" />
+  </Style>
+  <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource AccentColor}" />
+    <Setter Property="BorderBrush" Value="{StaticResource AccentColor}" />
+    <Setter Property="Foreground" Value="{StaticResource OnAccent}" />
+  </Style>
+  <Style Selector="Button.primary">
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <!-- A Save button with nothing to save looks quiet. -->
+  <Style Selector="Button.primary.clean">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+    <Setter Property="Foreground" Value="{StaticResource Muted}" />
+    <Setter Property="FontWeight" Value="Normal" />
+  </Style>
+  <Style Selector="Button.primary.clean:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource Panel2}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+    <Setter Property="Foreground" Value="{StaticResource Text}" />
+  </Style>
+  <Style Selector="Button.small, ToggleButton.small">
+    <Setter Property="Padding" Value="8,3" />
+    <Setter Property="FontSize" Value="12.5" />
+  </Style>
+  <Style Selector="Button.ghost">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource Muted}" />
+  </Style>
+  <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource Danger}" />
+  </Style>
+  <Style Selector="Button.link">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.link:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <!-- Site buttons at the top: rounded chips. -->
+  <Style Selector="ToggleButton.chip">
+    <Setter Property="CornerRadius" Value="999" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource Muted}" />
+    <Setter Property="Padding" Value="12,5" />
+  </Style>
+  <Style Selector="ToggleButton.chip:checked /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.chip:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource Panel2Color}" />
+    <Setter Property="BorderBrush" Value="#444a55" />
+    <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+  </Style>
+
+  <Style Selector="TextBox, ComboBox, CalendarDatePicker">
+    <Setter Property="Background" Value="{StaticResource Panel}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+    <Setter Property="CornerRadius" Value="8" />
+  </Style>
+  <Style Selector="TextBox.removed">
+    <Setter Property="Opacity" Value="0.45" />
+    <Setter Property="Foreground" Value="{StaticResource Danger}" />
+  </Style>
+  <Style Selector="ComboBox.on, CalendarDatePicker.on">
+    <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+  </Style>
+
+  <!-- Feed cards -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{StaticResource Panel}" />
+    <Setter Property="BorderBrush" Value="{StaticResource Line}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="ClipToBounds" Value="True" />
+  </Style>
+  <Style Selector="Border.card:pointerover">
+    <Setter Property="BorderBrush" Value="#444a55" />
+  </Style>
+  <Style Selector="Border.card.playing">
+    <Setter Property="BorderBrush" Value="{StaticResource Accent}" />
+  </Style>
+  <Style Selector="Border.card.hidden">
+    <Setter Property="Opacity" Value="0.45" />
+  </Style>
+  <Style Selector="Border.card.played > Grid > :is(Control).fade">
+    <Setter Property="Opacity" Value="0.45" />
+  </Style>
+  <Style Selector="Border.card.played:pointerover > Grid > :is(Control).fade, Border.card.played.playing > Grid > :is(Control).fade">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+  <Style Selector="Border.card Button.hidebtn">
+    <Setter Property="Opacity" Value="0" />
+  </Style>
+  <Style Selector="Border.card:pointerover Button.hidebtn, Border.card.hidden Button.hidebtn">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+  <Style Selector="Border.badge">
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="6,2" />
+  </Style>
+
+  <Style Selector="DataGrid">
+    <Setter Property="Background" Value="{StaticResource Bg}" />
+    <Setter Property="GridLinesVisibility" Value="Horizontal" />
+    <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource Line}" />
+  </Style>
+  <Style Selector="DataGridRow.played">
+    <Setter Property="Opacity" Value="0.5" />
+  </Style>
+  <Style Selector="DataGridRow.hidden">
+    <Setter Property="Opacity" Value="0.4" />
+  </Style>
+  <Style Selector="DataGridRow.playing">
+    <Setter Property="Background" Value="#262b1a" />
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+</Styles>
