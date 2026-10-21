@@ -141,6 +141,8 @@
                       </Button>
                       <TextBlock Classes="muted small" Text="{Binding Who}" TextTrimming="CharacterEllipsis" />
                       <TextBlock Classes="muted small" Text="{Binding Details}" TextTrimming="CharacterEllipsis" />
+                      <TextBlock Classes="small" Text="{Binding Note}" IsVisible="{Binding HasNote}" Foreground="{DynamicResource Warn}"
+                                 TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding NoteTip}" />
                     </StackPanel>
                     <Button Grid.Row="0" Classes="small hidebtn" Content="{Binding HideGlyph}" ToolTip.Tip="{Binding HideTip}"
                             HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6" Background="{DynamicResource Overlay}"

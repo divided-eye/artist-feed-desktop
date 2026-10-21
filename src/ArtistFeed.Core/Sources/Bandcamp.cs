@@ -229,6 +229,65 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
         public List<string> ListedTracks = new();
         /// <summary>Shown here but sold from this other page (usually the label's): see SoldElsewhere.</summary>
         public string? SoldAt;
+        /// <summary>No tracks and nothing physical either: shown here, but it can't be bought here.</summary>
+        public bool Placeholder;
+    }
+
+    public const string NotForSale = "Not for sale on this page";
+
+    /// <summary>Album results of a bandcamp.com/search page: url, name, artist.</summary>
+    public static List<(string Url, string Name, string Artist)> ParseSearchAlbums(string html)
+    {
+        var doc = Html.Parse(html);
+        string Text(IElement? e) => e == null ? "" : Regex.Replace(e.TextContent, @"\s+", " ").Trim();
+        var found = new List<(string, string, string)>();
+        foreach (var li in doc.QuerySelectorAll("li.searchresult"))
+        {
+            var info = li.QuerySelector(".result-info") ?? li;
+            var heading = info.QuerySelector(".heading a");
+            var url = Text(info.QuerySelector(".itemurl"));
+            if (url == "") url = heading?.GetAttribute("href") ?? "";
+            if (heading == null || url == "") continue;
+            if (!url.Contains("://")) url = "https://" + url;
+            var type = Text(info.QuerySelector(".itemtype")).ToLowerInvariant();
+            if (type is not ("album" or "")) continue;
+            var sub = Text(info.QuerySelector(".subhead"));
+            var by = sub.LastIndexOf(" by ", StringComparison.Ordinal);
+            var artist = sub.StartsWith("by ") ? sub[3..] : sub.StartsWith("from ") && by >= 0 ? sub[(by + 4)..] : "";
+            found.Add((Clean(url), Text(heading), artist.Trim()));
+        }
+        return found;
+    }
+
+    static bool SameWords(string? a, string? b)
+    {
+        var x = Names.Norm(a ?? "");
+        var y = Names.Norm(b ?? "");
+        return x != "" && y != "" && (x == y || x.Contains(y) || y.Contains(x));
+    }
+
+    /// <summary>
+    /// A release with no tracks and nothing to buy that doesn't say where it is sold: one Bandcamp search
+    /// for the same title and artist, on another page. Returns that page, or null.
+    /// </summary>
+    async Task<string?> SellerAsync(HttpClient client, string url, string? title, string? artist, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(title)) return null;
+        string html;
+        try
+        {
+            var q = Uri.EscapeDataString($"{artist ?? ""} {title}".Trim());
+            (html, _) = await GetAsync(client, $"https://bandcamp.com/search?q={q}&item_type=a", ct);
+        }
+        catch (Pace.BusyException) { throw; }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
+        catch (Exception) { return null; }
+        var here = new Uri(url).Host;
+        foreach (var (u, name, by) in ParseSearchAlbums(html))
+            if (Uri.TryCreate(u, UriKind.Absolute, out var there) && !string.Equals(there.Host, here, StringComparison.OrdinalIgnoreCase)
+                && SameWords(name, title) && (string.IsNullOrEmpty(artist) || SameWords(by, artist)))
+                return u;
+        return null;
     }
 
     /// <summary>
@@ -314,7 +373,11 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
             }
         }
         if (tracks.Count > 0 || ldTracks.Count > 0) outp.Tracks = tracks.Count > 0 ? tracks : ldTracks;
-        else outp.SoldAt = SoldElsewhere(doc, url);
+        else
+        {
+            outp.SoldAt = SoldElsewhere(doc, url);
+            outp.Placeholder = tralbum["packages"] is not JsonArray { Count: > 0 };
+        }
         // A track page names its album in the player data too, sometimes only there.
         var albumLink = Html.AsString(tralbum["album_url"]);
         if (outp.ReleaseUrl == null && outp.Url.Contains("/track/") && !string.IsNullOrWhiteSpace(albumLink))
@@ -440,15 +503,17 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
             {
                 var (page, _) = await GetAsync(client, url, ct);
                 rel = ParseRelease(page, url);
+                if (rel.Placeholder && rel.SoldAt == null)
+                    rel.SoldAt = await SellerAsync(client, url, rel.Title ?? it.Title, rel.Author ?? it.Author ?? result.DisplayName, ct);
                 if (rel.SoldAt != null)
                 {
                     // Shown here but sold from another page: link and play that one instead, so the
                     // feed shows one copy and its link is a page where the release can be bought.
-                    url = rel.SoldAt;
-                    var (realPage, _) = await GetAsync(client, url, ct);
-                    var real = ParseRelease(realPage, url);
-                    if (real.IsRelease || real.Tracks != null)
+                    var (realPage, _) = await GetAsync(client, rel.SoldAt, ct);
+                    var real = ParseRelease(realPage, rel.SoldAt);
+                    if (real.Tracks != null || (real.IsRelease && !real.Placeholder))
                     {
+                        url = rel.SoldAt;
                         real.Author ??= rel.Author;
                         real.PublishedAt ??= rel.PublishedAt;
                         rel = real;
@@ -474,6 +539,7 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
                 ExternalId = it.Url, Url = url, Title = rel.Title ?? it.Title, Image = rel.Image ?? it.Image,
                 Kind = KindOf(url), Author = rel.Author ?? it.Author, PublishedAt = rel.PublishedAt, PostedAt = rel.PostedAt,
                 Label = rel.Label, Release = rel.ReleaseName ?? rel.Title ?? it.Title, Embed = rel.Embed, Tracks = rel.Tracks,
+                Note = rel.Placeholder ? NotForSale : null,
             });
         }
         db.KvSet(failKey, JsonSerializer.Serialize(fails));

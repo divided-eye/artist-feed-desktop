@@ -91,6 +91,7 @@ public sealed class Db : IDisposable
     {
         ("label", "TEXT"), ("release", "TEXT"), ("embed", "TEXT"),
         ("detailed", "INTEGER NOT NULL DEFAULT 0"), ("posted_at", "TEXT"), ("hidden", "INTEGER NOT NULL DEFAULT 0"),
+        ("note", "TEXT"),
     };
 
     readonly object _lock = new();
@@ -366,8 +367,8 @@ public sealed class Db : IDisposable
             {
                 tx.Execute(
                     "INSERT INTO posts(account_id, external_id, title, url, image, kind, author," +
-                    " published_at, first_seen, label, release, embed, posted_at, detailed)" +
-                    " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?) " +
+                    " published_at, first_seen, label, release, embed, posted_at, detailed, note)" +
+                    " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) " +
                     "ON CONFLICT(account_id, external_id) DO UPDATE SET title=excluded.title, url=excluded.url," +
                     " image=COALESCE(excluded.image, image)," +
                     " author=COALESCE(excluded.author, author)," +
@@ -375,9 +376,9 @@ public sealed class Db : IDisposable
                     " label=COALESCE(excluded.label, label)," +
                     " release=COALESCE(excluded.release, release)," +
                     " embed=COALESCE(excluded.embed, embed)," +
-                    " posted_at=COALESCE(excluded.posted_at, posted_at), detailed=excluded.detailed",
+                    " posted_at=COALESCE(excluded.posted_at, posted_at), detailed=excluded.detailed, note=excluded.note",
                     account.Id, p.ExternalId, p.Title, p.Url, p.Image, p.Kind, p.Author,
-                    p.PublishedAt, seen, p.Label, p.Release, p.Embed, p.PostedAt, DetailVersion);
+                    p.PublishedAt, seen, p.Label, p.Release, p.Embed, p.PostedAt, DetailVersion, p.Note);
                 if (p.Tracks != null)
                 {
                     var postId = (long)tx.Scalar("SELECT id FROM posts WHERE account_id=? AND external_id=?", account.Id, p.ExternalId)!;
@@ -497,7 +498,7 @@ public sealed class Db : IDisposable
             "(SELECT COALESCE(GROUP_CONCAT(title, ' '), '') FROM tracks WHERE post_id=p.id)",
         }, false);
         var sql = "SELECT p.id, p.title, p.url, p.image, p.kind, p.author, p.published_at, p.first_seen," +
-                  " p.label, p.release, p.embed, p.hidden, a.source, a.avatar, a.display_name," +
+                  " p.label, p.release, p.embed, p.hidden, p.note, a.source, a.avatar, a.display_name," +
                   " EXISTS(SELECT 1 FROM played WHERE post_id=p.id) AS played," +
                   " ar.id AS artist_id, ar.name AS artist," +
                   " (SELECT COUNT(*) FROM tracks WHERE post_id=p.id) AS track_count," +
@@ -524,7 +525,7 @@ public sealed class Db : IDisposable
             $"SELECT p.id AS post_id, t.id AS track_id, {TArtist} AS artist, {TLabel} AS label," +
             $" {TRelease} AS release, {TTrack} AS track, t.duration, t.position," +
             $" t.ext_id AS track_ext_id, {When} AS released, p.published_at, {Posted} AS posted," +
-            " COALESCE(t.url, p.url) AS url, p.url AS post_url, p.embed, p.image, p.kind, p.hidden AS release_hidden," +
+            " COALESCE(t.url, p.url) AS url, p.url AS post_url, p.embed, p.image, p.kind, p.hidden AS release_hidden, p.note," +
             $" EXISTS(SELECT 1 FROM hidden_tracks h WHERE h.post_id=p.id AND h.track={TrackKey}) AS track_hidden," +
             $" (p.hidden OR EXISTS(SELECT 1 FROM hidden_tracks h WHERE h.post_id=p.id AND h.track={TrackKey})) AS hidden," +
             " COALESCE(t.ext_id, t.title, '') AS track_key," +

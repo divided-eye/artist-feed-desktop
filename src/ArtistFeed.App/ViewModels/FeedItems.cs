@@ -52,6 +52,13 @@ public partial class PostCardViewModel : ObservableObject
         }
     }
 
+    /// <summary>Something to know about it, such as "Not for sale on this page".</summary>
+    public string Note => Post.Note ?? "";
+    public bool HasNote => !string.IsNullOrEmpty(Post.Note);
+    public string? NoteTip => Post.Note == ArtistFeed.Core.Bandcamp.NotForSale
+        ? "This page shows the release but has no tracks and nothing to buy, and doesn't say where it is sold. A Bandcamp search didn't find the page that sells it."
+        : null;
+
     public string Details
     {
         get
@@ -99,7 +106,7 @@ public partial class TrackRowViewModel : ObservableObject
 
     public string Artist => Row.Artist;
     public string Label => Row.Label;
-    public string Release => Row.Release;
+    public string Release => string.IsNullOrEmpty(Row.Note) ? Row.Release : $"{Row.Release} · {Row.Note}";
     public string Track => Row.Track;
     public string Duration => Show.Clock(Row.Duration);
     public string Released => Day(Row.Released);

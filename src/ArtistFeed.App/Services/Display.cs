@@ -37,21 +37,21 @@ public static class Display
             ["Bg"] = "#0f1012", ["Panel"] = "#17191d", ["Panel2"] = "#1f2227", ["Line"] = "#2a2e35",
             ["Text"] = "#eceef1", ["Muted"] = "#8d95a1", ["Accent"] = "#d9f25c", ["AccentInk"] = "#d9f25c",
             ["OnAccent"] = "#14160a", ["Danger"] = "#ff6b6b", ["Hover"] = "#444a55", ["Letter"] = "#3a3f48",
-            ["Overlay"] = "#cc0f1012", ["PlayingRow"] = "#262b1a",
+            ["Overlay"] = "#cc0f1012", ["PlayingRow"] = "#262b1a", ["Warn"] = "#e6b450",
         },
         ["light"] = new()
         {
             ["Bg"] = "#f5f6f8", ["Panel"] = "#ffffff", ["Panel2"] = "#eceff3", ["Line"] = "#d3d8df",
             ["Text"] = "#15181d", ["Muted"] = "#586170", ["Accent"] = "#c8e33d", ["AccentInk"] = "#4b5a00",
             ["OnAccent"] = "#14160a", ["Danger"] = "#c62828", ["Hover"] = "#a7afba", ["Letter"] = "#c3c8cf",
-            ["Overlay"] = "#e6ffffff", ["PlayingRow"] = "#eef5cc",
+            ["Overlay"] = "#e6ffffff", ["PlayingRow"] = "#eef5cc", ["Warn"] = "#8f5f00",
         },
         ["contrast"] = new()
         {
             ["Bg"] = "#000000", ["Panel"] = "#000000", ["Panel2"] = "#1c1c1c", ["Line"] = "#ffffff",
             ["Text"] = "#ffffff", ["Muted"] = "#e2e2e2", ["Accent"] = "#ffff00", ["AccentInk"] = "#ffff00",
             ["OnAccent"] = "#000000", ["Danger"] = "#ff6a6a", ["Hover"] = "#ffff00", ["Letter"] = "#5c5c5c",
-            ["Overlay"] = "#eb000000", ["PlayingRow"] = "#333300",
+            ["Overlay"] = "#eb000000", ["PlayingRow"] = "#333300", ["Warn"] = "#ffd34d",
         },
     };
 

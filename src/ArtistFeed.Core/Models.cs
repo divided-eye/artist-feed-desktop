@@ -20,6 +20,7 @@ public sealed class Post
     public string? Release { get; init; }                  // the album/EP this belongs to
     public string? Embed { get; init; }                    // what the site's embeddable player needs
     public List<Track>? Tracks { get; init; }              // null: leave stored tracks alone
+    public string? Note { get; init; }                     // something to know about it ("Not for sale on this page")
 }
 
 public sealed class FetchResult
@@ -119,6 +120,7 @@ public sealed class FeedPost
     public required string Artist { get; init; }
     public long TrackCount { get; init; }
     public double? Duration { get; init; }
+    public string? Note { get; init; }
 
     public static FeedPost From(Dictionary<string, object?> r) => new()
     {
@@ -126,7 +128,7 @@ public sealed class FeedPost
         Author = r.S("author"), PublishedAt = r.S("published_at"), FirstSeen = r.S("first_seen") ?? "", Label = r.S("label"),
         Release = r.S("release"), Embed = r.S("embed"), Hidden = r.L("hidden") != 0, Source = r.S("source") ?? "",
         Played = r.L("played") != 0, ArtistId = r.L("artist_id"), Artist = r.S("artist") ?? "", TrackCount = r.L("track_count"),
-        Duration = r.D("duration"),
+        Duration = r.D("duration"), Note = r.S("note"),
     };
 }
 
@@ -159,6 +161,7 @@ public sealed class TrackRow
     public string Source { get; init; } = "";
     public long ArtistId { get; init; }
     public string TrackedArtist { get; init; } = "";
+    public string? Note { get; init; }
 
     public static TrackRow From(Dictionary<string, object?> r) => new()
     {
@@ -168,6 +171,6 @@ public sealed class TrackRow
         Url = r.S("url") ?? "", PostUrl = r.S("post_url") ?? "", Embed = r.S("embed"), Image = r.S("image"), Kind = r.S("kind"),
         ReleaseHidden = r.L("release_hidden") != 0, TrackHidden = r.L("track_hidden") != 0, Hidden = r.L("hidden") != 0,
         TrackKey = r.S("track_key") ?? "", Played = r.L("played") != 0, PostTitle = r.S("post_title") ?? "",
-        Source = r.S("source") ?? "", ArtistId = r.L("artist_id"), TrackedArtist = r.S("tracked_artist") ?? "",
+        Source = r.S("source") ?? "", ArtistId = r.L("artist_id"), TrackedArtist = r.S("tracked_artist") ?? "", Note = r.S("note"),
     };
 }

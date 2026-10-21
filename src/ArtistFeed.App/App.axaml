@@ -19,6 +19,7 @@
       <SolidColorBrush x:Key="Letter" Color="#3a3f48" />
       <SolidColorBrush x:Key="Overlay" Color="#cc0f1012" />
       <SolidColorBrush x:Key="PlayingRow" Color="#262b1a" />
+      <SolidColorBrush x:Key="Warn" Color="#e6b450" />
       <!-- Fluent's own accent follows the app's -->
       <Color x:Key="SystemAccentColor">#d9f25c</Color>
       <Color x:Key="SystemAccentColorDark1">#c4dc4f</Color>

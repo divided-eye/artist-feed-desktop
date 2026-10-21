@@ -549,4 +549,70 @@ public class CoreTests
         await app.AddAsync(("bandcamp", "observatory-records"));
         Assert.Single(app.Feed());
     }
+
+    /// <summary>A page showing a release with no tracks, nothing to buy and no link to where it is sold:
+    /// one Bandcamp search for it, and a note when that finds nothing.</summary>
+    [Fact]
+    public async Task AReleaseWithNothingToBuyAndNoLinkIsSearchedForOnceThenNoted()
+    {
+        var by = new JsonObject { ["byArtist"] = new JsonObject { ["name"] = "Herbalistek" } };
+        var foundShell = StandIn.Release("52 Blue", "20 Jan 2026 00:00:00 GMT", ldExtra: by);
+        var lostShell = StandIn.Release("Lost One", "20 Jan 2026 00:00:00 GMT", ldExtra: by);
+        var tralbum = new JsonObject
+        {
+            ["id"] = 778, ["item_type"] = "album",
+            ["trackinfo"] = new JsonArray(new JsonObject { ["title"] = "52 Blue", ["duration"] = 300, ["track_id"] = 7101 }),
+        }.ToJsonString();
+        var real = StandIn.Release("52 Blue", "20 Jan 2026 00:00:00 GMT", ldExtra: new JsonObject
+            {
+                ["byArtist"] = new JsonObject { ["name"] = "Herbalistek" },
+                ["publisher"] = new JsonObject { ["name"] = "Observatory Records" },
+            })
+            .Replace("</head>", "</head><body><script data-tralbum='" + tralbum + "'></script></body>");
+        const string grid = "<html><head><meta property=\"og:site_name\" content=\"Herbalistek\"></head><body><ol id=\"music-grid\">" +
+                            "<li><a href=\"/album/52-blue\"><p class=\"title\">52 Blue</p></a></li>" +
+                            "<li><a href=\"/album/lost-one\"><p class=\"title\">Lost One</p></a></li></ol></body></html>";
+        static string Result(string name, string url, string sub) =>
+            $"<li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ALBUM</div>" +
+            $"<div class=\"heading\"><a href=\"{url}?from=search\">\n {name}\n</a></div><div class=\"subhead\">\n {sub}\n</div>" +
+            $"<div class=\"itemurl\"><a href=\"{url}?from=search\">{url}</a></div></div></li>";
+        var searches = new List<string>();
+
+        Assert.True(Bandcamp.ParseRelease(foundShell, "https://herbalist.bandcamp.com/album/52-blue").Placeholder);
+        Assert.False(Bandcamp.ParseRelease(real, "https://observatory.bandcamp.com/album/52-blue").Placeholder);
+
+        using var app = new TestApp();
+        app.Web.Extra = r =>
+        {
+            var (host, path) = (r.RequestUri!.Host, r.RequestUri.AbsolutePath);
+            if (host == "herbalist.bandcamp.com")
+                return path switch
+                {
+                    "/music" => StandIn.Text(grid), "/album/52-blue" => StandIn.Text(foundShell),
+                    "/album/lost-one" => StandIn.Text(lostShell), _ => null,
+                };
+            if (host == "bandcamp.com" && path == "/search")
+            {
+                var q = Uri.UnescapeDataString(r.RequestUri.Query.Split("q=")[1].Split('&')[0]);
+                lock (searches) searches.Add(q);
+                return StandIn.Text("<ul>" + (q.Contains("52 Blue")
+                    ? Result("52 Blue", "https://herbalist.bandcamp.com/album/52-blue", "by Herbalistek") +
+                      Result("52 Blue", "https://observatory.bandcamp.com/album/52-blue", "by Herbalistek")
+                    : "") + "</ul>");
+            }
+            if (host == "observatory.bandcamp.com" && path == "/album/52-blue") return StandIn.Text(real);
+            return null;
+        };
+        await app.AddAsync(("bandcamp", "herbalist"));
+        Assert.Equal(new[] { "Herbalistek 52 Blue", "Herbalistek Lost One" }, searches);           // once each
+        var feed = app.Feed();
+        var blue = feed.Single(p => p.Title == "52 Blue");
+        var lost = feed.Single(p => p.Title == "Lost One");
+        Assert.Equal("https://observatory.bandcamp.com/album/52-blue", blue.Url);
+        Assert.Null(blue.Note);
+        Assert.Equal("Observatory Records", blue.Label);
+        Assert.Equal("https://herbalist.bandcamp.com/album/lost-one", lost.Url);
+        Assert.Equal(Bandcamp.NotForSale, lost.Note);
+        Assert.Equal(Bandcamp.NotForSale, app.Tracks().Single(t => t.PostTitle == "Lost One").Note);
+    }
 }

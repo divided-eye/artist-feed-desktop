@@ -320,4 +320,23 @@ public class UiTests
             w.Close();
         }
     }
+
+    [AvaloniaFact]
+    public async Task ANoteShowsOnTheCardAndInTheList()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        app.Engine.Db.Query("UPDATE posts SET note=? WHERE title='Third'", Bandcamp.NotForSale);
+        vm.SitesOrArtistsChanged();
+        Dispatcher.UIThread.RunJobs();
+        var third = vm.Posts.Single(p => p.Title == "Third");
+        Assert.True(third.HasNote);
+        Assert.Contains("nothing to buy", third.NoteTip);
+        Assert.False(vm.Posts.Single(p => p.Title == "First").HasNote);
+        Save(w, "13-note-card");
+        vm.ShowListCommand.Execute(null);
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("Third · " + Bandcamp.NotForSale, vm.Rows.Single(r => r.Row.PostTitle == "Third").Release);
+        w.Close();
+    }
 }
