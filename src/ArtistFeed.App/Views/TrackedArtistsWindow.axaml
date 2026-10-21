@@ -23,7 +23,7 @@
         <Button Content="Import CSV" Command="{Binding ImportCsvCommand}" />
         <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" />
         <Button Content="Clear All" Command="{Binding ClearAllCommand}" ToolTip.Tip="Empty the whole table (nothing is removed until you save)" />
-        <TextBox Text="{Binding FilterText}" Watermark="Filter rows" Width="200" ToolTip.Tip="Show only rows containing these words" />
+        <TextBox Text="{Binding FilterText}" PlaceholderText="Filter rows" Width="200" ToolTip.Tip="Show only rows containing these words" />
         <ComboBox ItemsSource="{Binding ShowOptions}" SelectedItem="{Binding Show}" ToolTip.Tip="Which rows to show" />
       </WrapPanel>
       <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="13"
@@ -40,7 +40,7 @@
                    Text="Paste a list to add: one artist or label per line. A name, a Bandcamp, SoundCloud or YouTube link, or name and links separated by tabs or commas." />
         <Button DockPanel.Dock="Right" Content="Add to table" Command="{Binding AddPastedCommand}" VerticalAlignment="Top" Margin="8,0,0,0" />
         <TextBox Text="{Binding PasteText}" AcceptsReturn="True" Height="70" TextWrapping="NoWrap"
-                 Watermark="Night Ferry&#10;https://somelabel.bandcamp.com&#10;Another Artist, anotherartist, another-artist" />
+                 PlaceholderText="Night Ferry&#10;https://somelabel.bandcamp.com&#10;Another Artist, anotherartist, another-artist" />
       </DockPanel>
     </Border>
 
@@ -59,7 +59,7 @@
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <StackPanel Margin="2,4" Spacing="2">
-                <TextBox Text="{Binding Name}" Watermark="Name (from the page if left empty)" Classes.removed="{Binding Remove}" />
+                <TextBox Text="{Binding Name}" PlaceholderText="Name (from the page if left empty)" Classes.removed="{Binding Remove}" />
                 <CheckBox Content="Keep both: different artists" IsChecked="{Binding KeepSeparate}" IsVisible="{Binding SameName}" FontSize="12"
                           ToolTip.Tip="Two rows share this name. Tick if they really are different artists; otherwise merge them into one row." />
               </StackPanel>
@@ -69,21 +69,21 @@
         <DataGridTemplateColumn Header="Bandcamp" Width="2*" MinWidth="140" Tag="bandcamp">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
-              <TextBox Text="{Binding Bandcamp}" Margin="2,4" VerticalAlignment="Top" Watermark="artistname" />
+              <TextBox Text="{Binding Bandcamp}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="artistname" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="SoundCloud" Width="2*" MinWidth="140" Tag="soundcloud">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
-              <TextBox Text="{Binding SoundCloud}" Margin="2,4" VerticalAlignment="Top" Watermark="username" />
+              <TextBox Text="{Binding SoundCloud}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="username" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="YouTube" Width="2*" MinWidth="140" Tag="youtube">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
-              <TextBox Text="{Binding YouTube}" Margin="2,4" VerticalAlignment="Top" Watermark="@handle" />
+              <TextBox Text="{Binding YouTube}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="@handle" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

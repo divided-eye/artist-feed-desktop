@@ -36,7 +36,7 @@
             </ItemsControl>
             <ComboBox ItemsSource="{Binding Artists}" SelectedItem="{Binding Artist}" MinWidth="170" MaxWidth="260"
                       ToolTip.Tip="Filter by artist" />
-            <TextBox Text="{Binding Search}" Watermark="Search" Width="220"
+            <TextBox Text="{Binding Search}" PlaceholderText="Search" Width="220"
                      ToolTip.Tip="Search titles, artists, labels and track names">
               <TextBox.InnerRightContent>
                 <Button Classes="ghost small" Content="✕" Click="ClearSearch" IsVisible="{Binding Search, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
@@ -74,9 +74,9 @@
           <ComboBox ItemsSource="{Binding Kinds}" SelectedItem="{Binding Kind}" Classes.on="{Binding Kind.Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Filter by type" />
           <ComboBox ItemsSource="{Binding LengthOptions}" SelectedItem="{Binding Length}" Classes.on="{Binding Length.Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Filter by track length" />
           <ComboBox ItemsSource="{Binding Ranges}" SelectedItem="{Binding Range}" Classes.on="{Binding Range.Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" ToolTip.Tip="Filter by date" />
-          <CalendarDatePicker SelectedDate="{Binding Since}" IsVisible="{Binding ShowRangeBox}" Watermark="From" ToolTip.Tip="From this date" />
+          <CalendarDatePicker SelectedDate="{Binding Since}" IsVisible="{Binding ShowRangeBox}" PlaceholderText="From" ToolTip.Tip="From this date" />
           <TextBlock Classes="muted" Text="to" VerticalAlignment="Center" IsVisible="{Binding ShowRangeBox}" />
-          <CalendarDatePicker SelectedDate="{Binding Until}" IsVisible="{Binding ShowRangeBox}" Watermark="To" ToolTip.Tip="Up to and including this date" />
+          <CalendarDatePicker SelectedDate="{Binding Until}" IsVisible="{Binding ShowRangeBox}" PlaceholderText="To" ToolTip.Tip="Up to and including this date" />
           <ComboBox ItemsSource="{Binding DateBys}" SelectedItem="{Binding DateBy}" IsVisible="{Binding ShowDateBy}" ToolTip.Tip="Which date the date filter uses" />
           <CheckBox IsChecked="{Binding PreviewOnly}" Content="Hide no-preview tracks"
                     ToolTip.Tip="Leave out Bandcamp tracks that can't be listened to yet, such as the unreleased tracks of a pre-order" />
