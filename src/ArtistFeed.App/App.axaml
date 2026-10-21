@@ -4,23 +4,21 @@
              RequestedThemeVariant="Dark">
   <Application.Resources>
     <ResourceDictionary>
-      <Color x:Key="BgColor">#0f1012</Color>
-      <Color x:Key="PanelColor">#17191d</Color>
-      <Color x:Key="Panel2Color">#1f2227</Color>
-      <Color x:Key="LineColor">#2a2e35</Color>
-      <Color x:Key="TextColor">#eceef1</Color>
-      <Color x:Key="MutedColor">#8d95a1</Color>
-      <Color x:Key="AccentColor">#d9f25c</Color>
-      <Color x:Key="DangerColor">#ff6b6b</Color>
-      <SolidColorBrush x:Key="Bg" Color="{StaticResource BgColor}" />
-      <SolidColorBrush x:Key="Panel" Color="{StaticResource PanelColor}" />
-      <SolidColorBrush x:Key="Panel2" Color="{StaticResource Panel2Color}" />
-      <SolidColorBrush x:Key="Line" Color="{StaticResource LineColor}" />
-      <SolidColorBrush x:Key="Text" Color="{StaticResource TextColor}" />
-      <SolidColorBrush x:Key="Muted" Color="{StaticResource MutedColor}" />
-      <SolidColorBrush x:Key="Accent" Color="{StaticResource AccentColor}" />
-      <SolidColorBrush x:Key="Danger" Color="{StaticResource DangerColor}" />
+      <!-- Dark, the default colour scheme. Services/Display.cs swaps these for Light or High contrast (Settings → Display). -->
+      <SolidColorBrush x:Key="Bg" Color="#0f1012" />
+      <SolidColorBrush x:Key="Panel" Color="#17191d" />
+      <SolidColorBrush x:Key="Panel2" Color="#1f2227" />
+      <SolidColorBrush x:Key="Line" Color="#2a2e35" />
+      <SolidColorBrush x:Key="Text" Color="#eceef1" />
+      <SolidColorBrush x:Key="Muted" Color="#8d95a1" />
+      <SolidColorBrush x:Key="Accent" Color="#d9f25c" />
+      <SolidColorBrush x:Key="AccentInk" Color="#d9f25c" />
+      <SolidColorBrush x:Key="Danger" Color="#ff6b6b" />
       <SolidColorBrush x:Key="OnAccent" Color="#14160a" />
+      <SolidColorBrush x:Key="Hover" Color="#444a55" />
+      <SolidColorBrush x:Key="Letter" Color="#3a3f48" />
+      <SolidColorBrush x:Key="Overlay" Color="#cc0f1012" />
+      <SolidColorBrush x:Key="PlayingRow" Color="#262b1a" />
       <!-- Fluent's own accent follows the app's -->
       <Color x:Key="SystemAccentColor">#d9f25c</Color>
       <Color x:Key="SystemAccentColorDark1">#c4dc4f</Color>

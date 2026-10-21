@@ -24,6 +24,12 @@ public partial class SettingsViewModel : ObservableObject
     public string DataFolder => _main.DataFolder;
     public string DatabasePath => _main.Engine.Db.Path;
 
+    public Option[] Sizes => Display.Sizes;
+    public Option[] Themes => Display.Themes;
+    [ObservableProperty] private Option _size;
+    [ObservableProperty] private Option _theme;
+    string _savedSize, _savedTheme;
+
     [ObservableProperty] private bool _dirty;
     [ObservableProperty] private string _savedNote = "";
     [ObservableProperty] private string _error = "";
@@ -31,6 +37,9 @@ public partial class SettingsViewModel : ObservableObject
     public SettingsViewModel(MainViewModel main)
     {
         _main = main;
+        (_savedSize, _savedTheme) = Display.Read(main.Engine.Db);
+        _size = Sizes.Single(o => o.Value == _savedSize);
+        _theme = Themes.Single(o => o.Value == _savedTheme);
         foreach (var s in main.Engine.Sites.All)
         {
             var t = new SiteToggle(s.Key, s.Label, s.Color, main.Engine.Sites.IsOn(s.Key));
@@ -39,9 +48,14 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
+    partial void OnSizeChanged(Option value) => Mark();
+    partial void OnThemeChanged(Option value) => Mark();
+
+    bool DisplayChanged => Size.Value != _savedSize || Theme.Value != _savedTheme;
+
     void Mark()
     {
-        Dirty = Sites.Any(s => s.On != s.Saved);
+        Dirty = Sites.Any(s => s.On != s.Saved) || DisplayChanged;
         SavedNote = Dirty ? "Unsaved changes" : "";
         Error = "";
     }
@@ -64,10 +78,16 @@ public partial class SettingsViewModel : ObservableObject
             // Switch on before off, so the "at least one" rule never trips half way.
             foreach (var s in Sites.Where(s => s.On && !s.Saved)) _main.Engine.Sites.SetOn(s.Key, true);
             foreach (var s in Sites.Where(s => !s.On && s.Saved)) _main.Engine.Sites.SetOn(s.Key, false);
+            var sitesChanged = Sites.Any(s => s.On != s.Saved);
             foreach (var s in Sites) s.Saved = s.On;
+            if (DisplayChanged)
+            {
+                Display.Save(_main.Engine.Db, Size.Value, Theme.Value);
+                (_savedSize, _savedTheme) = (Size.Value, Theme.Value);
+            }
             Dirty = false;
             SavedNote = "Saved";
-            _main.SitesOrArtistsChanged();
+            if (sitesChanged) _main.SitesOrArtistsChanged();
         }
         catch (Exception e)
         {

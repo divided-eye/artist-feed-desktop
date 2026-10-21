@@ -9,13 +9,13 @@
         WindowStartupLocation="CenterScreen">
   <DockPanel>
     <!-- ===== top bar ===== -->
-    <Border DockPanel.Dock="Top" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1">
+    <Border DockPanel.Dock="Top" Background="{DynamicResource Panel}" BorderBrush="{DynamicResource Line}" BorderThickness="0,0,0,1">
       <StackPanel Margin="16,10,16,10" Spacing="8">
         <Grid ColumnDefinitions="*,Auto">
           <WrapPanel Grid.Column="0" Orientation="Horizontal" ItemSpacing="8" LineSpacing="8">
             <TextBlock VerticalAlignment="Center" FontSize="17" FontWeight="Bold" Margin="0,0,6,0">
-              <Run Text="artist" /><Run Text="/" Foreground="{StaticResource Accent}" /><Run Text="feed" />
-              <Run Text="{Binding Version}" FontSize="11" FontWeight="Normal" Foreground="{StaticResource Muted}" />
+              <Run Text="artist" /><Run Text="/" Foreground="{DynamicResource AccentInk}" /><Run Text="feed" />
+              <Run Text="{Binding Version}" FontSize="11" FontWeight="Normal" Foreground="{DynamicResource Muted}" />
             </TextBlock>
             <ItemsControl ItemsSource="{Binding Chips}" VerticalAlignment="Center">
               <ItemsControl.ItemsPanel>
@@ -89,7 +89,7 @@
     </Border>
 
     <!-- ===== player ===== -->
-    <Border x:Name="Dock" DockPanel.Dock="Bottom" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0"
+    <Border x:Name="Dock" DockPanel.Dock="Bottom" Background="{DynamicResource Panel}" BorderBrush="{DynamicResource Line}" BorderThickness="0,1,0,0"
             IsVisible="False">
       <DockPanel Margin="16,8,16,10">
         <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
@@ -122,15 +122,15 @@
                             HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                             Command="{Binding #Root.((vm:MainViewModel)DataContext).PlayCardCommand}" CommandParameter="{Binding}"
                             ToolTip.Tip="{Binding PlayGlyph, StringFormat='{}{0} Play or open'}">
-                      <Panel Background="{StaticResource Panel2}">
-                        <TextBlock Text="{Binding Letter}" FontSize="64" FontWeight="Bold" Foreground="#3a3f48"
+                      <Panel Background="{DynamicResource Panel2}">
+                        <TextBlock Text="{Binding Letter}" FontSize="64" FontWeight="Bold" Foreground="{DynamicResource Letter}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <Image Source="{Binding Cover}" Stretch="UniformToFill" />
                         <Border Classes="badge" Background="{Binding BadgeBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8">
                           <TextBlock Text="{Binding SourceLabel}" FontSize="11" FontWeight="SemiBold" Foreground="White" />
                         </Border>
-                        <Border Width="34" Height="34" CornerRadius="17" Background="#cc0f1012" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="8">
-                          <TextBlock Text="{Binding PlayGlyph}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" />
+                        <Border Width="34" Height="34" CornerRadius="17" Background="{DynamicResource Overlay}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="8">
+                          <TextBlock Text="{Binding PlayGlyph}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource Text}" />
                         </Border>
                       </Panel>
                     </Button>
@@ -143,7 +143,7 @@
                       <TextBlock Classes="muted small" Text="{Binding Details}" TextTrimming="CharacterEllipsis" />
                     </StackPanel>
                     <Button Grid.Row="0" Classes="small hidebtn" Content="{Binding HideGlyph}" ToolTip.Tip="{Binding HideTip}"
-                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6" Background="#cc0f1012"
+                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6" Background="{DynamicResource Overlay}"
                             Command="{Binding #Root.((vm:MainViewModel)DataContext).ToggleHiddenCardCommand}" CommandParameter="{Binding}" />
                   </Grid>
                 </Border>

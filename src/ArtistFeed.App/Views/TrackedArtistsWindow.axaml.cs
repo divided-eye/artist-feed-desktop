@@ -11,6 +11,7 @@ public partial class TrackedArtistsWindow : Window
     public TrackedArtistsWindow()
     {
         InitializeComponent();
+        Services.Display.Attach(this);
         DataContextChanged += (_, _) => ShowColumns();
         Activated += (_, _) => ShowColumns();
     }

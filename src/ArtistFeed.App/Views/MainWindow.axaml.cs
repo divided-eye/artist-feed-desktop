@@ -18,6 +18,7 @@ public partial class MainWindow : Window, IUi
     public MainWindow()
     {
         InitializeComponent();
+        Display.Attach(this);
         DataContextChanged += (_, _) =>
         {
             if (DataContext is MainViewModel vm)
@@ -157,7 +158,7 @@ public partial class MainWindow : Window, IUi
         Dock.IsVisible = false;
         if (_web != null)
         {
-            try { _web.NavigateToString("<html><body style='background:#17191d'></body></html>", new Uri("https://artist-feed.app/")); }
+            try { _web.NavigateToString($"<html><body style='background:{Display.PanelCss}'></body></html>", new Uri("https://artist-feed.app/")); }
             catch (Exception) { }
         }
     }

@@ -8,7 +8,11 @@ public partial class SettingsWindow : Window
 {
     bool _closing;
 
-    public SettingsWindow() => InitializeComponent();
+    public SettingsWindow()
+    {
+        InitializeComponent();
+        Services.Display.Attach(this);
+    }
 
     void CloseClicked(object? sender, RoutedEventArgs e) => Close();
 

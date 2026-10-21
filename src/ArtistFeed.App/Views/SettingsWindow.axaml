@@ -16,6 +16,19 @@
       </StackPanel>
     </Grid>
     <StackPanel Spacing="6">
+      <TextBlock Classes="h3" Text="Display" />
+      <Grid ColumnDefinitions="Auto,Auto,24,Auto,Auto" RowDefinitions="Auto">
+        <TextBlock Text="Text size" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <ComboBox Grid.Column="1" ItemsSource="{Binding Sizes}" SelectedItem="{Binding Size}" MinWidth="160"
+                  ToolTip.Tip="Make everything in the app larger or smaller" />
+        <TextBlock Grid.Column="3" Text="Colour scheme" VerticalAlignment="Center" Margin="0,0,8,0" />
+        <ComboBox Grid.Column="4" ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" MinWidth="170"
+                  ToolTip.Tip="Dark, Light, High contrast, or follow this computer's light or dark setting" />
+      </Grid>
+      <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
+                 Text="How the app looks on this computer." />
+    </StackPanel>
+    <StackPanel Spacing="6">
       <TextBlock Classes="h3" Text="Sites" />
       <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
                  Text="A site switched off is gone from the app: no button for it at the top, no column in Tracked Artists, and no checks for new posts. The pages you track there are kept, so switching it back on brings them back. At least one site has to stay on." />
@@ -45,9 +58,9 @@
         <Button Content="Open data folder" Command="{Binding OpenDataFolderCommand}" />
         <Button Content="Import from the web version…" Command="{Binding ImportDatabaseCommand}" />
       </StackPanel>
-      <TextBlock Text="{Binding ImportNote}" Foreground="{StaticResource Accent}" TextWrapping="Wrap" FontSize="13" />
+      <TextBlock Text="{Binding ImportNote}" Foreground="{DynamicResource AccentInk}" TextWrapping="Wrap" FontSize="13" />
     </StackPanel>
     <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
-               Text="Changes to Sites take effect when you press Save." />
+               Text="Changes to Display and Sites take effect when you press Save." />
   </StackPanel>
 </Window>

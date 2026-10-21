@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ArtistFeed.App;
+using ArtistFeed.App.Services;
 using ArtistFeed.App.ViewModels;
 using ArtistFeed.App.Views;
 using ArtistFeed.Core;
@@ -253,5 +254,70 @@ public class UiTests
         Assert.Contains("YouTube", vm.Chips.Select(c => c.Label));
         win.Close();
         w.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task DisplaySizeAndColourScheme()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        try
+        {
+            var s = new SettingsViewModel(vm);
+            var win = new SettingsWindow { DataContext = s };
+            win.Show();
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal("100", s.Size.Value);
+            Assert.Equal("dark", s.Theme.Value);
+
+            // nothing changes until Save
+            s.Theme = s.Themes.Single(t => t.Value == "light");
+            s.Size = s.Sizes.Single(t => t.Value == "130");
+            Assert.True(s.Dirty);
+            Assert.Equal("dark", Display.Theme);
+            s.SaveCommand.Execute(null);
+            Assert.False(s.Dirty);
+            Assert.Equal("Saved", s.SavedNote);
+            Assert.Equal("light", Display.Theme);
+            Assert.Equal(1.3, Display.Scale, 3);
+            Assert.Equal(Avalonia.Styling.ThemeVariant.Light, Avalonia.Application.Current!.RequestedThemeVariant);
+            Assert.Equal(Avalonia.Media.Color.Parse("#f5f6f8"), ((Avalonia.Media.ISolidColorBrush)Avalonia.Application.Current.Resources["Bg"]!).Color);
+            Dispatcher.UIThread.RunJobs();
+            var zoom = Find<LayoutTransformControl>(w);
+            Assert.Equal(1.3, ((Avalonia.Media.ScaleTransform)zoom.LayoutTransform!).ScaleX, 3);
+            Save(win, "7-settings-light-130");
+            win.Close();
+
+            // kept for the next start
+            Assert.Equal(("130", "light"), Display.Read(app.Engine.Db));
+            Save(w, "8-grid-light-130");
+            vm.ShowListCommand.Execute(null);
+            Dispatcher.UIThread.RunJobs();
+            Save(w, "9-list-light-130");
+
+            Display.Save(app.Engine.Db, "100", "contrast");
+            Dispatcher.UIThread.RunJobs();
+            Assert.Contains("contrast", w.Classes);
+            Assert.Null(zoom.LayoutTransform);
+            vm.ShowGridCommand.Execute(null);
+            Dispatcher.UIThread.RunJobs();
+            Save(w, "10-grid-contrast");
+            var ta = new TrackedArtistsWindow { DataContext = new TrackedArtistsViewModel(vm), Width = 1240, Height = 800 };
+            ta.Show();
+            Dispatcher.UIThread.RunJobs();
+            Save(ta, "11-tracked-artists-contrast");
+            ta.Close();
+            Display.Save(app.Engine.Db, "100", "light");
+            var ta2 = new TrackedArtistsWindow { DataContext = new TrackedArtistsViewModel(vm), Width = 1240, Height = 800 };
+            ta2.Show();
+            Dispatcher.UIThread.RunJobs();
+            Save(ta2, "12-tracked-artists-light");
+            ta2.Close();
+        }
+        finally
+        {
+            Display.Apply("100", "dark");
+            w.Close();
+        }
     }
 }

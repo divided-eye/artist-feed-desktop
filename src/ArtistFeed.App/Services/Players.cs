@@ -34,7 +34,7 @@ public static class Players
     /// <summary>A small page holding the player, so the site sees an ordinary embed.</summary>
     public static string Html(PlayerPage p) => $$"""
         <!doctype html><html><head><meta charset="utf-8"><meta name="referrer" content="strict-origin-when-cross-origin">
-        <style>html,body{margin:0;background:#17191d;overflow:hidden}iframe{border:0;width:100%;height:{{p.Height}}px;display:block}</style>
+        <style>html{zoom:{{Display.Scale.ToString(System.Globalization.CultureInfo.InvariantCulture)}}}html,body{margin:0;background:{{Display.PanelCss}};overflow:hidden}iframe{border:0;width:100%;height:{{p.Height}}px;display:block}</style>
         </head><body><iframe src="{{System.Net.WebUtility.HtmlEncode(p.Src)}}" allow="autoplay; encrypted-media" allowfullscreen></iframe></body></html>
         """;
 }

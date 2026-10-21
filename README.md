@@ -58,7 +58,7 @@ versions shouldn't share one file while both are running.
   YouTube search ticks, Check now, removing rows, Import and Export CSV, pasting a list, filtering rows,
   and Save changes / Discard with each problem shown on its row. Same rules as the web version, including
   "two rows for one artist" and keeping both when they are different artists.
-- **Settings**: switching Bandcamp, SoundCloud or YouTube on and off, with Save; where your data is.
+- **Settings**: text size (90% to 150%) and colour scheme (Dark, Light, High contrast, or Match this computer); switching Bandcamp, SoundCloud or YouTube on and off, with Save; where your data is.
 
 Not in this version yet: **Link Finder**, **Find missing links**, the Bandcamp purchases reader and
 **Downloads** button, your SoundCloud account's follows, Beatport and Discogs, Related tracks, and choosing

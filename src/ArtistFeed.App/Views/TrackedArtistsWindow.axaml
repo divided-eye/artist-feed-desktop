@@ -12,7 +12,7 @@
       <Grid ColumnDefinitions="*,Auto">
         <TextBlock Classes="h2" Text="Tracked Artists" />
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-          <TextBlock Text="Unsaved changes" Foreground="{StaticResource Accent}" VerticalAlignment="Center" IsVisible="{Binding Dirty}" />
+          <TextBlock Text="Unsaved changes" Foreground="{DynamicResource AccentInk}" VerticalAlignment="Center" IsVisible="{Binding Dirty}" />
           <Button Content="Discard" Command="{Binding DiscardCommand}" IsVisible="{Binding Dirty}" />
           <Button Content="Save changes" Classes="primary" Classes.clean="{Binding !Dirty}" Command="{Binding SaveCommand}" IsEnabled="{Binding !Saving}" />
           <Button Content="Close" Click="CloseClicked" />
@@ -29,12 +29,12 @@
       <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="13"
                  Text="One row per artist. Type in the cells, or import or paste a list. Leave a cell empty if the artist isn't on that site; separate several pages in one cell with commas. The Artist cell can hold other names the artist goes by, after commas: the first is shown in the feed (put a name that contains a comma in &quot;double quotes&quot;). Changes take effect when you press Save changes." />
       <StackPanel Orientation="Horizontal" Spacing="12">
-        <TextBlock Text="{Binding Note}" Foreground="{StaticResource Accent}" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding Note}" Foreground="{DynamicResource AccentInk}" TextWrapping="Wrap" />
         <TextBlock Classes="error" Text="{Binding Error}" TextWrapping="Wrap" />
       </StackPanel>
     </StackPanel>
 
-    <Border DockPanel.Dock="Bottom" Margin="0,12,0,0" Padding="12" Background="{StaticResource Panel}" CornerRadius="10" BorderBrush="{StaticResource Line}" BorderThickness="1">
+    <Border DockPanel.Dock="Bottom" Margin="0,12,0,0" Padding="12" Background="{DynamicResource Panel}" CornerRadius="10" BorderBrush="{DynamicResource Line}" BorderThickness="1">
       <DockPanel>
         <TextBlock DockPanel.Dock="Top" Classes="muted" FontSize="13" Margin="0,0,0,6" TextWrapping="Wrap"
                    Text="Paste a list to add: one artist or label per line. A name, a Bandcamp, SoundCloud or YouTube link, or name and links separated by tabs or commas." />

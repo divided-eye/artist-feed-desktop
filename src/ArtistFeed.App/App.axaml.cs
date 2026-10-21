@@ -20,6 +20,7 @@ public partial class App : Application
             Directory.CreateDirectory(folder);
             Engine.FinishImport(dbPath);                     // a database imported in Settings takes over now
             var engine = new Engine(dbPath);
+            Services.Display.Load(engine.Db);                // text size and colour scheme, before the first window draws
             var vm = new MainViewModel(engine, folder);
             var window = new MainWindow { DataContext = vm };
             desktop.MainWindow = window;

@@ -33,6 +33,7 @@ public sealed class ConfirmDialog : Window
                 },
             },
         };
+        Services.Display.Attach(this);
     }
 
     public static async Task<bool> AskAsync(Window owner, string title, string message, string yes = "OK", string no = "Cancel")
