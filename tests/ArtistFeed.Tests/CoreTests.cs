@@ -497,4 +497,56 @@ public class CoreTests
         }
         Directory.Delete(folder, true);
     }
+
+    /// <summary>herbalistekmusic.bandcamp.com/album/52-blue shows a release with no tracks and nothing to buy;
+    /// its head links Observatory Records' page, which sells it.</summary>
+    [Fact]
+    public async Task AReleaseSoldFromAnotherPageLinksToThatPage()
+    {
+        const string realUrl = "https://observatory-records.bandcamp.com/album/52-blue";
+        var by = new JsonObject { ["byArtist"] = new JsonObject { ["name"] = "Herbalistek" } };
+        var shell = StandIn.Release("52 Blue", "20 Jan 2026 00:00:00 GMT", ldExtra: by, head: $"<link rel=\"canonical\" href=\"{realUrl}\">");
+        var tralbum = new JsonObject
+        {
+            ["id"] = 777, ["item_type"] = "album", ["artist"] = "Herbalistek",
+            ["trackinfo"] = new JsonArray(
+                new JsonObject { ["title"] = "52 Blue", ["duration"] = 300, ["track_id"] = 7001 },
+                new JsonObject { ["title"] = "Deep Water", ["duration"] = 280, ["track_id"] = 7002 }),
+        }.ToJsonString();
+        var real = StandIn.Release("52 Blue", "20 Jan 2026 00:00:00 GMT", ldExtra: new JsonObject
+            {
+                ["byArtist"] = new JsonObject { ["name"] = "Herbalistek" },
+                ["publisher"] = new JsonObject { ["name"] = "Observatory Records" },
+            })
+            .Replace("</head>", "</head><body><script data-tralbum='" + tralbum + "'></script></body>")
+            .Replace("<head>", "<head><meta name=\"bc-page-properties\" content='{\"item_type\":\"a\",\"item_id\":777}'>");
+        const string grid = "<html><head><meta property=\"og:site_name\" content=\"Herbalistek\"></head><body><ol id=\"music-grid\">" +
+                            "<li><a href=\"/album/52-blue\"><p class=\"title\">52 Blue</p></a></li></ol></body></html>";
+        const string label = "<html><head><meta property=\"og:site_name\" content=\"Observatory Records\"></head><body><ol id=\"music-grid\">" +
+                             "<li><a href=\"/album/52-blue\"><p class=\"title\">52 Blue</p></a></li></ol></body></html>";
+
+        Assert.Equal(realUrl, Bandcamp.ParseRelease(shell, "https://herbalistekmusic.bandcamp.com/album/52-blue").SoldAt);
+        Assert.Null(Bandcamp.ParseRelease(real, realUrl).SoldAt);                         // has tracks: it is the real page
+        Assert.Null(Bandcamp.ParseRelease(StandIn.Release("Other", "01 Jan 2026 00:00:00 GMT",
+            head: "<link rel=\"canonical\" href=\"https://someone.bandcamp.com/album/other\">"), "https://someone.bandcamp.com/album/other").SoldAt);
+
+        using var app = new TestApp();
+        app.Web.Extra = r => (r.RequestUri!.Host, r.RequestUri.AbsolutePath) switch
+        {
+            ("herbalistekmusic.bandcamp.com", "/music") => StandIn.Text(grid),
+            ("herbalistekmusic.bandcamp.com", "/album/52-blue") => StandIn.Text(shell),
+            ("observatory-records.bandcamp.com", "/music") => StandIn.Text(label),
+            ("observatory-records.bandcamp.com", "/album/52-blue") => StandIn.Text(real),
+            _ => null,
+        };
+        await app.AddAsync(("bandcamp", "herbalistekmusic"));
+        var post = Assert.Single(app.Feed());
+        Assert.Equal(realUrl, post.Url);
+        Assert.Equal("album=777", post.Embed);
+        Assert.Equal(new[] { "52 Blue", "Deep Water" }, app.Tracks().Select(t => t.Track));
+        Assert.All(app.Tracks(), t => Assert.Equal("Observatory Records", t.Label));
+        // tracking the label too: still shown once
+        await app.AddAsync(("bandcamp", "observatory-records"));
+        Assert.Single(app.Feed());
+    }
 }

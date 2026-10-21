@@ -132,6 +132,14 @@ public sealed class Db : IDisposable
         foreach (var (name, kind) in new[] { ("preorder", "INTEGER NOT NULL DEFAULT 0"), ("release_date", "TEXT NOT NULL DEFAULT ''"),
                                              ("checked_at", "TEXT NOT NULL DEFAULT ''") })
             if (ci.Count > 0 && !ci.Contains(name)) Exec($"ALTER TABLE collection_items ADD COLUMN {name} {kind}");
+        // Once: Bandcamp releases saved with no tracks are read again, so one that is only shown on an
+        // artist's page and sold from another (a label's) gets linked to the page that sells it.
+        if (Query("SELECT 1 FROM kv WHERE key='reread_trackless'").Count == 0)
+        {
+            Exec("UPDATE posts SET detailed=0 WHERE id IN (SELECT p.id FROM posts p JOIN accounts a ON a.id=p.account_id" +
+                 " WHERE a.source='bandcamp' AND NOT EXISTS(SELECT 1 FROM tracks t WHERE t.post_id=p.id))");
+            Exec("INSERT OR REPLACE INTO kv(key, value) VALUES('reread_trackless', '1')");
+        }
         var ar = Columns("artists");
         if (ar.Count > 0 && !ar.Contains("aliases")) Exec("ALTER TABLE artists ADD COLUMN aliases TEXT NOT NULL DEFAULT ''");
     }
@@ -360,7 +368,7 @@ public sealed class Db : IDisposable
                     "INSERT INTO posts(account_id, external_id, title, url, image, kind, author," +
                     " published_at, first_seen, label, release, embed, posted_at, detailed)" +
                     " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?) " +
-                    "ON CONFLICT(account_id, external_id) DO UPDATE SET title=excluded.title," +
+                    "ON CONFLICT(account_id, external_id) DO UPDATE SET title=excluded.title, url=excluded.url," +
                     " image=COALESCE(excluded.image, image)," +
                     " author=COALESCE(excluded.author, author)," +
                     " published_at=COALESCE(excluded.published_at, published_at)," +

@@ -227,6 +227,29 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
         public bool IsRelease;
         public List<Track>? Tracks;
         public List<string> ListedTracks = new();
+        /// <summary>Shown here but sold from this other page (usually the label's): see SoldElsewhere.</summary>
+        public string? SoldAt;
+    }
+
+    /// <summary>
+    /// A release shown on an artist's page but sold from another page (usually its label's). Bandcamp
+    /// gives such a page no tracks and nothing to buy, and points to the real one in a &lt;link&gt; in its
+    /// head: the canonical address, or the same /album/ path on the other page.
+    /// </summary>
+    static string? SoldElsewhere(IDocument doc, string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var here)) return null;
+        foreach (var tag in doc.QuerySelectorAll("link[href]"))
+        {
+            var href = Clean(tag.GetAttribute("href") ?? "");
+            if (!Uri.TryCreate(href, UriKind.Absolute, out var there) || there.Scheme is not ("http" or "https")
+                || string.Equals(there.Host, here.Host, StringComparison.OrdinalIgnoreCase))
+                continue;
+            if (!Regex.IsMatch(there.AbsolutePath, @"^/(album|track)/[^/]+$")) continue;
+            var rels = (tag.GetAttribute("rel") ?? "").ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (rels.Contains("canonical") || there.AbsolutePath == here.AbsolutePath.TrimEnd('/')) return href;
+        }
+        return null;
     }
 
     static string Squash(string s) => Regex.Replace(s, @"\W+", "").ToLowerInvariant();
@@ -291,6 +314,7 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
             }
         }
         if (tracks.Count > 0 || ldTracks.Count > 0) outp.Tracks = tracks.Count > 0 ? tracks : ldTracks;
+        else outp.SoldAt = SoldElsewhere(doc, url);
         // A track page names its album in the player data too, sometimes only there.
         var albumLink = Html.AsString(tralbum["album_url"]);
         if (outp.ReleaseUrl == null && outp.Url.Contains("/track/") && !string.IsNullOrWhiteSpace(albumLink))
@@ -411,10 +435,25 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
         {
             if (i++ > 0 && Pause > TimeSpan.Zero) await Task.Delay(Pause, ct);
             Release rel;
+            var url = it.Url;
             try
             {
-                var (page, _) = await GetAsync(client, it.Url, ct);
-                rel = ParseRelease(page, it.Url);
+                var (page, _) = await GetAsync(client, url, ct);
+                rel = ParseRelease(page, url);
+                if (rel.SoldAt != null)
+                {
+                    // Shown here but sold from another page: link and play that one instead, so the
+                    // feed shows one copy and its link is a page where the release can be bought.
+                    url = rel.SoldAt;
+                    var (realPage, _) = await GetAsync(client, url, ct);
+                    var real = ParseRelease(realPage, url);
+                    if (real.IsRelease || real.Tracks != null)
+                    {
+                        real.Author ??= rel.Author;
+                        real.PublishedAt ??= rel.PublishedAt;
+                        rel = real;
+                    }
+                }
             }
             catch (Pace.BusyException)
             {
@@ -432,8 +471,8 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
             fails.Remove(it.Url);
             result.Posts.Add(new Post
             {
-                ExternalId = it.Url, Url = it.Url, Title = rel.Title ?? it.Title, Image = rel.Image ?? it.Image,
-                Kind = KindOf(it.Url), Author = rel.Author ?? it.Author, PublishedAt = rel.PublishedAt, PostedAt = rel.PostedAt,
+                ExternalId = it.Url, Url = url, Title = rel.Title ?? it.Title, Image = rel.Image ?? it.Image,
+                Kind = KindOf(url), Author = rel.Author ?? it.Author, PublishedAt = rel.PublishedAt, PostedAt = rel.PostedAt,
                 Label = rel.Label, Release = rel.ReleaseName ?? rel.Title ?? it.Title, Embed = rel.Embed, Tracks = rel.Tracks,
             });
         }
