@@ -49,12 +49,12 @@ versions shouldn't share one file while both are running.
 ## What's in this version
 
 - **The feed**: a grid of covers or a sortable list of tracks, newest first; site buttons, artist menu,
-  search, Focus Feed, and the filters for year, label, type, length and date (by posted or release date);
+  search, the workspace menu, and the filters for year, label, type, length and date (by posted or release date);
   hide no-preview tracks; show and put back hidden items; limit to the first N results; Load more;
   Export Feed to CSV.
 - **Listening**: each site's own player opens at the bottom of the window (Bandcamp, SoundCloud, YouTube),
   and **Open on …** opens the page in your browser. Played items are dimmed, as in the web version.
-- **Tracked Artists**: the table of artists and their pages, other names in the Artist cell, Focus and
+- **Tracked Artists**: the table of artists and their pages, other names in the Artist cell, workspace and
   YouTube search ticks, Check now, removing rows, Import and Export CSV, pasting a list, filtering rows,
   and Save changes / Discard with each problem shown on its row. Same rules as the web version, including
   "two rows for one artist" and keeping both when they are different artists.
