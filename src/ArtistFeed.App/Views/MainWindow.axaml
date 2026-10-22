@@ -258,13 +258,13 @@
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTextColumn Header="Artist" Binding="{Binding Artist}" Width="170" Tag="artist" SortMemberPath="artist" />
-            <DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="140" Tag="label" SortMemberPath="label" />
+            <DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="140" Tag="label" SortMemberPath="label" CellStyleClasses="dim" />
             <DataGridTextColumn Header="Release" Binding="{Binding Release}" Width="190" Tag="release" SortMemberPath="release" />
             <DataGridTextColumn Header="Track" Binding="{Binding Track}" Width="*" MinWidth="160" Tag="track" SortMemberPath="track" />
-            <DataGridTextColumn Header="Length" Binding="{Binding Duration}" Width="86" Tag="duration" SortMemberPath="duration" />
-            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" Tag="year" SortMemberPath="year" />
-            <DataGridTextColumn Header="Released" Binding="{Binding Released}" Width="118" Tag="date" SortMemberPath="date" />
-            <DataGridTextColumn Header="Posted" Binding="{Binding Posted}" Width="118" Tag="posted" SortMemberPath="posted" />
+            <DataGridTextColumn Header="Length" Binding="{Binding Duration}" Width="86" Tag="duration" SortMemberPath="duration" CellStyleClasses="dim" />
+            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" Tag="year" SortMemberPath="year" CellStyleClasses="dim" />
+            <DataGridTextColumn Header="Released" Binding="{Binding Released}" Width="118" Tag="date" SortMemberPath="date" CellStyleClasses="dim" />
+            <DataGridTextColumn Header="Posted" Binding="{Binding Posted}" Width="118" Tag="posted" SortMemberPath="posted" CellStyleClasses="dim" />
             <DataGridTemplateColumn Header="Site" Width="120" CanUserSort="False" Tag="site">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate x:DataType="vm:TrackRowViewModel">
@@ -272,7 +272,7 @@
                           Command="{Binding #Root.((vm:MainViewModel)DataContext).OpenCommand}" CommandParameter="{Binding Row.Url}">
                     <StackPanel Orientation="Horizontal" Spacing="7">
                       <Ellipse Width="8" Height="8" Fill="{Binding SiteDot}" VerticalAlignment="Center" />
-                      <TextBlock Text="{Binding Site}" />
+                      <TextBlock Text="{Binding Site}" Foreground="{DynamicResource Muted}" />
                     </StackPanel>
                   </Button>
                 </DataTemplate>

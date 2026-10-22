@@ -10,7 +10,10 @@
     <Setter Property="Foreground" Value="{DynamicResource Text}" />
     <Setter Property="FontSize" Value="14" />
   </Style>
-
+  
+  <Style Selector="DataGridCell.dim">
+    <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+  </Style>
   <Style Selector="TextBlock.muted">
     <Setter Property="Foreground" Value="{DynamicResource Muted}" />
   </Style>
