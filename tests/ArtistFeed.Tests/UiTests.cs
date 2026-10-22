@@ -402,4 +402,68 @@ public class UiTests
         win.Close();
         w.Close();
     }
+
+    [AvaloniaFact]
+    public async Task FindMissingLinksOnTheRowsShownOrOneRow()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        var asked = new List<string>();
+        app.Web.Extra = r =>
+        {
+            var q = StandIn.QueryOf(r.RequestUri!);
+            if (r.RequestUri!.Host == "bandcamp.com" && r.RequestUri.AbsolutePath == "/search")
+            {
+                lock (asked) asked.Add(q["q"]);
+                var name = q["q"];
+                var slug = name.ToLowerInvariant().Replace(" ", "");
+                return StandIn.Text($"<ul><li class=\"searchresult\"><div class=\"result-info\"><div class=\"itemtype\">ARTIST</div>" +
+                    $"<div class=\"heading\"><a href=\"https://{slug}.bandcamp.com\">{name}</a></div>" +
+                    $"<div class=\"itemurl\"><a href=\"https://{slug}.bandcamp.com\">https://{slug}.bandcamp.com</a></div></div></li></ul>");
+            }
+            if (r.RequestUri.Host == "api-v2.soundcloud.com" && r.RequestUri.AbsolutePath == "/search/users")
+                return StandIn.Json(new JsonObject { ["collection"] = new JsonArray() });
+            return null;
+        };
+        var ta = new TrackedArtistsViewModel(vm);
+        var win = new TrackedArtistsWindow { DataContext = ta, Width = 1240, Height = 800 };
+        win.Show();
+        ta.PasteText = "Alpha Act\nBeta Act";
+        ta.AddPastedCommand.Execute(null);
+        var alpha = ta.Rows.Single(r => r.Name == "Alpha Act");
+        var beta = ta.Rows.Single(r => r.Name == "Beta Act");
+        Assert.True(alpha.HasOpen);
+
+        // filtered: only the rows shown
+        ta.FilterText = "beta";
+        Assert.Equal("Find missing links (shown rows)", ta.FillLabel);
+        await ta.FindMissingCommand.ExecuteAsync(null);
+        Assert.Equal(new[] { "Beta Act" }, asked);
+        Assert.Equal("betaact", beta.Bandcamp);
+        Assert.True(beta.AutoBandcamp);
+        Assert.Contains("Filled 1 cell", ta.FillStatus);
+        ta.FilterText = "";
+        Assert.Equal("Find missing links", ta.FillLabel);
+
+        // one row's own button
+        await ta.FindRowCommand.ExecuteAsync(alpha);
+        Assert.Equal(new[] { "Beta Act", "Alpha Act" }, asked);
+        Assert.Equal("alphaact", alpha.Bandcamp);
+        Dispatcher.UIThread.RunJobs();
+        Save(win, "17-find-missing-links");
+
+        // a guess cleared is remembered, and not looked for again unless Rescan is ticked
+        alpha.Bandcamp = "";
+        Assert.False(alpha.AutoBandcamp);
+        Assert.Contains("bandcamp", alpha.Skip);
+        Assert.Equal(new[] { "alphaact" }, alpha.Rejected["bandcamp"]);
+        await ta.FindRowCommand.ExecuteAsync(alpha);
+        Assert.Equal("", alpha.Bandcamp);
+        alpha.Rescan = true;
+        await ta.FindRowCommand.ExecuteAsync(alpha);
+        Assert.Equal("", alpha.Bandcamp);                 // the only result was turned down before
+        Assert.False(alpha.Rescan);
+        win.Close();
+        w.Close();
+    }
 }

@@ -60,6 +60,46 @@ public partial class ArtistRowViewModel : ObservableObject
     [ObservableProperty] private bool _sameName;          // the Keep both box shows while two rows share a name
     [ObservableProperty] private string _errors = "";
     [ObservableProperty] private bool _checking;
+    [ObservableProperty] private bool _rescan;            // Find missing links searches this row's cleared cells again
+    [ObservableProperty] private bool _searching;         // Find missing links is looking for this row now
+    // Cells filled in by Find missing links, shown highlighted until edited or saved.
+    [ObservableProperty] private bool _autoName;
+    [ObservableProperty] private bool _autoBandcamp;
+    [ObservableProperty] private bool _autoSoundCloud;
+    internal bool Filling;                                 // cells being set by Find missing links, not typed
+
+    /// <summary>Which of this row's cells Find missing links may look for (set by Tracked Artists).</summary>
+    public Func<ArtistRowViewModel, List<string>>? OpenCells { get; set; }
+    public bool HasOpen => !Remove && !IsBlank && (OpenCells?.Invoke(this).Count ?? 0) > 0;
+
+    // A cell emptied on purpose is remembered: Find missing links leaves it alone unless Rescan is
+    // ticked, and whatever was in it is never offered for that cell again.
+    void Edited(string col, string? was, string now)
+    {
+        if (!Filling)
+        {
+            if (col == "name") AutoName = false;
+            if (col == "bandcamp") AutoBandcamp = false;
+            if (col == "soundcloud") AutoSoundCloud = false;
+            if (now.Trim().Length == 0 && (was ?? "").Trim().Length > 0)
+            {
+                if (!Skip.Contains(col)) Skip.Add(col);
+                if (col != "name")
+                {
+                    if (!Rejected.TryGetValue(col, out var list)) Rejected[col] = list = new List<string>();
+                    if (!list.Contains(was!.Trim())) list.Add(was!.Trim());
+                }
+            }
+            else if (now.Trim().Length > 0) Skip.Remove(col);
+        }
+        OnPropertyChanged(nameof(HasOpen));
+    }
+
+    partial void OnNameChanged(string? oldValue, string newValue) => Edited("name", oldValue, newValue);
+    partial void OnBandcampChanged(string? oldValue, string newValue) => Edited("bandcamp", oldValue, newValue);
+    partial void OnSoundCloudChanged(string? oldValue, string newValue) => Edited("soundcloud", oldValue, newValue);
+    partial void OnRescanChanged(bool value) => OnPropertyChanged(nameof(HasOpen));
+    partial void OnSearchingChanged(bool value) => OnPropertyChanged(nameof(StatusShort));
 
     /// <summary>A tick for each workspace; ticking one marks the row changed (as "Groups").</summary>
     public ObservableCollection<GroupTick> Ticks { get; } = new();
@@ -94,7 +134,7 @@ public partial class ArtistRowViewModel : ObservableObject
         : Problems.Count > 0 ? string.Join("\n", Problems)
         : PostCount == 1 ? "1 post" : $"{PostCount} posts";
 
-    public string StatusShort => IsNew ? "new"
+    public string StatusShort => Searching ? "searching…" : IsNew ? "new"
         : HasIssue ? "⚠ " + (Problems.FirstOrDefault(p => !p.EndsWith("checking…")) ?? "")
         : IsChecking ? "checking…"
         : PostCount == 1 ? "1 post" : $"{PostCount} posts";
@@ -113,6 +153,7 @@ public partial class ArtistRowViewModel : ObservableObject
 
     partial void OnRemoveChanged(bool value)
     {
+        OnPropertyChanged(nameof(HasOpen));
         OnPropertyChanged(nameof(RemoveGlyph));
         OnPropertyChanged(nameof(RemoveTip));
     }
@@ -199,6 +240,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
         _savedIds = rows.Select(r => r.Id).ToList();
         Error = "";
         Note = "";
+        FillStatus = "";
         _loading = false;
         Dirty = false;
         RefreshView();
@@ -209,6 +251,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
 
     void Add(ArtistRowViewModel r)
     {
+        r.OpenCells = Open;
         r.Order = Rows.Count;
         r.PropertyChanged += RowChanged;
         Rows.Add(r);
@@ -220,6 +263,99 @@ public partial class TrackedArtistsViewModel : ObservableObject
         nameof(ArtistRowViewModel.YouTube), nameof(ArtistRowViewModel.Groups), nameof(ArtistRowViewModel.YoutubeLookup),
         nameof(ArtistRowViewModel.Remove), nameof(ArtistRowViewModel.KeepSeparate),
     };
+
+    // ---------- Find missing links ----------
+
+    [ObservableProperty] private bool _filling;
+    [ObservableProperty] private string _fillStatus = "";
+    CancellationTokenSource? _fillStop;
+
+    bool Filtered => FilterText.Trim().Length > 0 || !string.IsNullOrEmpty(Show?.Value);
+    public string FillLabel => Filling ? "Stop" : Filtered ? "Find missing links (shown rows)" : "Find missing links";
+
+    /// <summary>The cells Find missing links may fill in a row: the name, and the Bandcamp and SoundCloud
+    /// cells while those sites are on; empty, and not cleared on purpose unless Rescan is ticked.</summary>
+    List<string> Open(ArtistRowViewModel r)
+    {
+        var cols = new List<string> { "name" };
+        if (BandcampOn) cols.Add("bandcamp");
+        if (SoundCloudOn) cols.Add("soundcloud");
+        return cols.Where(c => (c == "name" ? r.Name : r.Cell(c)).Trim().Length == 0 && (r.Rescan || !r.Skip.Contains(c))).ToList();
+    }
+
+    partial void OnFillingChanged(bool value) => OnPropertyChanged(nameof(FillLabel));
+
+    /// <summary>Every row with something missing; while the table is filtered, only the rows shown.</summary>
+    [RelayCommand]
+    Task FindMissing()
+    {
+        if (Filling) { _fillStop?.Cancel(); return Task.CompletedTask; }
+        return FillAsync((Filtered ? Visible.ToList() : Rows.ToList()), Filtered ? "in the rows shown" : "");
+    }
+
+    /// <summary>One row's own Find links.</summary>
+    [RelayCommand]
+    Task FindRow(ArtistRowViewModel row) => Filling ? Task.CompletedTask : FillAsync(new() { row }, "in that row");
+
+    async Task FillAsync(List<ArtistRowViewModel> pool, string where)
+    {
+        var todo = pool.Where(r => !r.IsBlank && !r.Remove && Open(r).Count > 0).ToList();
+        if (todo.Count == 0)
+        {
+            FillStatus = $"Nothing to look for{(where.Length > 0 ? " " + where : "")}. Cells you cleared are left alone; tick Rescan on a row to search it again.";
+            return;
+        }
+        Filling = true;
+        Error = "";
+        _fillStop = new CancellationTokenSource();
+        var ct = _fillStop.Token;
+        int filled = 0, n = 0;
+        bool stopped = false;
+        try
+        {
+            foreach (var row in todo)
+            {
+                if (ct.IsCancellationRequested) { stopped = true; break; }
+                FillStatus = $"Looking for missing links: {++n} of {todo.Count} ({(row.Name.Trim().Length > 0 ? row.Name : row.Bandcamp + row.SoundCloud)})…";
+                row.Searching = true;
+                var cells = new Dictionary<string, string> { ["bandcamp"] = row.Bandcamp, ["soundcloud"] = row.SoundCloud };
+                var skip = row.Rescan ? new List<string>() : row.Skip.ToList();
+                var avoid = row.Rejected.ToDictionary(kv => kv.Key, kv => kv.Value.ToList());
+                var name = row.Name;
+                Suggestion found;
+                try
+                {
+                    found = await Task.Run(() => Engine.Suggester.SuggestAsync(name, cells, skip, avoid, ct), ct);
+                }
+                catch (OperationCanceledException) { stopped = true; break; }
+                catch (BlockedException e) { Error = e.Message; break; }
+                catch (Exception e) { Error = $"Couldn't look that up ({e.Message})."; break; }
+                finally { row.Searching = false; }
+                var open = Open(row);                    // never over something typed meanwhile, or a cleared cell
+                row.Filling = true;
+                if (found.Name.Length > 0 && open.Contains("name")) { row.Name = found.Name; row.AutoName = true; filled++; }
+                foreach (var (col, value) in found.Cells)
+                {
+                    if (value.Length == 0 || !open.Contains(col)) continue;
+                    row.SetCell(col, value);
+                    if (col == "bandcamp") row.AutoBandcamp = true; else row.AutoSoundCloud = true;
+                    row.Skip.Remove(col);
+                    filled++;
+                }
+                row.Filling = false;
+                row.Rescan = false;
+            }
+        }
+        finally
+        {
+            Filling = false;
+            _fillStop.Dispose();
+            _fillStop = null;
+            foreach (var r in todo) r.Searching = false;
+        }
+        if (filled > 0) Dirty = true;
+        FillStatus = (stopped ? "Stopped. " : "") + (filled > 0 ? $"Filled {filled} cell{(filled > 1 ? "s" : "")}. Check the highlighted ones, then Save changes." : "Nothing new found.");
+    }
 
     void RowChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -275,10 +411,15 @@ public partial class TrackedArtistsViewModel : ObservableObject
         }
     }
 
-    partial void OnFilterTextChanged(string value) => RefreshView();
+    partial void OnFilterTextChanged(string value)
+    {
+        RefreshView();
+        OnPropertyChanged(nameof(FillLabel));
+    }
     partial void OnShowChanged(Option? value)
     {
         if (!_loading) RefreshView();
+        OnPropertyChanged(nameof(FillLabel));
     }
 
     [RelayCommand]

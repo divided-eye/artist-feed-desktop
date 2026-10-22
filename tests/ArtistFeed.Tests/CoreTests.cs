@@ -617,4 +617,68 @@ public class CoreTests
         Assert.Equal(Bandcamp.NotForSale, lost.Note);
         Assert.Equal(Bandcamp.NotForSale, app.Tracks().Single(t => t.PostTitle == "Lost One").Note);
     }
+
+    /// <summary>Find missing links: the same guesses as the web version's, on the same kind of pages.</summary>
+    [Fact]
+    public async Task MissingPagesAreSuggested()
+    {
+        using var app = new TestApp();
+        static string Result(string name, string url, string kind) =>
+            $"<li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">{kind}</div>" +
+            $"<div class=\"heading\"><a href=\"{url}?from=search\">\n {name}\n</a></div><div class=\"subhead\">\n \n</div>" +
+            $"<div class=\"itemurl\"><a href=\"{url}?from=search\">{url}</a></div></div></li>";
+        JsonObject User(string name, string permalink, int followers) => new()
+            { ["username"] = name, ["permalink"] = permalink, ["permalink_url"] = $"https://soundcloud.com/{permalink}", ["followers_count"] = followers };
+        var users = new Dictionary<string, JsonArray>
+        {
+            ["River"] = new(User("River", "river", 900000), User("River", "riverirvine", 800)),
+            ["Solo Guy"] = new(User("Solo Guy", "sologuy-official", 10)),
+            ["Nightmare"] = new(),
+        };
+        int searches = 0;
+        app.Web.Extra = r =>
+        {
+            var (host, path, q) = (r.RequestUri!.Host, r.RequestUri.AbsolutePath, StandIn.QueryOf(r.RequestUri));
+            if (host == "bandcamp.com" && path == "/search")
+            {
+                searches++;
+                return StandIn.Text("<ul>" + (q["q"] == "Nightmare" && q["item_type"] == "b"
+                    ? Result("Nightmare", "https://nightmare.bandcamp.com", "ARTIST") + Result("Nightmare Tunes", "https://nmtunes.bandcamp.com", "LABEL") : "") + "</ul>");
+            }
+            if (host == "api-v2.soundcloud.com" && path == "/search/users")
+                return StandIn.Json(new JsonObject { ["collection"] = users.GetValueOrDefault(q["q"])?.DeepClone() ?? new JsonArray() });
+            if (host.EndsWith(".bandcamp.com") && host != "nightferry.bandcamp.com") return StandIn.Text("", System.Net.HttpStatusCode.NotFound);
+            return null;
+        };
+        var none = new Dictionary<string, List<string>>();
+        Task<Suggestion> Ask(string name, string bc = "", string sc = "", string[]? skip = null, Dictionary<string, List<string>>? avoid = null) =>
+            app.Engine.Suggester.SuggestAsync(name, new Dictionary<string, string> { ["bandcamp"] = bc, ["soundcloud"] = sc }, skip ?? Array.Empty<string>(), avoid ?? none);
+
+        var got = await Ask("Nightmare");
+        Assert.Equal("nightmare", got.Cells.GetValueOrDefault("bandcamp"));
+        Assert.Equal("", got.Name);
+        await Ask("Nightmare");
+        Assert.Equal(1, searches);                                     // Bandcamp's answer is kept
+        got = await Ask("Solo Guy");
+        Assert.Equal("sologuy-official", got.Cells["soundcloud"]);
+        Assert.Contains("no Bandcamp page found", got.Note);
+        // two profiles share the name: the one whose address matches the Bandcamp page given
+        Assert.Equal(new Dictionary<string, string> { ["soundcloud"] = "riverirvine" }, (await Ask("River", bc: "riverirvine")).Cells);
+        Assert.Equal("river", (await Ask("River")).Cells["soundcloud"]);                       // nothing to go on: the bigger one
+        // only a link: the name comes from the page; cells already filled are left alone
+        got = await Ask("", bc: "nightferry");
+        Assert.Equal("Night Ferry", got.Name);
+        Assert.False(got.Cells.ContainsKey("bandcamp"));
+        Assert.Empty((await Ask("Nightmare", bc: "x", sc: "y")).Cells);
+        // cleared on purpose, or turned down before
+        Assert.False((await Ask("River", skip: new[] { "soundcloud" })).Cells.ContainsKey("soundcloud"));
+        Assert.Equal("riverirvine", (await Ask("River", avoid: new() { ["soundcloud"] = new() { "river" } })).Cells["soundcloud"]);
+        Assert.Equal("nmtunes", (await Ask("Nightmare", avoid: new() { ["bandcamp"] = new() { "https://nightmare.bandcamp.com" } })).Cells["bandcamp"]);
+        // the web version's measure of likeness
+        Assert.Equal(0.5, Names.Ratio("abcd", "abef"), 3);
+        foreach (var (x, y, want) in new[] { ("nightmareandoni", "nightmareoni", 0.888889), ("riverirvine", "river", 0.625),
+                                            ("sologuyofficial", "sologuy", 0.636364), ("abcabcab", "bcabacba", 0.75), ("anechoicchamber", "anecho", 0.571429) })
+            Assert.Equal(want, Names.Ratio(x, y), 5);            // as Python's difflib gives them
+        Assert.Equal(0.9, Names.NameSim("somah", "somah uk"), 3);
+    }
 }

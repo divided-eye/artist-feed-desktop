@@ -21,6 +21,8 @@
       <WrapPanel Orientation="Horizontal" ItemSpacing="8" LineSpacing="8">
         <Button Content="Add row" Command="{Binding AddRowCommand}" />
         <Button Content="Import CSV" Command="{Binding ImportCsvCommand}" />
+        <Button Content="{Binding FillLabel}" Command="{Binding FindMissingCommand}"
+                ToolTip.Tip="Look for the Bandcamp pages and SoundCloud profiles rows are missing. While the table is filtered, only the rows shown are searched; each row also has its own Find links." />
         <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" />
         <ToggleButton Content="Import follows" IsChecked="{Binding ShowFollows, Mode=OneWay}" Command="{Binding ToggleFollowsCommand}"
                       ToolTip.Tip="Add the artists and labels a SoundCloud account or Bandcamp fan follows" />
@@ -31,7 +33,7 @@
         <ComboBox ItemsSource="{Binding ShowOptions}" SelectedItem="{Binding Show}" ToolTip.Tip="Which rows to show" />
       </WrapPanel>
       <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="13"
-                 Text="One row per artist. Type in the cells, or import or paste a list. Leave a cell empty if the artist isn't on that site; separate several pages in one cell with commas. The Artist cell can hold other names the artist goes by, after commas: the first is shown in the feed (put a name that contains a comma in &quot;double quotes&quot;). Changes take effect when you press Save changes." />
+                 Text="One row per artist. Type in the cells, or import or paste a list. Leave a cell empty if the artist isn't on that site; separate several pages in one cell with commas. The Artist cell can hold other names the artist goes by, after commas: the first is shown in the feed (put a name that contains a comma in &quot;double quotes&quot;). Find missing links fills empty Bandcamp, SoundCloud and name cells with its best guess, highlighted: check them, then Save changes. A cell you clear stays empty on later runs unless you tick that row's Rescan box. Changes take effect when you press Save changes." />
       <Border Classes="subpanel" IsVisible="{Binding ShowFollows}">
         <StackPanel Spacing="8">
           <StackPanel Orientation="Horizontal" Spacing="8">
@@ -93,6 +95,7 @@
       </Border>
       <StackPanel Orientation="Horizontal" Spacing="12">
         <TextBlock Text="{Binding Note}" Foreground="{DynamicResource AccentInk}" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding FillStatus}" Classes="muted" TextWrapping="Wrap" />
         <TextBlock Classes="error" Text="{Binding Error}" TextWrapping="Wrap" />
       </StackPanel>
     </StackPanel>
@@ -122,7 +125,7 @@
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <StackPanel Margin="2,4" Spacing="2">
-                <TextBox Text="{Binding Name}" PlaceholderText="Name (from the page if left empty)" Classes.removed="{Binding Remove}" />
+                <TextBox Text="{Binding Name}" PlaceholderText="Name (from the page if left empty)" Classes.removed="{Binding Remove}" Classes.auto="{Binding AutoName}" />
                 <CheckBox Content="Keep both: different artists" IsChecked="{Binding KeepSeparate}" IsVisible="{Binding SameName}" FontSize="12"
                           ToolTip.Tip="Two rows share this name. Tick if they really are different artists; otherwise merge them into one row." />
               </StackPanel>
@@ -132,14 +135,14 @@
         <DataGridTemplateColumn Header="Bandcamp" Width="2*" MinWidth="140" Tag="bandcamp">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
-              <TextBox Text="{Binding Bandcamp}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="artistname" />
+              <TextBox Text="{Binding Bandcamp}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="artistname" Classes.auto="{Binding AutoBandcamp}" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="SoundCloud" Width="2*" MinWidth="140" Tag="soundcloud">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
-              <TextBox Text="{Binding SoundCloud}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="username" />
+              <TextBox Text="{Binding SoundCloud}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="username" Classes.auto="{Binding AutoSoundCloud}" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
@@ -175,6 +178,14 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Rescan" Width="92">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate x:DataType="vm:ArtistRowViewModel">
+              <CheckBox IsChecked="{Binding Rescan}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0"
+                        ToolTip.Tip="Search this row's empty cells again, including ones you cleared. Earlier guesses you removed are not offered again." />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Status" Width="2*" MinWidth="150">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
@@ -188,10 +199,16 @@
         <DataGridTemplateColumn Header="" Width="96">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
-              <Button Classes="small" Content="Check now" VerticalAlignment="Top" Margin="0,6,0,0"
+              <StackPanel Spacing="4" Margin="0,6,0,0">
+              <Button Classes="small" Content="Find links" IsVisible="{Binding HasOpen}"
+                      IsEnabled="{Binding !#Root.((vm:TrackedArtistsViewModel)DataContext).Filling}"
+                      Command="{Binding #Root.((vm:TrackedArtistsViewModel)DataContext).FindRowCommand}" CommandParameter="{Binding}"
+                      ToolTip.Tip="Look for this row's missing Bandcamp page or SoundCloud profile (only this row)" />
+              <Button Classes="small" Content="Check now"
                       IsVisible="{Binding !IsNew}" IsEnabled="{Binding !Checking}"
                       Command="{Binding #Root.((vm:TrackedArtistsViewModel)DataContext).CheckNowCommand}" CommandParameter="{Binding}"
                       ToolTip.Tip="Read this artist's pages now, without waiting for the next refresh" />
+              </StackPanel>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

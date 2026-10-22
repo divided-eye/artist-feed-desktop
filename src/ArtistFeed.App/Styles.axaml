@@ -110,6 +110,12 @@
     <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
     <Setter Property="CornerRadius" Value="8" />
   </Style>
+  <!-- a cell filled in by Find missing links: check it, then Save -->
+  <Style Selector="TextBox.auto">
+    <Setter Property="FontStyle" Value="Italic" />
+    <Setter Property="BorderBrush" Value="#7dc8ff" />
+    <Setter Property="Background" Value="#297dc8ff" />
+  </Style>
   <Style Selector="TextBox.removed">
     <Setter Property="Opacity" Value="0.45" />
     <Setter Property="Foreground" Value="{DynamicResource Danger}" />

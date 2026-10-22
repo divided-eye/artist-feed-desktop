@@ -236,11 +236,15 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
     public const string NotForSale = "Not for sale on this page";
 
     /// <summary>Album results of a bandcamp.com/search page: url, name, artist.</summary>
-    public static List<(string Url, string Name, string Artist)> ParseSearchAlbums(string html)
+    public static List<(string Url, string Name, string Artist)> ParseSearchAlbums(string html) =>
+        ParseSearch(html).Where(c => c.Type is "album" or "").Select(c => (c.Url, c.Name, c.Artist)).ToList();
+
+    /// <summary>Results of a bandcamp.com/search page: type ("artist", "label", "album", "track"), url, name, artist.</summary>
+    public static List<(string Type, string Url, string Name, string Artist)> ParseSearch(string html)
     {
         var doc = Html.Parse(html);
         string Text(IElement? e) => e == null ? "" : Regex.Replace(e.TextContent, @"\s+", " ").Trim();
-        var found = new List<(string, string, string)>();
+        var found = new List<(string, string, string, string)>();
         foreach (var li in doc.QuerySelectorAll("li.searchresult"))
         {
             var info = li.QuerySelector(".result-info") ?? li;
@@ -250,11 +254,10 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
             if (heading == null || url == "") continue;
             if (!url.Contains("://")) url = "https://" + url;
             var type = Text(info.QuerySelector(".itemtype")).ToLowerInvariant();
-            if (type is not ("album" or "")) continue;
             var sub = Text(info.QuerySelector(".subhead"));
             var by = sub.LastIndexOf(" by ", StringComparison.Ordinal);
             var artist = sub.StartsWith("by ") ? sub[3..] : sub.StartsWith("from ") && by >= 0 ? sub[(by + 4)..] : "";
-            found.Add((Clean(url), Text(heading), artist.Trim()));
+            found.Add((type, Clean(url), Text(heading), artist.Trim()));
         }
         return found;
     }

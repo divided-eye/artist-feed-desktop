@@ -14,6 +14,7 @@ public sealed class Engine : IDisposable
     public SoundCloud SoundCloud { get; }
     public YouTube YouTube { get; }
     public Follows Follows { get; }
+    public Suggester Suggester { get; }
     readonly Func<HttpClient> _makeClient;
     readonly CancellationTokenSource _stop = new();
 
@@ -31,6 +32,7 @@ public sealed class Engine : IDisposable
         Refresher = new Refresher(Db, Sites, Pace, _makeClient);
         Table = new ArtistTable(Db, Sites);
         Follows = new Follows(this);
+        Suggester = new Suggester(this);
     }
 
     public HttpClient MakeClient() => _makeClient();

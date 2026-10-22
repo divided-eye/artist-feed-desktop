@@ -60,9 +60,12 @@ versions shouldn't share one file while both are running.
   "two rows for one artist" and keeping both when they are different artists.
 - **Workspaces**: named groups of artists (Focus is the first), ticked in Tracked Artists and chosen from the menu beside Search to show only them.
 - **Import follows** (Tracked Artists): add the profiles a SoundCloud account follows, or the artists and labels a public Bandcamp fan page follows.
+- **Find missing links** (Tracked Artists): fills empty Bandcamp, SoundCloud and name cells with highlighted guesses
+  to check; only the rows shown while the table is filtered, or one row with its own Find links; Rescan and
+  remembered cleared cells, as in the web version.
 - **Settings**: text size (90% to 150%) and colour scheme (Dark, Light, High contrast, or Match this computer); switching Bandcamp, SoundCloud or YouTube on and off, with Save; where your data is.
 
-Not in this version yet: **Link Finder**, **Find missing links**, the Bandcamp purchases reader and
+Not in this version yet: **Link Finder**, the Bandcamp purchases reader and
 **Downloads** button, your SoundCloud account's follows, Beatport and Discogs, Related tracks, and choosing
 or reordering list columns. They come in the next stage. Ticks and saved answers they use are kept in
 `feed.db`, so nothing is lost by using this version in between.

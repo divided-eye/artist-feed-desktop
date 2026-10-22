@@ -82,7 +82,7 @@ public sealed class StandIn : HttpMessageHandler
 
     static HttpResponseMessage Status(HttpStatusCode code) => new(code) { Content = new StringContent("") };
 
-    static Dictionary<string, string> QueryOf(Uri uri)
+    public static Dictionary<string, string> QueryOf(Uri uri)
     {
         var d = new Dictionary<string, string>();
         foreach (var part in uri.Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))

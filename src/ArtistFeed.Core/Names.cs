@@ -113,6 +113,62 @@ public static class Names
         return string.Join(' ', sb.ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 
+    /// <summary>Like Norm, but keeps everything, including version tags.</summary>
+    public static string Plain(string? text) => Words(Fold(text));
+
+    /// <summary>How alike two strings are, as Python's difflib.SequenceMatcher(None, a, b).ratio() measures it:
+    /// twice the matched characters over the total length. The web version's matching thresholds rely on it.</summary>
+    public static double Ratio(string a, string b)
+    {
+        if (a.Length == 0 || b.Length == 0) return 0;
+        if (a == b) return 1;
+        // difflib's cheap upper bounds first; below 0.5 never matters to the callers.
+        var counts = new Dictionary<char, int>();
+        foreach (var c in b) counts[c] = counts.GetValueOrDefault(c) + 1;
+        int common = 0;
+        foreach (var c in a)
+            if (counts.TryGetValue(c, out var n) && n > 0) { counts[c] = n - 1; common++; }
+        double total = a.Length + b.Length;
+        if (2.0 * Math.Min(a.Length, b.Length) / total < 0.5 || 2.0 * common / total < 0.5) return 0;
+        return 2.0 * Matched(a, 0, a.Length, b, 0, b.Length) / total;
+    }
+
+    /// <summary>Characters matched by difflib's method: the longest common block (earliest in a, then in b),
+    /// then the same on either side of it.</summary>
+    static int Matched(string a, int alo, int ahi, string b, int blo, int bhi)
+    {
+        if (alo >= ahi || blo >= bhi) return 0;
+        int besti = alo, bestj = blo, bestsize = 0;
+        var len = new int[bhi - blo + 1];
+        for (int i = alo; i < ahi; i++)
+        {
+            var next = new int[bhi - blo + 1];
+            for (int j = blo; j < bhi; j++)
+            {
+                if (a[i] != b[j]) continue;
+                var k = next[j - blo + 1] = len[j - blo] + 1;
+                if (k > bestsize) { besti = i - k + 1; bestj = j - k + 1; bestsize = k; }
+            }
+            len = next;
+        }
+        if (bestsize == 0) return 0;
+        return bestsize + Matched(a, alo, besti, b, blo, bestj) + Matched(a, besti + bestsize, ahi, b, bestj + bestsize, bhi);
+    }
+
+    /// <summary>How alike two tidied names are; one being the other plus extra words counts as close
+    /// ("somah" / "somah uk").</summary>
+    public static double NameSim(string a, string b)
+    {
+        var r = Ratio(a, b);
+        if (r < 0.9 && Math.Min(a.Length, b.Length) >= 4)
+        {
+            var ta = a.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToHashSet();
+            var tb = b.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToHashSet();
+            if (ta.IsSubsetOf(tb) || tb.IsSubsetOf(ta)) r = 0.9;
+        }
+        return r;
+    }
+
     /// <summary>For comparing titles and names: no accents, case, punctuation, "feat. X", or version tags
     /// such as "(Original Mix)".</summary>
     public static string Norm(string? text)
