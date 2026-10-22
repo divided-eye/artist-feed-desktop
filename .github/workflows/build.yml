@@ -1,5 +1,6 @@
 # Builds ready-to-run copies for Windows, macOS and Linux: run it from the Actions tab
-# (Build → Run workflow), or push a tag such as v1. The builds appear under the run's Artifacts.
+# (Build → Run workflow), or push a tag such as v0.5.0. The builds appear under the run's Artifacts.
+# The version shown in the app is the newest tag's (see Directory.Build.targets).
 name: Build
 on:
   workflow_dispatch:
@@ -10,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # the tags, which give the version shown in the app
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
@@ -17,12 +20,9 @@ jobs:
         run: dotnet test tests/ArtistFeed.Tests
       - name: Publish
         run: |
-          # a tag such as v0.5.0 sets the version shown in the app; other runs use Directory.Build.props
-          version=""
-          if [ "$GITHUB_REF_TYPE" = "tag" ]; then version="-p:Version=${GITHUB_REF_NAME#v}"; fi
           for rid in win-x64 osx-arm64 osx-x64 linux-x64; do
             dotnet publish src/ArtistFeed.App -c Release -r $rid --self-contained true \
-              -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none $version \
+              -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none \
               -o publish/ArtistFeed-$rid
           done
       - uses: actions/upload-artifact@v4

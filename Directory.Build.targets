@@ -1,0 +1,21 @@
+<Project>
+  <!-- The version comes from the newest tag (v0.5.0 → 0.5.0). A build made after that tag, with N more commits,
+       shows 0.5.0+N. Without Git or tags, Directory.Build.props' <Version> is used. -->
+  <Target Name="VersionFromGitTag" BeforeTargets="GetAssemblyVersion;GenerateAssemblyInfo;CoreGenerateAssemblyInfo">
+    <Exec Command="git describe --tags --match &quot;v[0-9]*&quot; --long" WorkingDirectory="$(MSBuildThisFileDirectory)"
+          ConsoleToMSBuild="true" IgnoreExitCode="true" ContinueOnError="true" EchoOff="true"
+          StandardOutputImportance="low" StandardErrorImportance="low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_GitDescribe" />
+      <Output TaskParameter="ExitCode" PropertyName="_GitDescribeExit" />
+    </Exec>
+    <PropertyGroup Condition="'$(_GitDescribeExit)' == '0' and $([System.Text.RegularExpressions.Regex]::IsMatch('$(_GitDescribe)', '^v\d+\.\d+\.\d+-\d+-g[0-9a-f]+$'))">
+      <_TagVersion>$([System.Text.RegularExpressions.Regex]::Match('$(_GitDescribe)', '^v(\d+\.\d+\.\d+)').Groups[1].Value)</_TagVersion>
+      <_TagCommits>$([System.Text.RegularExpressions.Regex]::Match('$(_GitDescribe)', '-(\d+)-g[0-9a-f]+$').Groups[1].Value)</_TagCommits>
+      <Version>$(_TagVersion)</Version>
+      <AssemblyVersion>$(_TagVersion).0</AssemblyVersion>
+      <FileVersion>$(_TagVersion).$(_TagCommits)</FileVersion>
+      <InformationalVersion>$(_TagVersion)</InformationalVersion>
+      <InformationalVersion Condition="'$(_TagCommits)' != '0'">$(_TagVersion)+$(_TagCommits)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
+</Project>

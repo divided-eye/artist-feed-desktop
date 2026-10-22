@@ -5,7 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <!-- The desktop app's version, shown beside the title. A build started by a tag such as v0.5.0 uses the tag's number instead. -->
-    <Version>0.4.0</Version>
+    <!-- The version shown beside the title comes from the newest Git tag (see Directory.Build.targets).
+         This one is used only when Git or tags aren't available, such as a copy downloaded as a zip. -->
+    <Version>0.0.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 </Project>
