@@ -5,8 +5,8 @@ A native desktop version of [Artist Feed](https://github.com/divided-eye/artist-
 It keeps one feed of the newest releases and uploads from the Bandcamp, SoundCloud and YouTube pages of the
 artists and labels you track.
 
-This is an experiment, and a first stage: it does what the web version's feed does, but not yet everything
-else. See [What's in this version](#whats-in-this-version).
+This is an experiment. It now does everything the web version does: the feed, Tracked Artists and Link
+Finder. See [What's in this version](#whats-in-this-version).
 
 ## Running it
 
@@ -21,7 +21,9 @@ dotnet run --project src/ArtistFeed.App
 
 The first start takes a minute while the packages download; later starts take seconds. The app checks your
 tracked pages when it starts and then every hour while it is open, with short catch-up visits in between
-for pages whose older releases are still loading.
+for pages whose older releases are still loading. While it is open it also reads the full track lists of
+your Bandcamp purchases in the background (when a Bandcamp username is set in Link Finder) and, with the
+Downloads button on, looks for new purchases and pre-orders that have come out.
 
 **Ready-to-run copies.** The **Build** workflow (GitHub → Actions → Build → Run workflow) makes copies for
 Windows, macOS (Apple silicon and Intel) and Linux that don't need .NET installed. Download one from the run's
@@ -63,12 +65,23 @@ versions shouldn't share one file while both are running.
 - **Find missing links** (Tracked Artists): fills empty Bandcamp, SoundCloud and name cells with highlighted guesses
   to check; only the rows shown while the table is filtered, or one row with its own Find links; Rescan and
   remembered cleared cells, as in the web version.
-- **Settings**: text size (90% to 150%) and colour scheme (Dark, Light, High contrast, or Match this computer); switching Bandcamp, SoundCloud or YouTube on and off, with Save; where your data is.
-
-Not in this version yet: **Link Finder**, the Bandcamp purchases reader and
-**Downloads** button, your SoundCloud account's follows, Beatport and Discogs, Related tracks, and choosing
-or reordering list columns. They come in the next stage. Ticks and saved answers they use are kept in
-`feed.db`, so nothing is lost by using this version in between.
+- **Link Finder**: paste a tracklist or choose an Excel or CSV file, and each track's link is looked for in
+  your feed, your Bandcamp purchases, Bandcamp search and the artist's own pages, then on the other sites
+  ticked in Settings. Skip a row while it runs, set a link yourself (Add link / Edit), keep a link marked for
+  review (Looks right), search one row again, see What was tried, and export the results. Your Bandcamp
+  username, Read purchases, Read full track lists, the Downloads switch and which artist link to give when a
+  track isn't found are all in the Look up tab.
+- **Saved results** (Link Finder): every track looked up, with search, filters, sorting by any heading, your
+  own spellings, Forget, Import your list (with links and notes) and export.
+- **Downloads** button: counts Bandcamp purchases and pre-orders ready to download, and opens your collection.
+  Off until switched on in Link Finder.
+- **Related tracks**: the + beside a SoundCloud row in the list opens the tracks SoundCloud lists as related,
+  three at a time, playable in place.
+- **Edit Columns** (list view): choose which columns show and their order; dragging a heading moves it too.
+- **Settings**: text size (90% to 150%) and colour scheme (Dark, Light, High contrast, or Match this computer);
+  switching sites on and off, including Beatport and Discogs for Link Finder (experimental, off by default);
+  which sites Link Finder searches; a Discogs access token; your SoundCloud username, whose follows are
+  preferred when a profile has to be picked by name; where your data is.
 
 ## Known limits
 
@@ -86,15 +99,19 @@ or reordering list columns. They come in the next stage. Ticks and saved answers
 dotnet test tests/ArtistFeed.Tests
 ```
 
-The tests are the web version's, rewritten: the same stand-in pages and the same expected results. Two of
-them compare against the web version directly: 1,446 names tidied by the web app must tidy the same here,
+The tests are the web version's, rewritten: the same stand-in pages and the same expected results. Link
+Finder's tests go further: the pages the web version's tests were served were recorded
+(`tools/record_web_exchanges.py`, saved as `tests/ArtistFeed.Tests/Data/web-exchanges.json`) and are served
+back here unchanged, so both versions are checked against exactly the same pages. Two tests
+compare against the web version directly: 1,446 names tidied by the web app must tidy the same here,
 and a database written by the web app must give the same feed and list for every filter and sort. The
 window tests drive the app headlessly and save pictures of each window to `artistfeed-shots` in the temp
 folder.
 
 ## Layout
 
-- `src/ArtistFeed.Core`: storage, the three site readers, the refresh, Tracked Artists' rules. No UI.
+- `src/ArtistFeed.Core`: storage, the three site readers, the refresh, Tracked Artists' rules, and Link
+  Finder (`Lookup/`). No UI.
 - `src/ArtistFeed.App`: the Avalonia windows (MVVM, CommunityToolkit.Mvvm).
 - `tests/ArtistFeed.Tests`: xUnit tests, including headless window tests.
 
