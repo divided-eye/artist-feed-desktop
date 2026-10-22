@@ -247,6 +247,23 @@ public sealed class Db : IDisposable
             return (long)last.ExecuteScalar()!;
         }
 
+        public List<Dictionary<string, object?>> Query(string sql, params object?[] args)
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.Transaction = tx;
+            cmd.CommandText = Numbered(sql);
+            Bind(cmd, args);
+            using var reader = cmd.ExecuteReader();
+            var rows = new List<Dictionary<string, object?>>();
+            while (reader.Read())
+            {
+                var row = new Dictionary<string, object?>(reader.FieldCount);
+                for (int i = 0; i < reader.FieldCount; i++) row[reader.GetName(i)] = reader.IsDBNull(i) ? null : reader.GetValue(i);
+                rows.Add(row);
+            }
+            return rows;
+        }
+
         public object? Scalar(string sql, params object?[] args)
         {
             using var cmd = conn.CreateCommand();

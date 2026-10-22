@@ -85,6 +85,9 @@ public static class Html
         if (node is not JsonValue v) return null;
         if (v.TryGetValue<double>(out var d)) return d;
         if (v.TryGetValue<long>(out var l)) return l;
+        if (v.TryGetValue<int>(out var i)) return i;
+        if (v.TryGetValue<float>(out var f)) return f;
+        if (v.TryGetValue<decimal>(out var m)) return (double)m;
         return null;
     }
 

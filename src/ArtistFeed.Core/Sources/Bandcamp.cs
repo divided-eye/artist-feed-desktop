@@ -240,11 +240,16 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
         ParseSearch(html).Where(c => c.Type is "album" or "").Select(c => (c.Url, c.Name, c.Artist)).ToList();
 
     /// <summary>Results of a bandcamp.com/search page: type ("artist", "label", "album", "track"), url, name, artist.</summary>
-    public static List<(string Type, string Url, string Name, string Artist)> ParseSearch(string html)
+    /// <summary>One result of a bandcamp.com/search page, as the web version's parse_search gives it.</summary>
+    public sealed record SearchHit(string Type, string Url, string Name, string Artist, string Album, string Released);
+
+    /// <summary>Results of a bandcamp.com/search page: type ("artist", "label", "album", "track"), url, name, artist,
+    /// album, released.</summary>
+    public static List<SearchHit> ParseSearch(string html)
     {
         var doc = Html.Parse(html);
         string Text(IElement? e) => e == null ? "" : Regex.Replace(e.TextContent, @"\s+", " ").Trim();
-        var found = new List<(string, string, string, string)>();
+        var found = new List<SearchHit>();
         foreach (var li in doc.QuerySelectorAll("li.searchresult"))
         {
             var info = li.QuerySelector(".result-info") ?? li;
@@ -255,9 +260,18 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
             if (!url.Contains("://")) url = "https://" + url;
             var type = Text(info.QuerySelector(".itemtype")).ToLowerInvariant();
             var sub = Text(info.QuerySelector(".subhead"));
-            var by = sub.LastIndexOf(" by ", StringComparison.Ordinal);
-            var artist = sub.StartsWith("by ") ? sub[3..] : sub.StartsWith("from ") && by >= 0 ? sub[(by + 4)..] : "";
-            found.Add((type, Clean(url), Text(heading), artist.Trim()));
+            string artist = "", album = "";
+            if (sub.StartsWith("from "))
+            {
+                var rest = sub[5..];
+                var by = rest.LastIndexOf(" by ", StringComparison.Ordinal);
+                if (by >= 0) { album = rest[..by]; artist = rest[(by + 4)..]; }
+                else artist = rest;
+            }
+            else if (sub.StartsWith("by ")) artist = sub[3..];
+            var released = Text(info.QuerySelector(".released"));
+            if (released.StartsWith("released ")) released = released["released ".Length..];
+            found.Add(new SearchHit(type, Clean(url), Text(heading), artist.Trim(), album.Trim(), released.Trim()));
         }
         return found;
     }

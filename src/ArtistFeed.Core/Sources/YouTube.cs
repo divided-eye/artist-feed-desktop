@@ -20,7 +20,7 @@ public sealed class YouTube : ISource
     public string Placeholder => "@handle or https://www.youtube.com/@handle";
 
     // Answers the cookie question YouTube asks visitors from some countries, so the channel page itself comes back.
-    const string Cookies = "SOCS=CAI; CONSENT=YES+1";
+    public const string Cookies = "SOCS=CAI; CONSENT=YES+1";
     static readonly XNamespace A = "http://www.w3.org/2005/Atom";
     static readonly XNamespace Yt = "http://www.youtube.com/xml/schemas/2015";
     static readonly XNamespace Media = "http://search.yahoo.com/mrss/";

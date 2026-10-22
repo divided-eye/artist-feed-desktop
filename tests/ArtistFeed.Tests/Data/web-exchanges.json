@@ -1,0 +1,3014 @@
+{
+"GET https://a-v2.sndcdn.com/assets/0-abc.js?": [
+{
+"status": 200,
+"text": "x={client_id:\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",y:1}",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://aaaa.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://anecho.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://api-v2.soundcloud.com/resolve?url=https%3A%2F%2Fsoundcloud.com%2Fghost": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://api-v2.soundcloud.com/resolve?url=https%3A%2F%2Fsoundcloud.com%2Fmefan": [
+{
+"status": 200,
+"text": "{\"kind\":\"user\",\"id\":7,\"username\":\"Me\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/resolve?url=https%3A%2F%2Fsoundcloud.com%2Fnightferry": [
+{
+"status": 200,
+"text": "{\"kind\":\"user\",\"id\":42,\"username\":\"Night Ferry\",\"avatar_url\":\"https://i1.sndcdn.com/avatars-1-large.jpg\"}",
+"type": "application/json"
+},
+{
+"status": 401,
+"text": "",
+"type": ""
+}
+],
+"GET https://api-v2.soundcloud.com/resolve?url=https%3A%2F%2Fsoundcloud.com%2Fnobody-here": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://api-v2.soundcloud.com/resolve?url=https%3A%2F%2Fsoundcloud.com%2Fothertubeband": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://api-v2.soundcloud.com/resolve?url=https%3A%2F%2Fsoundcloud.com%2Friverirvine": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://api-v2.soundcloud.com/resolve?url=https%3A%2F%2Fsoundcloud.com%2Fsologuy-official": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://api-v2.soundcloud.com/resolve?url=https%3A%2F%2Fsoundcloud.com%2Fzed-alias-one": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Anecho+Re-use%2C+Reduce+%28Continental+VIP%29": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Anecho+UFO": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Beat+Artist+Late+Tune": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Common+Name+Some+Tune": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"title\":\"Some Tune\",\"permalink_url\":\"https://soundcloud.com/the-real-common-name/some-tune\",\"created_at\":\"2024-05-05T00:00:00Z\",\"user\":{\"username\":\"Common Name\",\"permalink\":\"the-real-common-name\",\"permalink_url\":\"https://soundcloud.com/the-real-common-name\"}}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Ghost+Person+Qqq+Rrr": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Ghost+Person+Unfindable+Zzz+%28Nobody+Known+Flip%29": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Ghost+Person+Unfindable+Zzz+Nobody+Known+Flip": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Hannibal+Rex+Never+Existed": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Hidden+Act+Nothing+Like+This": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=IOWLA+Outside+The+Box": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Masot+02+%28Somebody+Edit%29": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Nas+Unfindable+%28Nightmare+%26+Oni+140+Bootleg%29": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Nightmare+%26+Oni+Unfindable": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Nobody+Known+SC+Only+Tune": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Nobody+Known+Unfindable+Zzz": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Nobody+Known+Zzz": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Old+Miss+Zzz+Qqq": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Omega+Nebula+Outside+The+Box+%28IOWLA+Flip%29": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Other+Guy+Especies+End%C3%A9micas": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Pugilist+Asteroids": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=River+Boogaloo": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=River+Boogaloo+VIP": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=River+Something+Else": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=River+Unheard+Of+Tune": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Sean+Paul+Temperature+%28River+Dub+Edit%29": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"title\":\"Temperature\",\"user\":{\"username\":\"Sean Paul\",\"permalink\":\"seanpaul\",\"permalink_url\":\"https://soundcloud.com/seanpaul\"},\"permalink_url\":\"https://soundcloud.com/x/Temperature\"},{\"title\":\"Sean Paul - Temperature (River Dub Edit) [PREMIERE]\",\"user\":{\"username\":\"Some Channel\",\"permalink\":\"somechannel\",\"permalink_url\":\"https://soundcloud.com/somechannel\"},\"permalink_url\":\"https://soundcloud.com/x/Sean-Paul---Temperature-(River-Dub-Edit)-[PREMIERE]\"},{\"title\":\"Sean Paul - Temperature (River Dub Edit)\",\"user\":{\"username\":\"River\",\"permalink\":\"riverirvine\",\"permalink_url\":\"https://soundcloud.com/riverirvine\"},\"downloadable\":true,\"display_date\":\"2026-03-01T00:00:00Z\",\"permalink_url\":\"https://soundcloud.com/riverirvine/temperature-river-dub-edit\"}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Solo+Guy+Whatever": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Somebody+02": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Tube+Band+Glass+River": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Tube+Band+Hidden+Lake": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Unticked+Artist+Lost+Song": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/tracks?limit=20&q=Wax+Only+Pressed+Tune": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Anecho": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"username\":\"ANECHO\",\"permalink\":\"anechoicchamber\",\"permalink_url\":\"https://soundcloud.com/anechoicchamber\"}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Beat+Artist": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Ghost+Person": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Hannibal+Rex": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Hidden+Act": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=IOWLA": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Masot": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Night+Ferry": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Nightmare": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Nightmare+%26+Oni": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"username\":\"NIGHTMARE\",\"permalink\":\"nightmare\",\"permalink_url\":\"https://soundcloud.com/nightmare\",\"followers_count\":500000},{\"username\":\"Nightmare & Oni\",\"permalink\":\"nightmareandoni\",\"permalink_url\":\"https://soundcloud.com/nightmareandoni\",\"followers_count\":300}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Nobody+Known": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"username\":\"nobody known fan\",\"permalink_url\":\"https://soundcloud.com/fan\",\"followers_count\":9000},{\"username\":\"Nobody Known\",\"permalink_url\":\"https://soundcloud.com/nobodyknown\",\"followers_count\":12}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Old+Miss": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Omega+Nebula": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"username\":\"Omega Nebula\",\"permalink\":\"omeganebula\",\"permalink_url\":\"https://soundcloud.com/omeganebula\"}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Other+Guy": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Pugilist": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=River": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"username\":\"River\",\"permalink\":\"river\",\"permalink_url\":\"https://soundcloud.com/river\",\"followers_count\":900000},{\"username\":\"River\",\"permalink\":\"riverirvine\",\"permalink_url\":\"https://soundcloud.com/riverirvine\",\"followers_count\":800}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Solo+Guy": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"username\":\"Solo Guy\",\"permalink\":\"sologuy-official\",\"permalink_url\":\"https://soundcloud.com/sologuy-official\",\"followers_count\":10}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Somebody": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Tube+Band": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Unticked+Artist": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/search/users?limit=20&q=Wax+Only": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/stream/users/2?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"type\":\"track-repost\",\"track\":{\"kind\":\"track\",\"id\":1,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}},{\"type\":\"track\",\"track\":{\"kind\":\"track\",\"id\":5001,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/stream/users/3?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/stream/users/4?cursor=2": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"type\":\"track\",\"track\":{\"kind\":\"track\",\"id\":5003,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/stream/users/4?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"type\":\"track\",\"track\":{\"kind\":\"track\",\"id\":5001,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}},{\"type\":\"track\",\"track\":{\"kind\":\"track\",\"id\":5002,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}}],\"next_href\":\"https://api-v2.soundcloud.com/stream/users/4?cursor=2\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/stream/users/6?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"type\":\"track-repost\",\"track\":{\"kind\":\"track\",\"id\":6200,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"id\":6}}},{\"type\":\"track-repost\",\"track\":{\"kind\":\"track\",\"id\":6300,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"id\":99}}}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/stream/users/7?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/tracks/900/related?limit=50&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"kind\":\"track\",\"id\":1000,\"title\":\"Rel 0\",\"permalink_url\":\"https://soundcloud.com/x/rel-0\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-01-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 0\"},\"publisher_metadata\":{\"artist\":\"Pub Artist\"}},{\"kind\":\"track\",\"id\":1001,\"title\":\"Rel 1\",\"permalink_url\":\"https://soundcloud.com/x/rel-1\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-02-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 1\"},\"publisher_metadata\":{}},{\"kind\":\"track\",\"id\":1002,\"title\":\"Rel 2\",\"permalink_url\":\"https://soundcloud.com/x/rel-2\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-03-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 2\"},\"publisher_metadata\":{}},{\"kind\":\"track\",\"id\":1003,\"title\":\"Rel 3\",\"permalink_url\":\"https://soundcloud.com/x/rel-3\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-04-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 3\"},\"publisher_metadata\":{}},{\"kind\":\"track\",\"id\":1004,\"title\":\"Rel 4\",\"permalink_url\":\"https://soundcloud.com/x/rel-4\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-05-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 4\"},\"publisher_metadata\":{}},{\"kind\":\"track\",\"id\":1005,\"title\":\"Rel 5\",\"permalink_url\":\"https://soundcloud.com/x/rel-5\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-06-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 5\"},\"publisher_metadata\":{}},{\"kind\":\"track\",\"id\":1006,\"title\":\"Rel 6\",\"permalink_url\":\"https://soundcloud.com/x/rel-6\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-07-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 6\"},\"publisher_metadata\":{}},{\"kind\":\"track\",\"id\":1007,\"title\":\"Rel 7\",\"permalink_url\":\"https://soundcloud.com/x/rel-7\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-08-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 7\"},\"publisher_metadata\":{}},{\"kind\":\"track\",\"id\":1008,\"title\":\"Rel 8\",\"permalink_url\":\"https://soundcloud.com/x/rel-8\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-09-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 8\"},\"publisher_metadata\":{}},{\"kind\":\"track\",\"id\":1009,\"title\":\"Rel 9\",\"permalink_url\":\"https://soundcloud.com/x/rel-9\",\"duration\":30000,\"full_duration\":181000,\"created_at\":\"2025-01-01T00:00:00Z\",\"user\":{\"username\":\"Uploader 9\"},\"publisher_metadata\":{}},{\"kind\":\"playlist\",\"id\":5}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/tracks?ids=6001%2C6002": [
+{
+"status": 200,
+"text": "[{\"kind\":\"track\",\"id\":6001,\"title\":\"Old 6001\",\"permalink_url\":\"https://soundcloud.com/oxo/old-6001\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}},{\"kind\":\"track\",\"id\":6002,\"title\":\"Old 6002\",\"permalink_url\":\"https://soundcloud.com/oxo/old-6002\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}]",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/1/tracks?cursor=2": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"kind\":\"track\",\"id\":5001,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}],\"next_href\":null}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/1/tracks?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[],\"next_href\":\"https://api-v2.soundcloud.com/users/1/tracks?cursor=2\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/1?": [
+{
+"status": 200,
+"text": "{\"track_count\":1}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/2/toptracks?limit=50": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/2/tracks?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/3/toptracks?limit=50": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/3/tracks?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/3?": [
+{
+"status": 200,
+"text": "{\"permalink\":\"oxo3\",\"track_count\":37}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/4/toptracks?limit=50": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/4/tracks?cursor=2": [
+{
+"status": 200,
+"text": "{\"collection\":[],\"next_href\":null}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/4/tracks?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"kind\":\"track\",\"id\":5001,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}],\"next_href\":\"https://api-v2.soundcloud.com/users/4/tracks?cursor=2\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/42/tracks?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"kind\":\"track\",\"id\":900,\"title\":\"Demo\",\"permalink_url\":\"https://soundcloud.com/nightferry/demo\",\"artwork_url\":\"https://i1.sndcdn.com/artworks-9-large.jpg\",\"created_at\":\"2026-10-01T10:00:00Z\",\"duration\":30000,\"full_duration\":200000,\"label_name\":\"SC Label\",\"publisher_metadata\":{\"album_title\":\"Demo EP\"},\"user\":{\"username\":\"Night Ferry\"}},{\"kind\":\"track\",\"id\":901,\"title\":\"No Art\",\"permalink_url\":\"https://soundcloud.com/nightferry/no-art\",\"artwork_url\":null,\"display_date\":\"2026-08-01T10:00:00Z\",\"created_at\":\"2020-01-01T00:00:00Z\",\"user\":{\"username\":\"Night Ferry\",\"avatar_url\":\"https://i1.sndcdn.com/avatars-1-large.jpg\"}}]}",
+"type": "application/json"
+},
+{
+"status": 401,
+"text": "",
+"type": ""
+}
+],
+"GET https://api-v2.soundcloud.com/users/4?": [
+{
+"status": 200,
+"text": "{\"permalink\":\"oxo4\",\"track_count\":3}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/5/tracks?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"kind\":\"track\",\"id\":5001,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}},{\"id\":6001,\"kind\":\"track\",\"policy\":\"ALLOW\"},{\"id\":6002,\"kind\":\"track\"}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/6/toptracks?limit=50": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/6/tracks?cursor=1&offset=2025-01-01": [
+{
+"status": 200,
+"text": "{\"collection\":[],\"next_href\":\"https://api-v2.soundcloud.com/users/6/tracks?cursor=2&offset=2025-01-02\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/6/tracks?cursor=2&offset=2025-01-02": [
+{
+"status": 200,
+"text": "{\"collection\":[],\"next_href\":\"https://api-v2.soundcloud.com/users/6/tracks?cursor=3&offset=2025-01-03\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/6/tracks?cursor=3&offset=2025-01-03": [
+{
+"status": 200,
+"text": "{\"collection\":[],\"next_href\":\"https://api-v2.soundcloud.com/users/6/tracks?cursor=4&offset=2025-01-04\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/6/tracks?cursor=4&offset=2025-01-04": [
+{
+"status": 200,
+"text": "{\"collection\":[],\"next_href\":\"https://api-v2.soundcloud.com/users/6/tracks?cursor=5&offset=2025-01-05\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/6/tracks?cursor=5&offset=2025-01-05": [
+{
+"status": 200,
+"text": "{\"collection\":[],\"next_href\":\"https://api-v2.soundcloud.com/users/6/tracks?cursor=6&offset=2025-01-06\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/6/tracks?cursor=6&offset=2025-01-06": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"kind\":\"track\",\"id\":6100,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}],\"next_href\":null}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/6/tracks?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[],\"next_href\":\"https://api-v2.soundcloud.com/users/6/tracks?cursor=1&offset=2025-01-01\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/6?": [
+{
+"status": 200,
+"text": "{\"track_count\":2}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/7/followings?cursor=2&limit=200": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"username\":\"Hidden Act\",\"permalink\":\"hidden-act-music\",\"permalink_url\":\"https://soundcloud.com/hidden-act-music\"}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/7/followings?limit=200&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"username\":\"River\",\"permalink\":\"riverirvine\",\"permalink_url\":\"https://soundcloud.com/riverirvine\"},{\"username\":\"Someone Else\",\"permalink\":\"someone\",\"permalink_url\":\"https://soundcloud.com/someone\"}],\"next_href\":\"https://api-v2.soundcloud.com/users/7/followings?cursor=2&limit=200&client_id=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/7/toptracks?limit=50": [
+{
+"status": 200,
+"text": "{\"collection\":[{\"kind\":\"track\",\"id\":7001,\"title\":\"Meus Olhos\",\"permalink_url\":\"https://soundcloud.com/oxo/meus-olhos\",\"created_at\":\"2022-05-01T10:00:00Z\",\"user\":{\"username\":\"Oxo\"}}]}",
+"type": "application/json"
+}
+],
+"GET https://api-v2.soundcloud.com/users/7/tracks?limit=30&linked_partitioning=1": [
+{
+"status": 200,
+"text": "{\"collection\":[]}",
+"type": "application/json"
+}
+],
+"GET https://api.discogs.com/database/search?artist=Wax+Only&per_page=15&track=Pressed+Tune&type=release": [
+{
+"status": 200,
+"text": "{\"results\":[{\"id\":77,\"title\":\"Wax Only - Pressed EP\",\"type\":\"release\"}]}",
+"type": "application/json"
+}
+],
+"GET https://api.discogs.com/releases/77?": [
+{
+"status": 200,
+"text": "{\"title\":\"Pressed EP\",\"year\":2019,\"uri\":\"https://www.discogs.com/release/77-Wax-Only-Pressed-EP\",\"master_id\":700,\"artists\":[{\"name\":\"Wax Only\"}],\"formats\":[{\"name\":\"Vinyl\"}],\"tracklist\":[{\"title\":\"Side Tune\",\"type_\":\"track\"},{\"title\":\"Pressed Tune\",\"type_\":\"track\"}]}",
+"type": "application/json"
+}
+],
+"GET https://artikalmusic.bandcamp.com/album/half-empty?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Half Empty\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Half Empty_10.jpg\", \"byArtist\": {\"name\": \"contactghost\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"contactghost\", \"trackinfo\": [{\"title\": \"Half Empty\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Spelling Mitsake\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://artikalmusic.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://bandcamp.com/divided_eye?": [
+{
+"status": 200,
+"text": "<div id=\"pagedata\" data-blob=\"{&quot;fan_data&quot;: {&quot;fan_id&quot;: 77}, &quot;collection_data&quot;: {&quot;sequence&quot;: [&quot;a1&quot;, &quot;a2&quot;], &quot;item_count&quot;: 4, &quot;last_token&quot;: &quot;tok1&quot;}, &quot;item_cache&quot;: {&quot;collection&quot;: {&quot;a1&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 1, &quot;item_title&quot;: &quot;Archivos Pt. 1&quot;, &quot;band_name&quot;: &quot;Masot&quot;, &quot;item_url&quot;: &quot;https://masot.bandcamp.com/album/archivos-pt-1&quot;, &quot;featured_track&quot;: 11}, &quot;a2&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 2, &quot;item_title&quot;: &quot;WPR091 - Phoenix&quot;, &quot;band_name&quot;: &quot;Blocklab&quot;, &quot;item_url&quot;: &quot;https://whitepeach.bandcamp.com/album/wpr091-phoenix&quot;, &quot;featured_track&quot;: 21}}}, &quot;tracklists&quot;: {&quot;collection&quot;: {&quot;a1&quot;: [{&quot;id&quot;: 11, &quot;title&quot;: &quot;01&quot;, &quot;track_number&quot;: 1}, {&quot;id&quot;: 12, &quot;title&quot;: &quot;02&quot;, &quot;track_number&quot;: 2}], &quot;a2&quot;: [{&quot;id&quot;: 21, &quot;title&quot;: &quot;Phoenix&quot;}]}}}\"></div>",
+"type": "text/plain; charset=utf-8"
+},
+{
+"status": 200,
+"text": "<div id=\"pagedata\" data-blob=\"{&quot;fan_data&quot;: {&quot;fan_id&quot;: 77}, &quot;collection_data&quot;: {&quot;sequence&quot;: [&quot;a5&quot;, &quot;a6&quot;, &quot;a1&quot;, &quot;a2&quot;], &quot;item_count&quot;: 4, &quot;last_token&quot;: &quot;tok1&quot;}, &quot;item_cache&quot;: {&quot;collection&quot;: {&quot;a1&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 1, &quot;item_title&quot;: &quot;Archivos Pt. 1&quot;, &quot;band_name&quot;: &quot;Masot&quot;, &quot;item_url&quot;: &quot;https://masot.bandcamp.com/album/archivos-pt-1&quot;, &quot;featured_track&quot;: 11}, &quot;a2&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 2, &quot;item_title&quot;: &quot;WPR091 - Phoenix&quot;, &quot;band_name&quot;: &quot;Blocklab&quot;, &quot;item_url&quot;: &quot;https://whitepeach.bandcamp.com/album/wpr091-phoenix&quot;, &quot;featured_track&quot;: 21}, &quot;a5&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 5, &quot;item_title&quot;: &quot;Fresh One&quot;, &quot;band_name&quot;: &quot;Masot&quot;, &quot;item_url&quot;: &quot;https://masot.bandcamp.com/album/fresh-one&quot;}, &quot;a6&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 6, &quot;item_title&quot;: &quot;Coming Soon&quot;, &quot;band_name&quot;: &quot;Masot&quot;, &quot;item_url&quot;: &quot;https://masot.bandcamp.com/album/coming-soon&quot;, &quot;is_preorder&quot;: true}}}, &quot;tracklists&quot;: {&quot;collection&quot;: {&quot;a1&quot;: [{&quot;id&quot;: 11, &quot;title&quot;: &quot;01&quot;, &quot;track_number&quot;: 1}, {&quot;id&quot;: 12, &quot;title&quot;: &quot;02&quot;, &quot;track_number&quot;: 2}], &quot;a2&quot;: [{&quot;id&quot;: 21, &quot;title&quot;: &quot;Phoenix&quot;}]}}}\"></div>",
+"type": "text/plain; charset=utf-8"
+},
+{
+"status": 200,
+"text": "<div id=\"pagedata\" data-blob=\"{&quot;fan_data&quot;: {&quot;fan_id&quot;: 77}, &quot;collection_data&quot;: {&quot;sequence&quot;: [&quot;a5&quot;, &quot;a6&quot;, &quot;a1&quot;, &quot;a2&quot;], &quot;item_count&quot;: 4, &quot;last_token&quot;: &quot;tok1&quot;}, &quot;item_cache&quot;: {&quot;collection&quot;: {&quot;a1&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 1, &quot;item_title&quot;: &quot;Archivos Pt. 1&quot;, &quot;band_name&quot;: &quot;Masot&quot;, &quot;item_url&quot;: &quot;https://masot.bandcamp.com/album/archivos-pt-1&quot;, &quot;featured_track&quot;: 11}, &quot;a2&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 2, &quot;item_title&quot;: &quot;WPR091 - Phoenix&quot;, &quot;band_name&quot;: &quot;Blocklab&quot;, &quot;item_url&quot;: &quot;https://whitepeach.bandcamp.com/album/wpr091-phoenix&quot;, &quot;featured_track&quot;: 21}, &quot;a5&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 5, &quot;item_title&quot;: &quot;Fresh One&quot;, &quot;band_name&quot;: &quot;Masot&quot;, &quot;item_url&quot;: &quot;https://masot.bandcamp.com/album/fresh-one&quot;}, &quot;a6&quot;: {&quot;tralbum_type&quot;: &quot;a&quot;, &quot;tralbum_id&quot;: 6, &quot;item_title&quot;: &quot;Coming Soon&quot;, &quot;band_name&quot;: &quot;Masot&quot;, &quot;item_url&quot;: &quot;https://masot.bandcamp.com/album/coming-soon&quot;, &quot;is_preorder&quot;: false}}}, &quot;tracklists&quot;: {&quot;collection&quot;: {&quot;a1&quot;: [{&quot;id&quot;: 11, &quot;title&quot;: &quot;01&quot;, &quot;track_number&quot;: 1}, {&quot;id&quot;: 12, &quot;title&quot;: &quot;02&quot;, &quot;track_number&quot;: 2}], &quot;a2&quot;: [{&quot;id&quot;: 21, &quot;title&quot;: &quot;Phoenix&quot;}]}}}\"></div>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/fanperson?": [
+{
+"status": 200,
+"text": "<html><div id='pagedata' data-blob='{\"fan_data\": {\"fan_id\": 55}, \"following_bands_data\": {\"sequence\": [\"1\", \"2\"], \"last_token\": \"t1\"}, \"item_cache\": {\"following_bands\": {\"1\": {\"band_id\": 1, \"name\": \"Night Ferry\", \"url_hints\": {\"subdomain\": \"nightferry\", \"custom_domain\": null}}, \"2\": {\"band_id\": 2, \"name\": \"Deep Label\", \"url_hints\": {\"subdomain\": \"deeplabel\"}}}}}'></div></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/nobody?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Aaaa+%26+Bbbb+Cccc": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Aaaa+%26+Bbbb+Cccc+Deep+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Allen+Mock+Dragon+Language": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ALBUM</div><div class=\"heading\"><a href=\"https://observatory-records.bandcamp.com/album/dragon-language?from=search\">\n Dragon Language\n</a></div><div class=\"subhead\">\n by Allen Mock\n</div><div class=\"released\">released 3 March 2026</div><div class=\"itemurl\"><a href=\"https://observatory-records.bandcamp.com/album/dragon-language?from=search\">https://observatory-records.bandcamp.com/album/dragon-language</a></div></div></li><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ALBUM</div><div class=\"heading\"><a href=\"https://x.bandcamp.com/album/dl?from=search\">\n Dragon Language\n</a></div><div class=\"subhead\">\n by Somebody Else\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://x.bandcamp.com/album/dl?from=search\">https://x.bandcamp.com/album/dl</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Anecho": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Anecho+Re-use%2C+Reduce+%28Continental+VIP%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Anecho+UFO": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Asteroids": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Beat+Artist": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Beat+Artist+Deep+Groove": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Beat+Artist+Late+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Boogaloo": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Boogaloo+VIP": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Catalogue+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Common+Name": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Common+Name+Some+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Deep+Groove": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Deep+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Especies+End%C3%A9micas": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Ghost+Person": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Ghost+Person+Qqq+Rrr": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Ghost+Person+Unfindable+Zzz+%28Nobody+Known+Flip%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Ghost+Person+Unfindable+Zzz+Nobody+Known+Flip": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Glass+River": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Hannibal+Rex": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Hannibal+Rex+Manyothers": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Hannibal+Rex+Never+Existed": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Herbalistek+52+Blue": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ALBUM</div><div class=\"heading\"><a href=\"https://herbalist.bandcamp.com/album/52-blue?from=search\">\n 52 Blue\n</a></div><div class=\"subhead\">\n by Herbalistek\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://herbalist.bandcamp.com/album/52-blue?from=search\">https://herbalist.bandcamp.com/album/52-blue</a></div></div></li><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ALBUM</div><div class=\"heading\"><a href=\"https://observatory.bandcamp.com/album/52-blue?from=search\">\n 52 Blue\n</a></div><div class=\"subhead\">\n by Herbalistek\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://observatory.bandcamp.com/album/52-blue?from=search\">https://observatory.bandcamp.com/album/52-blue</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Herbalistek+Lost+One": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Hidden+Act": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Hidden+Act+Nothing+Like+This": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Hidden+Lake": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Howman": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ALBUM</div><div class=\"heading\"><a href=\"https://dnorecords.bandcamp.com/album/dno022-howman-trap-eastwood-ep?from=search\">\n DNO022 - Howman - Trap Eastwood EP\n</a></div><div class=\"subhead\">\n by DNO Records\n</div><div class=\"released\">released 28 August 2026</div><div class=\"itemurl\"><a href=\"https://dnorecords.bandcamp.com/album/dno022-howman-trap-eastwood-ep?from=search\">https://dnorecords.bandcamp.com/album/dno022-howman-trap-eastwood-ep</a></div></div></li><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ALBUM</div><div class=\"heading\"><a href=\"https://zzz.bandcamp.com/album/unrelated?from=search\">\n Unrelated Album\n</a></div><div class=\"subhead\">\n by Someone\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://zzz.bandcamp.com/album/unrelated?from=search\">https://zzz.bandcamp.com/album/unrelated</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Howman+Strip+Search": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=IOWLA": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Late+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Lost+Song": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Manyothers": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Masot": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Masot+02+%28Somebody+Edit%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Nas": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Nas+Unfindable+%28Nightmare+%26+Oni+140+Bootleg%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Nas+You+Owe+Me+%28Nightmare+%26+Oni+140+Bootleg%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Never+Existed": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Night+Ferry": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Night+Ferry+Unreleased+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Nightmare+%26+Oni": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Nobody+Known": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Nobody+Known+SC+Only+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Nobody+Known+Zzz": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Nothing+Like+This": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Old+Miss": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Old+Miss+Zzz+Qqq": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Omega+Nebula": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Omega+Nebula+Outside+The+Box+%28IOWLA+Flip%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Other+Guy": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Other+Guy+Especies+End%C3%A9micas": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Outside+The+Box+%28IOWLA+Flip%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Pressed+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Pugilist": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Pugilist+Asteroids": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Qqq+Rrr": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Quantum+Soul": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Quantum+Soul+Unite+The+Tribes": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Re-use%2C+Reduce+%28Continental+VIP%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=River": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=River+Boogaloo": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=River+Boogaloo+VIP": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=River+Something+Else": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=River+Unheard+Of+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=SC+Only+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Sean+Paul": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Sean+Paul+Temperature+%28River+Dub+Edit%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Solo+Guy": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Solo+Guy+Whatever": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Somah": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Somah+Gnosis": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Some+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Somebody": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Somebody+Catalogue+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Something+Else": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Strip+Search": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Temperature+%28River+Dub+Edit%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Tube+Band": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Tube+Band+Glass+River": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Tube+Band+Hidden+Lake": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Unfindable+%28Nightmare+%26+Oni+140+Bootleg%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Unfindable+Qqq+Www": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Unfindable+Zzz+%28Nobody+Known+Flip%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Unfindable+Zzz+Nobody+Known+Flip": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Unheard+Of+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Unite+The+Tribes": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Unreleased+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Unticked+Artist": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Unticked+Artist+Lost+Song": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Wax+Only": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Wax+Only+Pressed+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Whatever": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=You+Owe+Me+%28Nightmare+%26+Oni+140+Bootleg%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=ZAO": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=ZAO+Unfindable+Qqq+Www": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=Zzz+Qqq": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=aaaa": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=bbbb+cccc": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=zed+alias+one": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=a&q=zed+with+comma": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=Hidden+Act": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=aaaa": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=anecho": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=bbbb+cccc": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ARTIST</div><div class=\"heading\"><a href=\"https://ccc.bandcamp.com?from=search\">\n Cccc\n</a></div><div class=\"subhead\">\n \n</div><div class=\"released\"></div><div class=\"itemurl\"><a href=\"https://ccc.bandcamp.com?from=search\">https://ccc.bandcamp.com</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=beat+artist": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=common+name": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=ghost+person": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=hannibal+rex": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=hidden+act": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=iowla": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=masot": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=nas": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=night+ferry": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=nightmare": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ARTIST</div><div class=\"heading\"><a href=\"https://nightmare.bandcamp.com?from=search\">\n Nightmare\n</a></div><div class=\"subhead\">\n \n</div><div class=\"released\"></div><div class=\"itemurl\"><a href=\"https://nightmare.bandcamp.com?from=search\">https://nightmare.bandcamp.com</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=nobody+known": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=old+miss": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=omega+nebula": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=oni": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=other+guy": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=pugilist": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=quantum+soul": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=river": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=river+dub": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=sean+paul": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=solo+guy": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=somah": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ARTIST</div><div class=\"heading\"><a href=\"https://somahuk.bandcamp.com?from=search\">\n Somah UK\n</a></div><div class=\"subhead\">\n Bristol, UK\n</div><div class=\"released\"></div><div class=\"itemurl\"><a href=\"https://somahuk.bandcamp.com?from=search\">https://somahuk.bandcamp.com</a></div></div></li><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">ARTIST</div><div class=\"heading\"><a href=\"https://somahaus.bandcamp.com?from=search\">\n Somahaus\n</a></div><div class=\"subhead\">\n Berlin\n</div><div class=\"released\"></div><div class=\"itemurl\"><a href=\"https://somahaus.bandcamp.com?from=search\">https://somahaus.bandcamp.com</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=somebody": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=tube+band": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=unticked+artist": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=wax+only": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=zed+alias+one": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=b&q=zed+with+comma": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Aaaa+%26+Bbbb+Cccc+Deep+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Allen+Mock+Dragon+Language": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Anecho+Re-use%2C+Reduce+%28Continental+VIP%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Anecho+UFO": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Asteroids": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Beat+Artist+Deep+Groove": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Beat+Artist+Late+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Boogaloo": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Boogaloo+VIP": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Catalogue+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Common+Name+Some+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Deep+Groove": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Deep+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Dragon+Language": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Especies+End%C3%A9micas": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Ghost+Person+Qqq+Rrr": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Ghost+Person+Unfindable+Zzz+%28Nobody+Known+Flip%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Ghost+Person+Unfindable+Zzz+Nobody+Known+Flip": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Glass+River": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Gnosis": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Hannibal+Rex+Manyothers": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Hannibal+Rex+Never+Existed": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Hidden+Act+Nothing+Like+This": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Hidden+Lake": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Howman+Strip+Search": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=IOWLA+Outside+The+Box": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Idpa+%26+Sa%C5%A1a+Delimar+State+I": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Kercha+Trigger+Activation": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">TRACK</div><div class=\"heading\"><a href=\"https://dnorecords.bandcamp.com/track/trigger-activation?from=search\">\n Trigger Activation\n</a></div><div class=\"subhead\">\n from Open The Door LP by DNO Records\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://dnorecords.bandcamp.com/track/trigger-activation?from=search\">https://dnorecords.bandcamp.com/track/trigger-activation</a></div></div></li><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">TRACK</div><div class=\"heading\"><a href=\"https://other.bandcamp.com/track/trigger-activation?from=search\">\n Trigger Activation\n</a></div><div class=\"subhead\">\n from Something Else by Other Label\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://other.bandcamp.com/track/trigger-activation?from=search\">https://other.bandcamp.com/track/trigger-activation</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Late+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Lost+Song": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Manyothers": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Masot+02+%28Somebody+Edit%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Masot+Especies+End%C3%A9micas": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">TRACK</div><div class=\"heading\"><a href=\"https://masot.bandcamp.com/track/especies-end-micas?from=search\">\n Especies Endémicas\n</a></div><div class=\"subhead\">\n from Flora by Masot\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://masot.bandcamp.com/track/especies-end-micas?from=search\">https://masot.bandcamp.com/track/especies-end-micas</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Nas+Unfindable+%28Nightmare+%26+Oni+140+Bootleg%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Nas+You+Owe+Me+%28Nightmare+%26+Oni+140+Bootleg%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Never+Existed": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Night+Ferry+Unreleased+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Nightmare+%26+Oni+Unfindable": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Nightmare+%26+Oni+You+Owe+Me": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Nobody+Known+SC+Only+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Nobody+Known+Unfindable+Zzz": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Nobody+Known+Zzz": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Nothing+Like+This": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Old+Miss+Zzz+Qqq": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Omega+Nebula+Outside+The+Box+%28IOWLA+Flip%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Other+Guy+Especies+End%C3%A9micas": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">TRACK</div><div class=\"heading\"><a href=\"https://masot.bandcamp.com/track/especies-end-micas?from=search\">\n Especies Endémicas\n</a></div><div class=\"subhead\">\n from Flora by Masot\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://masot.bandcamp.com/track/especies-end-micas?from=search\">https://masot.bandcamp.com/track/especies-end-micas</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Outside+The+Box+%28IOWLA+Flip%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Pressed+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Pugilist+Asteroids": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Qqq+Rrr": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Quantum+Soul+Unite+The+Tribes": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Re-use%2C+Reduce+%28Continental+VIP%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=River+Boogaloo": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=River+Boogaloo+VIP": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=River+Something+Else": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=River+Temperature": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=River+Unheard+Of+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=SC+Only+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Sean+Paul+Temperature+%28River+Dub+Edit%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Siadic+Air": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">TRACK</div><div class=\"heading\"><a href=\"https://siadic.bandcamp.com/track/air?from=search\">\n Air\n</a></div><div class=\"subhead\">\n from Traction EP by Siadic\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://siadic.bandcamp.com/track/air?from=search\">https://siadic.bandcamp.com/track/air</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Solo+Guy+Whatever": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Somah+Gnosis": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Some+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Somebody+02": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Somebody+Catalogue+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Something+Else": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Strip+Search": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Temperature+%28River+Dub+Edit%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Tube+Band+Glass+River": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Tube+Band+Hidden+Lake": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Unfindable+%28Nightmare+%26+Oni+140+Bootleg%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Unfindable+Qqq+Www": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Unfindable+Zzz+%28Nobody+Known+Flip%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Unfindable+Zzz+Nobody+Known+Flip": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Unheard+Of+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Unite+The+Tribes": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Unreleased+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Unticked+Artist+Lost+Song": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Wax+Only+Pressed+Tune": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=What+A+World": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">TRACK</div><div class=\"heading\"><a href=\"https://dubdenrecords.bandcamp.com/track/ydx-what-a-world?from=search\">\n YDX - What A World\n</a></div><div class=\"subhead\">\n from Dubs From The Den Vol. 7 by Dub Den Records\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://dubdenrecords.bandcamp.com/track/ydx-what-a-world?from=search\">https://dubdenrecords.bandcamp.com/track/ydx-what-a-world</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Whatever": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=YDX+What+A+World": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=You+Owe+Me+%28Nightmare+%26+Oni+140+Bootleg%29": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=ZAO+Unfindable+Qqq+Www": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=Zzz+Qqq": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=aaaa+Deep+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=bbbb+cccc+Deep+Thing": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=idpa+State+I": [
+{
+"status": 200,
+"text": "<ul><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">TRACK</div><div class=\"heading\"><a href=\"https://somelabel.bandcamp.com/track/state-i?from=search\">\n Idpa - State I (Original Mix)\n</a></div><div class=\"subhead\">\n from VA 004 by Some Label\n</div><div class=\"released\">released 9 January 2021</div><div class=\"itemurl\"><a href=\"https://somelabel.bandcamp.com/track/state-i?from=search\">https://somelabel.bandcamp.com/track/state-i</a></div></div></li><li class=\"searchresult data-search\"><div class=\"result-info\"><div class=\"itemtype\">TRACK</div><div class=\"heading\"><a href=\"https://x.bandcamp.com/track/state?from=search\">\n State Of Mind\n</a></div><div class=\"subhead\">\n by Idpa\n</div><div class=\"released\">released 2 May 2023</div><div class=\"itemurl\"><a href=\"https://x.bandcamp.com/track/state?from=search\">https://x.bandcamp.com/track/state</a></div></div></li></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=zed+alias+one+Unfindable+Qqq+Www": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bandcamp.com/search?item_type=t&q=zed+with+comma+Unfindable+Qqq+Www": [
+{
+"status": 200,
+"text": "<ul></ul>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://bbbbcccc.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://beatartist.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://ccc.bandcamp.com/album/conduit?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Conduit / Dissolution\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Conduit / Dissolution_10.jpg\", \"byArtist\": {\"name\": \"Aaaa & Cccc\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Aaaa & Cccc\", \"trackinfo\": [{\"title\": \"Deep Thing\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Dissolution\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://ccc.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:site_name\" content=\"Cccc\"></head><body><ol id=\"music-grid\"><li><a href=\"/album/conduit\"><p class=\"title\">Conduit / Dissolution</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://commonname.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://deeplabel.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:site_name\" content=\"Deep Label\"></head><body><ol id=\"music-grid\"><li><a href=\"https://nightferry.bandcamp.com/album/first?label=9\"><p class=\"title\">First</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://dnorecords.bandcamp.com/album/dno022-howman-trap-eastwood-ep?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"DNO022 - Howman - Trap Eastwood EP\", \"datePublished\": \"28 Aug 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/DNO022 - Howman - Trap Eastwood EP_10.jpg\", \"byArtist\": {\"name\": \"DNO Records\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"DNO Records\", \"trackinfo\": [{\"title\": \"Strip Search\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Frosty\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://dnorecords.bandcamp.com/track/trigger-activation?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicRecording\", \"name\": \"Trigger Activation\", \"datePublished\": \"29 May 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Trigger Activation_10.jpg\", \"byArtist\": {\"name\": \"DNO Records\"}, \"inAlbum\": {\"name\": \"Open The Door LP\", \"@id\": \"https://dnorecords.bandcamp.com/album/dno021-kercha-open-the-door-lp\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://dubdenrecords.bandcamp.com/track/ydx-what-a-world?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicRecording\", \"name\": \"YDX - What A World\", \"datePublished\": \"01 Jan 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/YDX - What A World_10.jpg\", \"byArtist\": {\"name\": \"Dub Den Records\"}, \"inAlbum\": {\"name\": \"Dubs From The Den Vol. 7\", \"@id\": \"https://dubdenrecords.bandcamp.com/album/dubs-from-the-den-vol-7\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://dungeonbeats.bandcamp.com/track/hannibal-rex-an-older-one?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://dungeonbeats.bandcamp.com/track/hannibal-rex-manyothers?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicRecording\", \"name\": \"Hannibal Rex - Manyothers\", \"datePublished\": \"16 Aug 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Hannibal Rex - Manyothers_10.jpg\", \"byArtist\": {\"name\": \"Dungeon Beats\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://dungeonbeats.bandcamp.com/track/hannibal-rex-never-existed?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://dungeonbeats.bandcamp.com/track/never-existed?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://ghostperson.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://hannibalrex.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://herbalist.bandcamp.com/album/52-blue?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:description\" content=\"0 track album\"><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"52 Blue\", \"datePublished\": \"20 Jan 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/52 Blue_10.jpg\", \"byArtist\": {\"name\": \"Herbalistek\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://herbalist.bandcamp.com/album/lost-one?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:description\" content=\"0 track album\"><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Lost One\", \"datePublished\": \"20 Jan 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Lost One_10.jpg\", \"byArtist\": {\"name\": \"Herbalistek\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://herbalist.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><body><p id=\"band-name-location\"><span class=\"title\">Herbalistek</span></p><ol id=\"music-grid\"><li><a href=\"/album/52-blue\"><p class=\"title\">52 Blue</p></a></li><li><a href=\"/album/lost-one\"><p class=\"title\">Lost One</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://herbalistekmusic.bandcamp.com/album/52-blue?": [
+{
+"status": 200,
+"text": "<html><head><link rel=\"canonical\" href=\"https://observatory-records.bandcamp.com/album/52-blue\"><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"52 Blue\", \"datePublished\": \"20 Jan 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/52 Blue_10.jpg\", \"byArtist\": {\"name\": \"Herbalistek\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://herbalistekmusic.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><body><p id=\"band-name-location\"><span class=\"title\">Herbalistek</span></p><ol id=\"music-grid\"><li><a href=\"/album/52-blue\"><p class=\"title\">52 Blue</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://hiddenact.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://iowla.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://labelx.bandcamp.com/album/lx001?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"LX001\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/LX001_10.jpg\", \"byArtist\": {\"name\": \"Label X\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Label X\", \"trackinfo\": [{\"title\": \"Somebody - Catalogue Tune\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Other - Thing\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://masot.bandcamp.com/album/archivos-pt-1?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Archivos Pt. 1\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Archivos Pt. 1_10.jpg\", \"byArtist\": {\"name\": \"Masot\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Masot\", \"trackinfo\": [{\"title\": \"01\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"02\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://masot.bandcamp.com/album/coming-soon?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Coming Soon\", \"datePublished\": \"01 Jan 2099 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Coming Soon_10.jpg\", \"byArtist\": {\"name\": \"Night Ferry\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://masot.bandcamp.com/album/especies-endemicas?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Especies End\\u00e9micas\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Especies End\\u00e9micas_10.jpg\", \"byArtist\": {\"name\": \"Masot\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Masot\", \"trackinfo\": [{\"title\": \"Intro Piece\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Especies End\\u00e9micas\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://masot.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://masot.bandcamp.com/track/02-somebody-edit?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://masot.bandcamp.com/track/02?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://masot.bandcamp.com/track/especies-end-micas?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicRecording\", \"name\": \"Especies End\\u00e9micas\", \"datePublished\": \"02 May 2023 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Especies End\\u00e9micas_10.jpg\", \"byArtist\": {\"name\": \"Masot\"}, \"inAlbum\": {\"name\": \"Flora\", \"@id\": \"https://masot.bandcamp.com/album/flora\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://masot.bandcamp.com/track/masot-02-somebody-edit?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://masot.bandcamp.com/track/masot-02?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://nas.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://nightferry.bandcamp.com/album/first?": [
+{
+"status": 200,
+"text": "<html><head><meta name=\"bc-page-properties\" content='{\"item_type\":\"a\",\"item_id\":111}'><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"First\", \"datePublished\": \"07 Mar 2025 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/First_10.jpg\", \"byArtist\": {\"name\": \"Night Ferry\"}, \"publisher\": {\"name\": \"Deep Label\"}}</script></head><body><script data-tralbum='{\"id\": 111, \"item_type\": \"album\", \"artist\": \"Night Ferry\", \"current\": {\"id\": 111, \"type\": \"album\", \"publish_date\": \"05 Mar 2025 16:00:00 GMT\"}, \"trackinfo\": [{\"title\": \"Intro\", \"duration\": 61.5, \"track_id\": 1001, \"title_link\": \"/track/intro\"}, {\"title\": \"Long One\", \"duration\": 3725, \"track_id\": 1002, \"title_link\": \"/track/long-one\", \"artist\": \"Guest Person\"}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://nightferry.bandcamp.com/album/third?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Third\", \"datePublished\": \"15 Jan 2024 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Third_10.jpg\", \"byArtist\": {\"name\": \"Night Ferry\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://nightferry.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:site_name\" content=\"Night Ferry\"></head><body>\n<img class=\"band-photo\" src=\"https://f4.bcbits.com/img/0001_21.jpg\">\n<ol id=\"music-grid\" data-client-items='[{\"art_id\":333,\"id\":3,\"page_url\":\"/album/third\",\"title\":\"Third\",\"type\":\"album\"}]'>\n <li data-item-id=\"album-1\" class=\"music-grid-item\"><a href=\"/album/first?from=grid\">\n   <div class=\"art\"><img src=\"https://f4.bcbits.com/img/a111_2.jpg\"></div>\n   <p class=\"title\">First</p></a></li>\n <li data-item-id=\"track-2\" class=\"music-grid-item\"><a href=\"/track/second\">\n   <div class=\"art\"><img src=\"/img/0.gif\" data-original=\"https://f4.bcbits.com/img/a222_2.jpg\"></div>\n   <p class=\"title\">Second <br><span class=\"artist-override\">Guest Person</span></p></a></li>\n</ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://nightferry.bandcamp.com/track/second?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:video\" content=\"https://bandcamp.com/EmbeddedPlayer/v=2/track=222/size=large/\"><script type=\"application/ld+json\">{\"@type\": \"MusicRecording\", \"name\": \"Second\", \"datePublished\": \"01 Sep 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Second_10.jpg\", \"byArtist\": {\"name\": \"Night Ferry\"}, \"duration\": \"P00H03M45S\", \"inAlbum\": {\"name\": \"First\"}, \"publisher\": {\"name\": \"Night Ferry\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://nightferry2.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://nightmare.bandcamp.com/album/bootlegs?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Bootlegs Vol. 1\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Bootlegs Vol. 1_10.jpg\", \"byArtist\": {\"name\": \"Nightmare\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Nightmare\", \"trackinfo\": [{\"title\": \"Nas - You Owe Me (Nightmare & Oni 140 Bootleg)\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Other\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://nightmare.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:site_name\" content=\"Nightmare\"></head><body><ol id=\"music-grid\"><li><a href=\"/album/bootlegs\"><p class=\"title\">Bootlegs Vol. 1</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://nobodyknown.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://nobodyknown.bandcamp.com/track/listed-tune?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://observatory-records.bandcamp.com/album/52-blue?": [
+{
+"status": 200,
+"text": "<html><head><meta name=\"bc-page-properties\" content='{\"item_type\":\"a\",\"item_id\":777}'><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"52 Blue\", \"datePublished\": \"20 Jan 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/52 Blue_10.jpg\", \"byArtist\": {\"name\": \"Herbalistek\"}, \"publisher\": {\"name\": \"Observatory Records\"}}</script></head><body><script data-tralbum='{\"id\": 777, \"item_type\": \"album\", \"artist\": \"Herbalistek\", \"trackinfo\": [{\"title\": \"52 Blue\", \"duration\": 300, \"track_id\": 7001}, {\"title\": \"Deep Water\", \"duration\": 280, \"track_id\": 7002}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://observatory-records.bandcamp.com/album/dragon-language?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://observatory.bandcamp.com/album/52-blue?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"52 Blue\", \"datePublished\": \"20 Jan 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/52 Blue_10.jpg\", \"byArtist\": {\"name\": \"Herbalistek\"}, \"publisher\": {\"name\": \"Observatory Records\"}}</script></head><body><script data-tralbum='{\"id\": 778, \"item_type\": \"album\", \"trackinfo\": [{\"title\": \"52 Blue\", \"duration\": 300, \"track_id\": 7101}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://oldmiss.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://omeganebula.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://oni.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://otherguy.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://pugilist.bandcamp.com/album/blue?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Blue EP\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Blue EP_10.jpg\", \"byArtist\": {\"name\": \"Pugilist\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Pugilist\", \"trackinfo\": [{\"title\": \"Blue\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Green\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://pugilist.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:site_name\" content=\"Pugilist\"></head><body><ol id=\"music-grid\"><li><a href=\"/album/blue\"><p class=\"title\">Blue EP</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://quantumsoul.bandcamp.com/album/evolution-part-1?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Evolution Part 1\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Evolution Part 1_10.jpg\", \"byArtist\": {\"name\": \"Quantum Soul\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Quantum Soul\", \"trackinfo\": [{\"title\": \"Evolution Part 1 - Mini Mix\", \"duration\": 200, \"track_id\": 1}]}'></script><ul><li class=\"buyItem digital\"><h3>Digital Album</h3><div class=\"bd\">Includes unlimited streaming via the free Bandcamp app.<br><br>1. Serpentine<br>2. High Priest<br>3. The Message<br>4. Otherside<br>6. Dema Dub<br>7. Raw Signal (5:41)<br>8. Unite The Tribes</div></li></ul></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://quantumsoul.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:site_name\" content=\"Quantum Soul\"></head><body><ol id=\"music-grid\"><li><a href=\"/album/evolution-part-1\"><p class=\"title\">Evolution Part 1</p></a></li><li><a href=\"/album/older-ep\"><p class=\"title\">Older EP</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://river.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://riverdub.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://seanpaul.bandcamp.com/album/hits?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Hits\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Hits_10.jpg\", \"byArtist\": {\"name\": \"Sean Paul\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Sean Paul\", \"trackinfo\": [{\"title\": \"Temperature\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Get Busy\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://seanpaul.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:site_name\" content=\"Sean Paul\"></head><body><ol id=\"music-grid\"><li><a href=\"/album/hits\"><p class=\"title\">Hits</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://shakhtarecords.bandcamp.com/track/dead-angle?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicRecording\", \"name\": \"Dead Angle\", \"datePublished\": \"30 Sep 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Dead Angle_10.jpg\", \"byArtist\": {\"name\": \"JOHNEY\"}, \"inAlbum\": {\"name\": \"SHKHT013 - JOHNEY\"}}</script></head><body><script data-tralbum='{\"item_type\": \"track\", \"album_url\": \"/album/shkht013-johney\", \"trackinfo\": [{\"title\": \"Dead Angle\", \"duration\": 240, \"track_id\": 77}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://siadic.bandcamp.com/track/air?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicRecording\", \"name\": \"Air\", \"datePublished\": \"09 Sep 2024 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Air_10.jpg\", \"byArtist\": {\"name\": \"Siadic\"}, \"inAlbum\": {\"name\": \"Traction EP\", \"@id\": \"https://siadic.bandcamp.com/album/traction-ep\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://slowtwo.bandcamp.com/track/next?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://solo.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@id\": \"https://solo.bandcamp.com/album/only-one\", \"@type\": \"MusicAlbum\", \"name\": \"Only One\", \"datePublished\": \"02 Feb 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Only One_10.jpg\", \"byArtist\": {\"name\": \"Night Ferry\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://sologuy.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://somah.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://somahuk.bandcamp.com/album/gnosis-railroads?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"Gnosis / Railroads\", \"datePublished\": \"06 Jun 2026 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/Gnosis / Railroads_10.jpg\", \"byArtist\": {\"name\": \"Somah\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Somah\", \"trackinfo\": [{\"title\": \"Gnosis\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Railroads\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://somahuk.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><head><meta property=\"og:site_name\" content=\"Somah UK\"></head><body><ol id=\"music-grid\"><li><a href=\"/album/older\"><p class=\"title\">Older Thing</p></a></li><li><a href=\"/album/gnosis-railroads\"><p class=\"title\">Gnosis / Railroads</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://somebody.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://somelabel.bandcamp.com/track/state-i?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://soundcloud.com/?": [
+{
+"status": 200,
+"text": "<script src=\"https://a-v2.sndcdn.com/assets/0-abc.js\"></script>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://stucklabel.bandcamp.com/album/r1?": [
+{
+"status": 500,
+"text": "",
+"type": ""
+}
+],
+"GET https://stucklabel.bandcamp.com/album/r2?": [
+{
+"status": 500,
+"text": "",
+"type": ""
+}
+],
+"GET https://stucklabel.bandcamp.com/album/r3?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"R3\", \"datePublished\": \"07 Mar 2025 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/R3_10.jpg\", \"byArtist\": {\"name\": \"Night Ferry\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://stucklabel.bandcamp.com/album/r4?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"R4\", \"datePublished\": \"07 Mar 2025 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/R4_10.jpg\", \"byArtist\": {\"name\": \"Night Ferry\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://stucklabel.bandcamp.com/album/r5?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"R5\", \"datePublished\": \"07 Mar 2025 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/R5_10.jpg\", \"byArtist\": {\"name\": \"Night Ferry\"}}</script></head></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://stucklabel.bandcamp.com/music?": [
+{
+"status": 200,
+"text": "<html><body><p id=\"band-name-location\"><span class=\"title\">Stuck Label</span></p><ol id=\"music-grid\"><li data-item-id=\"album-1\" class=\"music-grid-item\"><a href=\"/album/r1\"><div class=\"art\"><img src=\"https://f4.bcbits.com/img/a1_2.jpg\"></div><p class=\"title\">R1</p></a></li><li data-item-id=\"album-2\" class=\"music-grid-item\"><a href=\"/album/r2\"><div class=\"art\"><img src=\"https://f4.bcbits.com/img/a2_2.jpg\"></div><p class=\"title\">R2</p></a></li><li data-item-id=\"album-3\" class=\"music-grid-item\"><a href=\"/album/r3\"><div class=\"art\"><img src=\"https://f4.bcbits.com/img/a3_2.jpg\"></div><p class=\"title\">R3</p></a></li><li data-item-id=\"album-4\" class=\"music-grid-item\"><a href=\"/album/r4\"><div class=\"art\"><img src=\"https://f4.bcbits.com/img/a4_2.jpg\"></div><p class=\"title\">R4</p></a></li><li data-item-id=\"album-5\" class=\"music-grid-item\"><a href=\"/album/r5\"><div class=\"art\"><img src=\"https://f4.bcbits.com/img/a5_2.jpg\"></div><p class=\"title\">R5</p></a></li></ol></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://toomuchcollective.bandcamp.com/track/anecho-re-use-reduce-continental-vip?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://toomuchcollective.bandcamp.com/track/anecho-re-use-reduce?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://toomuchcollective.bandcamp.com/track/re-use-reduce-continental-vip?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://toomuchcollective.bandcamp.com/track/re-use-reduce?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://tubeband.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://untickedartist.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://waxonly.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://whitepeach.bandcamp.com/album/wpr091-phoenix?": [
+{
+"status": 200,
+"text": "<html><head><script type=\"application/ld+json\">{\"@type\": \"MusicAlbum\", \"name\": \"WPR091 - Phoenix\", \"datePublished\": \"01 Feb 2025 00:00:00 GMT\", \"image\": \"https://f4.bcbits.com/img/WPR091 - Phoenix_10.jpg\", \"byArtist\": {\"name\": \"Blocklab\"}}</script></head><body><script data-tralbum='{\"current\": {\"type\": \"album\"}, \"artist\": \"Blocklab\", \"trackinfo\": [{\"title\": \"Phoenix\", \"duration\": 200, \"track_id\": 1}, {\"title\": \"Gargantua\", \"duration\": 200, \"track_id\": 2}]}'></script></body></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://whitepeach.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://www.beatport.com/search/tracks?per_page=25&q=Beat+Artist+Deep+Groove": [
+{
+"status": 200,
+"text": "<html><script id=\"__NEXT_DATA__\" type=\"application/json\">{\"props\": {\"pageProps\": {\"dehydratedState\": {\"queries\": [{\"state\": {\"data\": {\"data\": [{\"track_id\": 501, \"track_name\": \"Deep Groove\", \"mix_name\": \"Original Mix\", \"slug\": \"deep-groove\", \"artists\": [{\"artist_id\": 1, \"artist_name\": \"Beat Artist\"}], \"remixers\": [], \"release\": {\"release_id\": 9, \"release_name\": \"Deep Groove EP\"}, \"label\": {\"label_name\": \"BP Label\"}, \"publish_date\": \"2024-03-01\"}]}}}]}}}}</script></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://www.beatport.com/search/tracks?per_page=25&q=Beat+Artist+Late+Tune": [
+{
+"status": 200,
+"text": "<html><script id=\"__NEXT_DATA__\" type=\"application/json\">{\"props\": {\"pageProps\": {\"dehydratedState\": {\"queries\": [{\"state\": {\"data\": {\"data\": [{\"track_id\": 502, \"track_name\": \"Late Tune\", \"mix_name\": \"Extended Mix\", \"artists\": [{\"artist_name\": \"Beat Artist\"}], \"release\": {\"release_name\": \"Late\"}, \"publish_date\": \"2025-01-01\"}]}}}]}}}}</script></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://www.beatport.com/search/tracks?per_page=25&q=Wax+Only+Pressed+Tune": [
+{
+"status": 200,
+"text": "<html><script id=\"__NEXT_DATA__\" type=\"application/json\">{\"props\": {\"pageProps\": {\"dehydratedState\": {\"queries\": [{\"state\": {\"data\": {\"data\": []}}}]}}}}</script></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://www.youtube.com/@tubeband?": [
+{
+"status": 200,
+"text": "<html><link rel=\"canonical\" href=\"https://www.youtube.com/channel/UC1234567890123456789012\"></html>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://www.youtube.com/feeds/videos.xml?channel_id=UC1234567890123456789012": [
+{
+"status": 200,
+"text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<feed xmlns:yt=\"http://www.youtube.com/xml/schemas/2015\" xmlns:media=\"http://search.yahoo.com/mrss/\" xmlns=\"http://www.w3.org/2005/Atom\">\n <title>Tube Band</title>\n <entry><yt:videoId>vid00000001</yt:videoId><title>Tube Band - Glass River</title>\n  <link rel=\"alternate\" href=\"https://www.youtube.com/watch?v=vid00000001\"/>\n  <author><name>Tube Band</name></author><published>2026-10-02T12:00:00+00:00</published>\n  <media:group><media:thumbnail url=\"https://i1.ytimg.com/vi/vid00000001/hqdefault.jpg\" width=\"480\" height=\"360\"/></media:group></entry>\n <entry><yt:videoId>vid00000002</yt:videoId><title>Studio Diary</title>\n  <link rel=\"alternate\" href=\"https://www.youtube.com/watch?v=vid00000002\"/>\n  <author><name>Tube Band</name></author><published>2026-09-01T12:00:00+00:00</published></entry>\n</feed>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://www.youtube.com/results?search_query=Tube+Band+Hidden+Lake&sp=EgIQAQ%3D%3D": [
+{
+"status": 200,
+"text": "<script>var ytInitialData = {\"contents\": {\"sectionListRenderer\": {\"contents\": [{\"itemSectionRenderer\": {\"contents\": [{\"videoRenderer\": {\"videoId\": \"vid00000009\", \"title\": {\"runs\": [{\"text\": \"Someone Else - Hidden Lake (cover)\"}]}, \"ownerText\": {\"runs\": [{\"text\": \"Covers Inc\"}]}, \"lengthText\": {\"simpleText\": \"4:01\"}}}, {\"videoRenderer\": {\"videoId\": \"vid00000010\", \"title\": {\"runs\": [{\"text\": \"Tube Band - Hidden Lake\"}]}, \"ownerText\": {\"runs\": [{\"text\": \"Tube Band Archive\"}]}, \"lengthText\": {\"simpleText\": \"4:01\"}}}]}}]}}};</script>",
+"type": "text/plain; charset=utf-8"
+}
+],
+"GET https://zedaliasone.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"GET https://zedwithcomma.bandcamp.com/music?": [
+{
+"status": 404,
+"text": "",
+"type": ""
+}
+],
+"POST https://bandcamp.com/api/fancollection/1/collection_items? {\"count\": 100, \"fan_id\": 77, \"older_than_token\": \"tok1\"}": [
+{
+"status": 500,
+"text": "",
+"type": ""
+},
+{
+"status": 429,
+"text": "",
+"type": ""
+},
+{
+"status": 200,
+"text": "{\"items\":[{\"tralbum_type\":\"a\",\"tralbum_id\":3,\"item_title\":\"Especies Endémicas\",\"band_name\":\"Masot\",\"item_url\":\"https://masot.bandcamp.com/album/especies-endemicas\",\"featured_track\":31},{\"tralbum_type\":\"a\",\"tralbum_id\":4,\"item_title\":\"Half Empty\",\"band_name\":\"contactghost\",\"item_url\":\"https://artikalmusic.bandcamp.com/album/half-empty?from=fanpub\"}],\"tracklists\":{\"a3\":[{\"id\":31,\"title\":\"Intro Piece\"}]},\"more_available\":false,\"last_token\":\"tok2\"}",
+"type": "application/json"
+}
+],
+"POST https://bandcamp.com/api/fancollection/1/following_bands? {\"count\": 100, \"fan_id\": 55, \"older_than_token\": \"t1\"}": [
+{
+"status": 200,
+"text": "{\"followeers\":[{\"name\":\"Custom Domain Act\",\"url_hints\":{\"subdomain\":\"cda\",\"custom_domain\":\"music.cda.net\"}},{\"name\":\"Deep Label\",\"url_hints\":{\"subdomain\":\"deeplabel\"}}],\"more_available\":true,\"last_token\":\"t2\"}",
+"type": "application/json"
+}
+],
+"POST https://bandcamp.com/api/fancollection/1/following_bands? {\"count\": 100, \"fan_id\": 55, \"older_than_token\": \"t2\"}": [
+{
+"status": 200,
+"text": "{\"followeers\":[],\"more_available\":false,\"last_token\":null}",
+"type": "application/json"
+}
+]
+}

@@ -10,7 +10,7 @@ namespace ArtistFeed.Core;
 /// </summary>
 public static class Names
 {
-    const string RemixWord = @"remix|rmx|re-?mix|edit|re-?edit|bootleg|boot|flip|refix|re-?fix|rework|re-?work|re-?rub|" +
+    internal const string RemixWord = @"remix|rmx|re-?mix|edit|re-?edit|bootleg|boot|flip|refix|re-?fix|rework|re-?work|re-?rub|" +
                              @"remake|re-?lick|mash-?up|redo|re-?twist|re-?fit|cover|treatment|version|mix|dub|vip";
 
     static readonly Regex Wip = new(
@@ -21,7 +21,7 @@ public static class Names
         @"[\(\[][^\)\]]*(?:mix|edit|version|remaster|bonus|free|dub|\b(?:" + RemixWord + @")\b)[^\)\]]*[\)\]]",
         RegexOptions.CultureInvariant);
 
-    static readonly HashSet<string> Generic = new("""
+    internal static readonly HashSet<string> Generic = new("""
         original extended radio club instrumental vocal dub vip album single full short long clean
         dirty explicit main alternate alt demo live final new old digital vinyl bonus free download unreleased
         dubplate special mini intro outro acapella remastered remaster mono stereo official unofficial exclusive
@@ -31,7 +31,7 @@ public static class Names
         bootleg remix rework mix version unofficial steppers stepper roller rollers sound system soundsystem
         """.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 
-    static readonly HashSet<string> Format = new("""
+    internal static readonly HashSet<string> Format = new("""
         digital download downloads dl wav wave mp3 flac aiff 16bit 24bit bit hq hd master mastered premaster
         preorder pre order out now forthcoming soon premiere preview clip clips snippet teaser promo limited edition
         repress press pressing lp ep 7 10 12 inch only bandcamp soundcloud release released track audio stream
@@ -95,7 +95,7 @@ public static class Names
 
     /// <summary>The letters and digits of a tidied name, of any alphabet, with everything else as a space.
     /// A symbol written as part of a word stays ("∑1", "Myca$h"); punctuation never does.</summary>
-    static string Words(string text)
+    internal static string Words(string text)
     {
         bool ascii = text.All(c => c < 128);
         if (ascii && !text.Contains('$')) return NonWord.Replace(text, " ").Trim();

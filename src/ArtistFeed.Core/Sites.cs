@@ -14,7 +14,53 @@ public sealed class Sites(Db db, IReadOnlyList<ISource> sources)
 
     public ISource? Get(string key) => sources.FirstOrDefault(s => s.Key == key);
 
-    public bool IsOn(string key) => Get(key) != null && !db.KvList("sites_off").Contains(key);
+    // ---------- Link Finder's sites ----------
+    // Link Finder searches the sites ticked for it, in a fixed order of preference. Beatport and Discogs are
+    // only used by Link Finder (no feed): switched off until switched on.
+
+    public static readonly string[] LookupOrder = { "bandcamp", "beatport", "soundcloud", "youtube", "discogs" };
+    public static readonly string[] LookupDefault = { "bandcamp", "soundcloud" };
+    public static readonly Dictionary<string, (string Label, string Color)> LookupOnly = new()
+    {
+        ["beatport"] = ("Beatport", "#01ff95"), ["discogs"] = ("Discogs", "#c9b98f"),
+    };
+
+    public string Label(string key) => LookupOnly.TryGetValue(key, out var x) ? x.Label : Get(key)?.Label ?? key;
+    public string ColorOf(string key) => LookupOnly.TryGetValue(key, out var x) ? x.Color : Get(key)?.Color ?? "#888888";
+
+    /// <summary>The Link Finder-only sites switched on.</summary>
+    List<string> ExtraOn() => db.KvList("extra_sites_on");
+
+    /// <summary>At start-up: in the web version's v76 ticking Beatport or Discogs was enough to use it,
+    /// so the ones ticked then start switched on.</summary>
+    public void Upgrade()
+    {
+        if (db.KvGet("extra_sites_on") == null)
+            db.KvSetList("extra_sites_on", LookupChosen().Where(LookupOnly.ContainsKey));
+    }
+
+    /// <summary>The sites Link Finder searches, best first: ticked for it, and switched on.</summary>
+    public List<string> LookupSites()
+    {
+        var chosen = db.KvList("lookup_sites", LookupDefault).ToHashSet();
+        return LookupOrder.Where(k => chosen.Contains(k) && IsOn(k)).ToList();
+    }
+
+    /// <summary>What is ticked for Link Finder, whether or not the site is switched on.</summary>
+    public List<string> LookupChosen()
+    {
+        var chosen = db.KvList("lookup_sites", LookupDefault).ToHashSet();
+        return LookupOrder.Where(chosen.Contains).ToList();
+    }
+
+    public void SetLookupSites(IEnumerable<string> keys)
+    {
+        var set = keys.ToHashSet();
+        db.KvSetList("lookup_sites", LookupOrder.Where(set.Contains));
+    }
+
+    public bool IsOn(string key) => LookupOnly.ContainsKey(key) ? ExtraOn().Contains(key)
+        : Get(key) != null && !db.KvList("sites_off").Contains(key);
 
     /// <summary>The keys of the sites switched on, in the order they are shown.</summary>
     public List<string> Enabled()
@@ -25,6 +71,13 @@ public sealed class Sites(Db db, IReadOnlyList<ISource> sources)
 
     public void SetOn(string key, bool on)
     {
+        if (LookupOnly.ContainsKey(key))
+        {
+            var extra = ExtraOn().ToHashSet();
+            if (on) extra.Add(key); else extra.Remove(key);
+            db.KvSetList("extra_sites_on", extra.OrderBy(x => x, StringComparer.Ordinal));
+            return;
+        }
         if (Get(key) == null) throw new ArgumentException($"Unknown site '{key}'.");
         var off = db.KvList("sites_off").ToHashSet();
         if (on) off.Remove(key); else off.Add(key);
