@@ -497,7 +497,7 @@ public sealed partial class LinkFinder
             var row = job.Rows.FirstOrDefault(r => (int)(r.N("n") ?? -1) == n) ?? throw new InvalidOperationException("That row isn't in this lookup.");
             if (row.S("status") != "pending" || job.Finished) throw new InvalidOperationException("That row isn't waiting to be searched.");
             job.Skip.Add(n);
-            if (job.Current != n) Fill(row, WithListLink(Skipped(), row.T("artist"), row.T("title")));   // not started yet: skipped at once
+            if (job.Current != n) Fill(row, WithListLink(Skipped(), row.T("artist"), row.T("title"))!);   // not started yet: skipped at once
         }
         job.Touch();
     }
@@ -623,7 +623,7 @@ public sealed partial class LinkFinder
                 if (job.Extend.Remove(rn, out var ex)) extend = ex;
                 if (job.Skip.Contains(rn))
                 {
-                    if (row.S("status") == "pending") Fill(row, WithListLink(Skipped(), row.T("artist"), row.T("title")));   // skipped before its turn
+                    if (row.S("status") == "pending") Fill(row, WithListLink(Skipped(), row.T("artist"), row.T("title"))!);   // skipped before its turn
                     job.Done++;
                     continue;
                 }
@@ -656,7 +656,7 @@ public sealed partial class LinkFinder
             {
                 lock (job)
                 {
-                    if (row.S("status") == "pending") Fill(row, WithListLink(Skipped(), row.T("artist"), row.T("title")));
+                    if (row.S("status") == "pending") Fill(row, WithListLink(Skipped(), row.T("artist"), row.T("title"))!);
                     job.Done++;
                 }
                 job.Touch();
