@@ -376,7 +376,9 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
         else
         {
             outp.SoldAt = SoldElsewhere(doc, url);
-            outp.Placeholder = tralbum["packages"] is not JsonArray { Count: > 0 };
+            // No tracks and nothing physical either, and the page says so itself ("0 track album").
+            outp.Placeholder = tralbum["packages"] is not JsonArray { Count: > 0 }
+                               && Regex.IsMatch(Html.Meta(doc, "og:description") ?? "", @"^\s*0 track album", RegexOptions.IgnoreCase);
         }
         // A track page names its album in the player data too, sometimes only there.
         var albumLink = Html.AsString(tralbum["album_url"]);

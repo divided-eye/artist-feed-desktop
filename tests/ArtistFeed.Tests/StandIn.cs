@@ -77,7 +77,7 @@ public sealed class StandIn : HttpMessageHandler
     public static HttpResponseMessage Text(string text, HttpStatusCode code = HttpStatusCode.OK) =>
         new(code) { Content = new StringContent(text, Encoding.UTF8, "text/html") };
 
-    static HttpResponseMessage Json(JsonNode node) =>
+    public static HttpResponseMessage Json(JsonNode node) =>
         new(HttpStatusCode.OK) { Content = new StringContent(node.ToJsonString(), Encoding.UTF8, "application/json") };
 
     static HttpResponseMessage Status(HttpStatusCode code) => new(code) { Content = new StringContent("") };

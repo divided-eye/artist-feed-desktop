@@ -58,7 +58,9 @@ public partial class MainViewModel : ObservableObject
 
     [ObservableProperty] private ArtistOption? _artist;
     [ObservableProperty] private string _search = "";
-    [ObservableProperty] private bool _focus;
+    /// <summary>The workspace menu: Every artist, then each workspace with how many artists it holds.</summary>
+    public ObservableCollection<Option> WorkspaceOptions { get; } = new();
+    [ObservableProperty] private Option? _workspace;
     [ObservableProperty] private bool _isGrid = true;
     [ObservableProperty] private Option? _year;
     [ObservableProperty] private Option? _label;
@@ -175,6 +177,11 @@ public partial class MainViewModel : ObservableObject
         Artists.Add(new ArtistOption(null, "All artists"));
         foreach (var a in Engine.Db.ListArtists()) Artists.Add(new ArtistOption(a.Id, a.Name));
         Artist = Artists.FirstOrDefault(a => a.Id == keep) ?? Artists[0];
+        var space = Workspace?.Value;
+        WorkspaceOptions.Clear();
+        WorkspaceOptions.Add(new Option("", "Every artist"));
+        foreach (var (w, n) in Engine.Sites.WorkspaceCounts()) WorkspaceOptions.Add(new Option(w.Id, $"{w.Name} ({n})"));
+        Workspace = WorkspaceOptions.FirstOrDefault(o => o.Value == space) ?? WorkspaceOptions[0];
         _quiet = false;
     }
 
@@ -224,7 +231,7 @@ public partial class MainViewModel : ObservableObject
             Until = until,
             DateByReleased = (since != null || until != null) && DateBy?.Value == "released",
         };
-        return Engine.WithFocus(f, Focus);
+        return Engine.WithWorkspace(f, NullIfEmpty(Workspace?.Value));
     }
 
     static string? NullIfEmpty(string? s) => string.IsNullOrEmpty(s) ? null : s;
@@ -240,7 +247,7 @@ public partial class MainViewModel : ObservableObject
         _searchTimer.Stop();
         _searchTimer.Start();
     }
-    partial void OnFocusChanged(bool value) => FilterChanged();
+    partial void OnWorkspaceChanged(Option? value) => FilterChanged();
     partial void OnYearChanged(Option? value) => FilterChanged();
     partial void OnLabelChanged(Option? value) => FilterChanged();
     partial void OnKindChanged(Option? value) => FilterChanged();
@@ -277,7 +284,7 @@ public partial class MainViewModel : ObservableObject
         foreach (var c in Chips) c.IsChecked = c.Key == null;
         Artist = Artists.FirstOrDefault();
         Search = "";
-        Focus = false;
+        Workspace = WorkspaceOptions.FirstOrDefault();
         Year = Years.FirstOrDefault();
         Label = Labels.FirstOrDefault();
         Kind = Kinds[0];
@@ -312,7 +319,7 @@ public partial class MainViewModel : ObservableObject
         var seq = ++_seq;
         var f = CurrentFilter();
         HasFilters = SelectedSource != null || f.ArtistId != null || f.Query != null || f.Year != null || f.Label != null ||
-                     f.Kind != null || f.Length != null || ShowHidden || !string.IsNullOrEmpty(Range?.Value) || Focus;
+                     f.Kind != null || f.Length != null || ShowHidden || !string.IsNullOrEmpty(Range?.Value) || !string.IsNullOrEmpty(Workspace?.Value);
         Error = "";
         try
         {
@@ -371,10 +378,11 @@ public partial class MainViewModel : ObservableObject
         IsEmpty = none;
         if (!none) return;
         var artists = Artists.Count > 1;
-        if (Focus && artists && Engine.Sites.FocusNames().Count == 0)
+        var space = Engine.Sites.WorkspaceCounts().FirstOrDefault(w => w.Space.Id == Workspace?.Value);
+        if (space.Space != null && artists && space.Count == 0)
         {
-            EmptyTitle = "No artists in your Focus Feed yet";
-            EmptyText = "Tick the Focus box beside an artist in Tracked Artists, then Save.";
+            EmptyTitle = $"No artists in {space.Space.Name} yet";
+            EmptyText = $"Tick the {space.Space.Name} box beside an artist in Tracked Artists, then Save.";
             return;
         }
         EmptyTitle = !artists ? "No artists yet" : HasFilters ? "Nothing matches" : "Nothing here yet";

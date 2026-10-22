@@ -556,8 +556,9 @@ public class CoreTests
     public async Task AReleaseWithNothingToBuyAndNoLinkIsSearchedForOnceThenNoted()
     {
         var by = new JsonObject { ["byArtist"] = new JsonObject { ["name"] = "Herbalistek" } };
-        var foundShell = StandIn.Release("52 Blue", "20 Jan 2026 00:00:00 GMT", ldExtra: by);
-        var lostShell = StandIn.Release("Lost One", "20 Jan 2026 00:00:00 GMT", ldExtra: by);
+        const string zero = "<meta property=\"og:description\" content=\"0 track album\">";
+        var foundShell = StandIn.Release("52 Blue", "20 Jan 2026 00:00:00 GMT", ldExtra: by, head: zero);
+        var lostShell = StandIn.Release("Lost One", "20 Jan 2026 00:00:00 GMT", ldExtra: by, head: zero);
         var tralbum = new JsonObject
         {
             ["id"] = 778, ["item_type"] = "album",
@@ -580,6 +581,7 @@ public class CoreTests
 
         Assert.True(Bandcamp.ParseRelease(foundShell, "https://herbalist.bandcamp.com/album/52-blue").Placeholder);
         Assert.False(Bandcamp.ParseRelease(real, "https://observatory.bandcamp.com/album/52-blue").Placeholder);
+        Assert.False(Bandcamp.ParseRelease(StandIn.Release("No List", "20 Jan 2026 00:00:00 GMT"), "https://x.bandcamp.com/album/no-list").Placeholder);
 
         using var app = new TestApp();
         app.Web.Extra = r =>

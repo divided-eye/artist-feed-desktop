@@ -58,6 +58,8 @@ versions shouldn't share one file while both are running.
   YouTube search ticks, Check now, removing rows, Import and Export CSV, pasting a list, filtering rows,
   and Save changes / Discard with each problem shown on its row. Same rules as the web version, including
   "two rows for one artist" and keeping both when they are different artists.
+- **Workspaces**: named groups of artists (Focus is the first), ticked in Tracked Artists and chosen from the menu beside Search to show only them.
+- **Import follows** (Tracked Artists): add the profiles a SoundCloud account follows, or the artists and labels a public Bandcamp fan page follows.
 - **Settings**: text size (90% to 150%) and colour scheme (Dark, Light, High contrast, or Match this computer); switching Bandcamp, SoundCloud or YouTube on and off, with Save; where your data is.
 
 Not in this version yet: **Link Finder**, **Find missing links**, the Bandcamp purchases reader and

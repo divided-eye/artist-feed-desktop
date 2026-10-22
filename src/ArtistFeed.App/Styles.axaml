@@ -152,6 +152,14 @@
     <Setter Property="Padding" Value="6,2" />
   </Style>
 
+  <Style Selector="Border.subpanel">
+    <Setter Property="Background" Value="{DynamicResource Panel2}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="12,10" />
+  </Style>
+
   <Style Selector="DataGrid">
     <Setter Property="Background" Value="{DynamicResource Bg}" />
     <Setter Property="GridLinesVisibility" Value="Horizontal" />

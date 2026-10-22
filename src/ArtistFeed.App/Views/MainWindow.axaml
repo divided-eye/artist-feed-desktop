@@ -43,8 +43,9 @@
                         ToolTip.Tip="Clear" />
               </TextBox.InnerRightContent>
             </TextBox>
-            <ToggleButton IsChecked="{Binding Focus}" Content="Focus Feed"
-                          ToolTip.Tip="Show only the artists ticked in the Focus column of Tracked Artists. Click again to show everyone." />
+            <ComboBox ItemsSource="{Binding WorkspaceOptions}" SelectedItem="{Binding Workspace}" MinWidth="150"
+                      Classes.on="{Binding Workspace.Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                      ToolTip.Tip="Show only the artists in one workspace. Workspaces are set up in Tracked Artists." />
             <StackPanel Orientation="Horizontal" Spacing="0">
               <ToggleButton IsChecked="{Binding IsGrid, Mode=OneWay}" Command="{Binding ShowGridCommand}" Content="Grid" CornerRadius="8,0,0,8" />
               <ToggleButton IsChecked="{Binding IsList, Mode=OneWay}" Command="{Binding ShowListCommand}" Content="List" CornerRadius="0,8,8,0" />

@@ -15,7 +15,8 @@ public sealed class TableRow
     public bool? YoutubeLookup { get; set; }          // Link Finder may search YouTube for this artist or label
     public bool KeepSeparate { get; set; }            // shares a name with another row on purpose (different artists)
     public bool SameName { get; set; }
-    public bool Focus { get; set; }                   // shown by the Focus Feed button
+    public bool Focus { get; set; }                   // in the Focus workspace (older form of Groups = ["focus"])
+    public List<string> Groups { get; set; } = new(); // the workspaces this artist is in, by id
     public bool Remove { get; set; }                  // marked for removal: stops being tracked, like a blank row
     public long PostCount { get; set; }
     public List<string> Problems { get; set; } = new();
@@ -53,7 +54,7 @@ public sealed class ArtistTable(Db db, Sites sites)
         var on = sites.Enabled();
         var youtube = sites.YoutubeNames();
         var same = SameNameOk();
-        var focus = sites.FocusNames();
+        var groups = sites.Workspaces();
         foreach (var a in db.ListArtists())
         {
             var cells = on.ToDictionary(k => k, _ => new List<string>());
@@ -81,7 +82,8 @@ public sealed class ArtistTable(Db db, Sites sites)
                 Name = Names.JoinNames(new[] { a.Name }.Concat(Names.SplitNames(a.Aliases))),
                 PostCount = a.PostCount,
                 YoutubeLookup = youtube.Contains(key),
-                Focus = focus.Contains(key),
+                Groups = groups.Where(w => w.Members.Contains(key)).Select(w => w.Id).ToList(),
+                Focus = groups.Any(w => w.Id == "focus" && w.Members.Contains(key)),
                 SameName = same.Contains(key),
                 Cells = cells.ToDictionary(kv => kv.Key, kv => string.Join(", ", kv.Value)),
                 Problems = problems,
@@ -94,8 +96,20 @@ public sealed class ArtistTable(Db db, Sites sites)
 
     /// <summary>Replace the whole artist list with these rows. Nothing changes unless every row is valid.
     /// Returns the ids of the pages added, which want reading straight away.</summary>
-    public List<long> Save(IReadOnlyList<TableRow> rows)
+    /// <param name="spaces">The workspaces as they should be (id, name), in order; null leaves them as they are.</param>
+    public List<long> Save(IReadOnlyList<TableRow> rows, IReadOnlyList<(string Id, string Name)>? spaces = null)
     {
+        var groups = (spaces ?? sites.Workspaces().Select(w => (w.Id, w.Name)).ToList())
+            .Select(w => (Id: w.Id.Trim(), Name: w.Name.Trim())).ToList();
+        var seenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var w in groups)
+        {
+            if (w.Id.Length == 0 || w.Name.Length == 0)
+                throw new TableSaveException(new() { new RowError(-1, "Every workspace needs a name.") });
+            if (!seenNames.Add(w.Name))
+                throw new TableSaveException(new() { new RowError(-1, $"Two workspaces are called \"{w.Name}\"; rename one.") });
+        }
+        var members = groups.ToDictionary(w => w.Id, _ => new HashSet<string>());
         var existing = db.ListArtists().ToDictionary(a => a.Id);
         var errors = new List<RowError>();
         var claimed = new Dictionary<(string, string), int>();
@@ -103,7 +117,6 @@ public sealed class ArtistTable(Db db, Sites sites)
         var remember = new JsonObject();
         var youtube = new HashSet<string>();
         var claimedNames = new Dictionary<string, List<int>>();
-        var focus = new HashSet<string>();
         var allowed = SameNameOk();
         var on = sites.Enabled().ToHashSet();
         for (int index = 0; index < rows.Count; index++)
@@ -168,7 +181,8 @@ public sealed class ArtistTable(Db db, Sites sites)
                     ["rejected"] = r,
                 };
             }
-            if (row.Focus) focus.Add(Names.Norm(finalName));
+            foreach (var gid in row.Groups.Concat(row.Focus ? new[] { "focus" } : Array.Empty<string>()).Distinct())
+                if (members.TryGetValue(gid, out var set)) set.Add(Names.Norm(finalName));
             if (row.YoutubeLookup == true)
                 foreach (var n in new[] { finalName }.Concat(Names.SplitNames(aliases))) youtube.Add(Names.Norm(n));
         }
@@ -217,7 +231,7 @@ public sealed class ArtistTable(Db db, Sites sites)
         }
         db.KvSet("table_left_empty", remember.ToJsonString());
         db.KvSetList("same_name_ok", shared.Keys.Where(allowed.Contains).OrderBy(x => x, StringComparer.Ordinal));
-        sites.SetFocusNames(focus);
+        sites.SetWorkspaces(groups.Select(w => new Workspace(w.Id, w.Name, members[w.Id].ToList())));
         if (rows.Any(r => r.YoutubeLookup != null)) sites.SetYoutubeNames(youtube);    // sent only while YouTube is on
         return added;
     }

@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
@@ -196,7 +197,7 @@ public class UiTests
         // fixed: saved, and the new page is read
         row.SoundCloud = "";
         row.Bandcamp = "solo";
-        row.Focus = true;
+        row.Ticks.Single(t => t.Space.Id == "focus").IsIn = true;
         await ta.SaveCommand.ExecuteAsync(null);
         Assert.Equal("", ta.Error);
         Assert.False(ta.Dirty);
@@ -207,9 +208,9 @@ public class UiTests
         Dispatcher.UIThread.RunJobs();
         Assert.Contains("Only One", app.Feed().Select(p => p.Title));
         Assert.Contains("someone", app.Engine.Sites.FocusNames());
-        vm.Focus = true;
+        vm.Workspace = vm.WorkspaceOptions.Single(o => o.Value == "focus");
         Assert.Equal(new[] { "Only One" }, vm.Posts.Select(p => p.Title));
-        vm.Focus = false;
+        vm.Workspace = vm.WorkspaceOptions[0];
 
         // filter rows; mark one for removal
         ta.FilterText = "tube";
@@ -337,6 +338,68 @@ public class UiTests
         vm.ShowListCommand.Execute(null);
         Dispatcher.UIThread.RunJobs();
         Assert.Equal("Third · " + Bandcamp.NotForSale, vm.Rows.Single(r => r.Row.PostTitle == "Third").Release);
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task WorkspacesAndImportFollows()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        Assert.Equal(new[] { "Every artist", "Focus (0)" }, vm.WorkspaceOptions.Select(o => o.Text));
+        var ta = new TrackedArtistsViewModel(vm);
+        var win = new TrackedArtistsWindow { DataContext = ta, Width = 1240, Height = 860 };
+        win.Show();
+
+        // a new workspace, renamed, with Night Ferry in it
+        ta.ToggleSpacesCommand.Execute(null);
+        ta.AddSpaceCommand.Execute(null);
+        var deep = ta.Spaces[^1];
+        deep.Name = "Deep dubstep";
+        Assert.True(ta.Dirty);
+        var nf = ta.Rows.Single(r => r.Name == "Night Ferry");
+        nf.Ticks.Single(t => t.Space == deep).IsIn = true;
+        Assert.Equal(1, deep.Count);
+        Assert.Contains(ta.ShowOptions, o => o.Text == "In Deep dubstep (1)");
+
+        // follows read from SoundCloud: one already tracked, one joins the row of the same name, one new
+        app.Web.Extra = r => r.RequestUri!.Host == "api-v2.soundcloud.com" && r.RequestUri.AbsolutePath == "/resolve" && r.RequestUri.Query.Contains("mefan")
+            ? StandIn.Json(new JsonObject { ["kind"] = "user", ["id"] = 7, ["username"] = "Me" })
+            : r.RequestUri!.Host == "api-v2.soundcloud.com" && r.RequestUri.AbsolutePath == "/users/7/followings"
+            ? StandIn.Json(new JsonObject { ["collection"] = new JsonArray(
+                new JsonObject { ["username"] = "Night Ferry", ["permalink"] = "nightferry" },
+                new JsonObject { ["username"] = "Tube Band", ["permalink"] = "tube-band-sc" },
+                new JsonObject { ["username"] = "Brand New Act", ["permalink"] = "brandnewact" }) })
+            : null;
+        ta.ToggleFollowsCommand.Execute(null);
+        ta.FollowUser = "https://soundcloud.com/MeFan";
+        await ta.ReadFollowsCommand.ExecuteAsync(null);
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal(new[] { "already tracked", "tube-band-sc", "brandnewact" }, ta.FollowItems.Select(i => i.Detail));
+        Assert.Equal("2 of 2 picked · 1 already tracked or in the table", ta.FollowCount);
+        ta.FollowSpace = ta.SpaceChoices.Single(o => o.Text == "Deep dubstep");
+        Save(win, "14-import-follows");
+        ta.AddFollowsCommand.Execute(null);
+        Assert.Equal("tube-band-sc", ta.Rows.Single(r => r.Name == "Tube Band").SoundCloud);
+        Assert.True(ta.Rows.Single(r => r.Name == "Brand New Act").InGroup(deep.Id));
+        Assert.All(ta.FollowItems, i => Assert.False(i.Open));
+        Save(win, "15-workspaces");
+
+        await ta.SaveCommand.ExecuteAsync(null);
+        Assert.Equal("", ta.Error);
+        Assert.Equal(new[] { "Every artist", "Focus (0)", "Deep dubstep (3)" }, vm.WorkspaceOptions.Select(o => o.Text));
+        Assert.Equal(new[] { "focus", deep.Id }, app.Engine.Sites.Workspaces().Select(x => x.Id));
+        vm.Workspace = vm.WorkspaceOptions[2];
+        Dispatcher.UIThread.RunJobs();
+        Assert.All(vm.Posts, p => Assert.Contains(p.Post.Artist, new[] { "Night Ferry", "Tube Band", "Brand New Act" }));
+        Save(w, "16-workspace-feed");
+
+        // two workspaces with one name are refused
+        ta.AddSpaceCommand.Execute(null);
+        ta.Spaces[^1].Name = "focus";
+        await ta.SaveCommand.ExecuteAsync(null);
+        Assert.Contains("Two workspaces", ta.Error);
+        win.Close();
         w.Close();
     }
 }

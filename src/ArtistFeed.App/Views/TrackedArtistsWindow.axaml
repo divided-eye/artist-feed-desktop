@@ -22,12 +22,75 @@
         <Button Content="Add row" Command="{Binding AddRowCommand}" />
         <Button Content="Import CSV" Command="{Binding ImportCsvCommand}" />
         <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" />
+        <ToggleButton Content="Import follows" IsChecked="{Binding ShowFollows, Mode=OneWay}" Command="{Binding ToggleFollowsCommand}"
+                      ToolTip.Tip="Add the artists and labels a SoundCloud account or Bandcamp fan follows" />
+        <ToggleButton Content="Workspaces" IsChecked="{Binding ShowSpaces, Mode=OneWay}" Command="{Binding ToggleSpacesCommand}"
+                      ToolTip.Tip="Name the groups of artists you can show on their own (Focus is the first)" />
         <Button Content="Clear All" Command="{Binding ClearAllCommand}" ToolTip.Tip="Empty the whole table (nothing is removed until you save)" />
         <TextBox Text="{Binding FilterText}" PlaceholderText="Filter rows" Width="200" ToolTip.Tip="Show only rows containing these words" />
         <ComboBox ItemsSource="{Binding ShowOptions}" SelectedItem="{Binding Show}" ToolTip.Tip="Which rows to show" />
       </WrapPanel>
       <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="13"
                  Text="One row per artist. Type in the cells, or import or paste a list. Leave a cell empty if the artist isn't on that site; separate several pages in one cell with commas. The Artist cell can hold other names the artist goes by, after commas: the first is shown in the feed (put a name that contains a comma in &quot;double quotes&quot;). Changes take effect when you press Save changes." />
+      <Border Classes="subpanel" IsVisible="{Binding ShowFollows}">
+        <StackPanel Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <ComboBox ItemsSource="{Binding FollowSites}" SelectedItem="{Binding FollowSite}" ToolTip.Tip="Site to read follows from" />
+            <TextBox Text="{Binding FollowUser}" PlaceholderText="Username" Width="220" />
+            <Button Content="Read follows" Command="{Binding ReadFollowsCommand}" IsEnabled="{Binding !Reading}" />
+            <TextBlock Classes="muted" Text="{Binding FollowStatus}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="560" />
+          </StackPanel>
+          <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
+                     Text="The profiles a SoundCloud account follows, or the artists and labels a Bandcamp fan follows (the fan page must be public). Pick the ones to add: each becomes a row, or joins the row that already has that name. Nothing is tracked until you Save changes. YouTube keeps subscriptions private, so it can't be read." />
+          <StackPanel Spacing="8" IsVisible="{Binding HasFollows}">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <CheckBox Content="Select all" IsChecked="{Binding FollowAll}" />
+              <TextBlock Classes="muted" Text="{Binding FollowCount}" VerticalAlignment="Center" />
+              <TextBlock Classes="muted" Text="Also put them in" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <ComboBox ItemsSource="{Binding SpaceChoices}" SelectedItem="{Binding FollowSpace}" />
+              <Button Content="Add to table" Classes="primary" Command="{Binding AddFollowsCommand}" />
+            </StackPanel>
+            <ScrollViewer MaxHeight="200" HorizontalScrollBarVisibility="Disabled">
+              <ItemsControl ItemsSource="{Binding FollowItems}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:FollowItem">
+                    <CheckBox IsChecked="{Binding Pick}" IsEnabled="{Binding Open}" Width="260" ToolTip.Tip="{Binding Followed.Url}">
+                      <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" MaxWidth="140" FontSize="13" />
+                        <TextBlock Classes="muted" Text="{Binding Detail}" TextTrimming="CharacterEllipsis" MaxWidth="90" FontSize="11.5" VerticalAlignment="Center" />
+                      </StackPanel>
+                    </CheckBox>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+      <Border Classes="subpanel" IsVisible="{Binding ShowSpaces}">
+        <StackPanel Spacing="6">
+          <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
+                     Text="A workspace is a group of artists with its own name, such as Focus, Labels or Deep dubstep. Tick the artists in each in the Workspaces column. Choose a workspace at the top of the main window to show only its artists. An artist can be in several. Changes are kept when you Save changes." />
+          <ItemsControl ItemsSource="{Binding Spaces}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:WorkspaceDraft">
+                <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,2">
+                  <TextBox Text="{Binding Name}" Width="240" />
+                  <Button Classes="small" Content="↑" ToolTip.Tip="Move up" Command="{Binding #Root.((vm:TrackedArtistsViewModel)DataContext).MoveSpaceUpCommand}" CommandParameter="{Binding}" />
+                  <Button Classes="small" Content="↓" ToolTip.Tip="Move down" Command="{Binding #Root.((vm:TrackedArtistsViewModel)DataContext).MoveSpaceDownCommand}" CommandParameter="{Binding}" />
+                  <Button Classes="small ghost" Content="✕" ToolTip.Tip="Remove this workspace (its artists stay tracked)"
+                          Command="{Binding #Root.((vm:TrackedArtistsViewModel)DataContext).RemoveSpaceCommand}" CommandParameter="{Binding}" />
+                  <TextBlock Classes="muted" Text="{Binding CountText}" VerticalAlignment="Center" FontSize="13" />
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Button Content="Add workspace" Command="{Binding AddSpaceCommand}" HorizontalAlignment="Left" />
+        </StackPanel>
+      </Border>
       <StackPanel Orientation="Horizontal" Spacing="12">
         <TextBlock Text="{Binding Note}" Foreground="{DynamicResource AccentInk}" TextWrapping="Wrap" />
         <TextBlock Classes="error" Text="{Binding Error}" TextWrapping="Wrap" />
@@ -87,11 +150,20 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Focus" Width="86">
+        <DataGridTemplateColumn Header="Workspaces" Width="1.4*" MinWidth="120">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
-              <CheckBox IsChecked="{Binding Focus}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0"
-                        ToolTip.Tip="Show this artist in the Focus Feed" />
+              <ItemsControl ItemsSource="{Binding Ticks}" Margin="4,4">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" ItemSpacing="10" /></ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:GroupTick">
+                    <CheckBox IsChecked="{Binding IsIn}" Content="{Binding Space.Name}" FontSize="12"
+                              ToolTip.Tip="In this workspace: choose it at the top of the main window to show only its artists" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

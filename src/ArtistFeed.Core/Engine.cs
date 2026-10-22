@@ -13,6 +13,7 @@ public sealed class Engine : IDisposable
     public Bandcamp Bandcamp { get; }
     public SoundCloud SoundCloud { get; }
     public YouTube YouTube { get; }
+    public Follows Follows { get; }
     readonly Func<HttpClient> _makeClient;
     readonly CancellationTokenSource _stop = new();
 
@@ -29,6 +30,7 @@ public sealed class Engine : IDisposable
                                       : () => Http.Create();
         Refresher = new Refresher(Db, Sites, Pace, _makeClient);
         Table = new ArtistTable(Db, Sites);
+        Follows = new Follows(this);
     }
 
     public HttpClient MakeClient() => _makeClient();
@@ -118,6 +120,9 @@ public sealed class Engine : IDisposable
     }
 
     public FeedFilter WithFocus(FeedFilter f, bool focus) => f with { FocusIds = focus ? Sites.FocusIds() : null };
+
+    /// <summary>Only the artists in one workspace (null or empty: everyone).</summary>
+    public FeedFilter WithWorkspace(FeedFilter f, string? workspace) => f with { FocusIds = Sites.WorkspaceIds(workspace) };
 
     public void Dispose()
     {

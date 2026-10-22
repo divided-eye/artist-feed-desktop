@@ -1,3 +1,5 @@
+using System.Text.Json.Nodes;
+
 namespace ArtistFeed.Core;
 
 /// <summary>
@@ -43,10 +45,55 @@ public sealed class Sites(Db db, IReadOnlyList<ISource> sources)
         db.KvSetList("focus_names", names.Where(n => n.Length > 0).Distinct().OrderBy(x => x, StringComparer.Ordinal));
 
     /// <summary>The ids of the artists ticked in the Focus column.</summary>
-    public List<long> FocusIds()
+    public List<long> FocusIds() => WorkspaceIds("focus") ?? new();
+
+    // ---------- workspaces: named groups of artists, each a filter for the feed (Focus is the first) ----------
+    // Kept as the web app keeps them: kv "workspaces" = [{"id", "name", "members": [tidied names]}].
+
+    public List<Workspace> Workspaces()
     {
-        var names = FocusNames();
+        if (Html.ParseJson(db.KvGet("workspaces")) is not JsonArray saved)      // from before workspaces: Focus becomes the first
+            return new() { new Workspace("focus", "Focus", FocusNames().OrderBy(x => x, StringComparer.Ordinal).ToList()) };
+        var list = new List<Workspace>();
+        foreach (var w in saved)
+        {
+            if (w is not JsonObject o || Html.AsString(o["id"]) is not { Length: > 0 } id || Html.AsString(o["name"]) is not { Length: > 0 } name) continue;
+            var members = (o["members"] as JsonArray)?.Select(Html.AsString).Where(x => !string.IsNullOrEmpty(x)).Select(x => x!).ToList() ?? new();
+            list.Add(new Workspace(id, name, members));
+        }
+        return list;
+    }
+
+    public void SetWorkspaces(IEnumerable<Workspace> groups)
+    {
+        var list = groups.Select(w => new Workspace(w.Id, w.Name.Trim(),
+            w.Members.Where(n => n.Length > 0).Distinct().OrderBy(x => x, StringComparer.Ordinal).ToList())).ToList();
+        var arr = new JsonArray();
+        foreach (var w in list)
+            arr.Add(new JsonObject
+            {
+                ["id"] = w.Id, ["name"] = w.Name,
+                ["members"] = new JsonArray(w.Members.Select(m => (JsonNode?)m).ToArray()),
+            });
+        db.KvSet("workspaces", arr.ToJsonString());
+        SetFocusNames(list.FirstOrDefault(w => w.Id == "focus")?.Members ?? new List<string>());   // for older versions
+    }
+
+    /// <summary>The ids of the artists in a workspace; null when none is chosen.</summary>
+    public List<long>? WorkspaceIds(string? id)
+    {
+        if (string.IsNullOrEmpty(id)) return null;
+        var names = Workspaces().FirstOrDefault(w => w.Id == id)?.Members.ToHashSet() ?? new HashSet<string>();
         return db.Query("SELECT id, name FROM artists").Where(r => names.Contains(Names.Norm((string)r["name"]!)))
             .Select(r => (long)r["id"]!).ToList();
     }
+
+    /// <summary>The workspaces with how many tracked artists each holds.</summary>
+    public List<(Workspace Space, int Count)> WorkspaceCounts()
+    {
+        var names = db.Query("SELECT name FROM artists").Select(r => Names.Norm((string)r["name"]!)).ToHashSet();
+        return Workspaces().Select(w => (w, w.Members.Count(names.Contains))).ToList();
+    }
 }
+
+public sealed record Workspace(string Id, string Name, List<string> Members);

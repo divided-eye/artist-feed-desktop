@@ -2,9 +2,43 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Text.RegularExpressions;
 using ArtistFeed.Core;
 
 namespace ArtistFeed.App.ViewModels;
+
+/// <summary>A workspace as it is being edited in Tracked Artists (kept when the table is saved).</summary>
+public partial class WorkspaceDraft(string id, string name) : ObservableObject
+{
+    public string Id { get; } = id;
+    [ObservableProperty] private string _name = name;
+    [ObservableProperty] private int _count;
+    public string CountText => Count == 1 ? "1 artist" : $"{Count} artists";
+    partial void OnCountChanged(int value) => OnPropertyChanged(nameof(CountText));
+}
+
+/// <summary>One row's tick for one workspace.</summary>
+public partial class GroupTick(WorkspaceDraft space, bool isIn) : ObservableObject
+{
+    public WorkspaceDraft Space { get; } = space;
+    [ObservableProperty] private bool _isIn = isIn;
+}
+
+/// <summary>One profile, artist or label an account follows, in the Import follows list.</summary>
+public partial class FollowItem(Followed f, bool inTable) : ObservableObject
+{
+    public Followed Followed { get; } = f;
+    public string Name => Followed.Name;
+    [ObservableProperty] private bool _inTable = inTable;
+    [ObservableProperty] private bool _pick = true;
+    public bool Open => !Followed.Tracked && !InTable;
+    public string Detail => Followed.Tracked ? "already tracked" : InTable ? "already in the table" : Followed.Handle;
+    partial void OnInTableChanged(bool value)
+    {
+        OnPropertyChanged(nameof(Open));
+        OnPropertyChanged(nameof(Detail));
+    }
+}
 
 /// <summary>One editable row of Tracked Artists.</summary>
 public partial class ArtistRowViewModel : ObservableObject
@@ -20,13 +54,36 @@ public partial class ArtistRowViewModel : ObservableObject
     [ObservableProperty] private string _bandcamp = "";
     [ObservableProperty] private string _soundCloud = "";
     [ObservableProperty] private string _youTube = "";
-    [ObservableProperty] private bool _focus;
     [ObservableProperty] private bool _youtubeLookup;
     [ObservableProperty] private bool _remove;
     [ObservableProperty] private bool _keepSeparate;
     [ObservableProperty] private bool _sameName;          // the Keep both box shows while two rows share a name
     [ObservableProperty] private string _errors = "";
     [ObservableProperty] private bool _checking;
+
+    /// <summary>A tick for each workspace; ticking one marks the row changed (as "Groups").</summary>
+    public ObservableCollection<GroupTick> Ticks { get; } = new();
+    public List<string> Groups => Ticks.Where(t => t.IsIn).Select(t => t.Space.Id).ToList();
+    public bool InGroup(string id) => Ticks.Any(t => t.IsIn && t.Space.Id == id);
+
+    /// <summary>Ticks for these workspaces, keeping the row's choices (or taking `start` the first time).</summary>
+    public void SetSpaces(IEnumerable<WorkspaceDraft> spaces, IEnumerable<string>? start = null)
+    {
+        var keep = (start ?? Groups).ToHashSet();
+        foreach (var t in Ticks) t.PropertyChanged -= TickChanged;
+        Ticks.Clear();
+        foreach (var w in spaces)
+        {
+            var t = new GroupTick(w, keep.Contains(w.Id));
+            t.PropertyChanged += TickChanged;
+            Ticks.Add(t);
+        }
+    }
+
+    void TickChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(GroupTick.IsIn)) OnPropertyChanged(nameof(Groups));
+    }
 
     public bool IsNew => Id == null;
     public bool IsBlank => Name.Trim().Length == 0 && Bandcamp.Trim().Length == 0 && SoundCloud.Trim().Length == 0 && YouTube.Trim().Length == 0;
@@ -72,11 +129,18 @@ public partial class ArtistRowViewModel : ObservableObject
         }
     }
 
-    public static ArtistRowViewModel From(TableRow r) => new()
+    public static ArtistRowViewModel From(TableRow r, IEnumerable<WorkspaceDraft> spaces)
+    {
+        var row = From(r);
+        row.SetSpaces(spaces, r.Groups.Concat(r.Focus ? new[] { "focus" } : Array.Empty<string>()));
+        return row;
+    }
+
+    static ArtistRowViewModel From(TableRow r) => new()
     {
         Id = r.Id, PostCount = r.PostCount, Skip = r.Skip, Rejected = r.Rejected, Problems = r.Problems,
         Name = r.Name, Bandcamp = r.Cells.GetValueOrDefault("bandcamp") ?? "", SoundCloud = r.Cells.GetValueOrDefault("soundcloud") ?? "",
-        YouTube = r.Cells.GetValueOrDefault("youtube") ?? "", Focus = r.Focus, YoutubeLookup = r.YoutubeLookup == true, SameName = r.SameName,
+        YouTube = r.Cells.GetValueOrDefault("youtube") ?? "", YoutubeLookup = r.YoutubeLookup == true, SameName = r.SameName,
         KeepSeparate = r.SameName,
     };
 }
@@ -90,6 +154,8 @@ public partial class TrackedArtistsViewModel : ObservableObject
     public ObservableCollection<ArtistRowViewModel> Rows { get; } = new();
     public ObservableCollection<ArtistRowViewModel> Visible { get; } = new();
     public ObservableCollection<Option> ShowOptions { get; } = new();
+    public ObservableCollection<WorkspaceDraft> Spaces { get; } = new();
+    [ObservableProperty] private bool _showSpaces;
 
     [ObservableProperty] private bool _dirty;
     [ObservableProperty] private string _filterText = "";
@@ -117,9 +183,17 @@ public partial class TrackedArtistsViewModel : ObservableObject
         _loading = true;
         foreach (var r in Rows) r.PropertyChanged -= RowChanged;
         Rows.Clear();
+        Spaces.Clear();
+        foreach (var w in Engine.Sites.Workspaces())
+        {
+            var draft = new WorkspaceDraft(w.Id, w.Name);
+            draft.PropertyChanged += SpaceRenamed;
+            Spaces.Add(draft);
+        }
+        OnPropertyChanged(nameof(SpaceChoices));
         var rows = Engine.Table.Rows();
         // Problems first, then fewest posts, so what needs attention is on top.
-        var ordered = rows.Select(ArtistRowViewModel.From)
+        var ordered = rows.Select(r => ArtistRowViewModel.From(r, Spaces))
             .OrderBy(r => r.HasIssue ? 0 : r.IsChecking ? 1 : 2).ThenBy(r => r.PostCount).ToList();
         foreach (var r in ordered) Add(r);
         _savedIds = rows.Select(r => r.Id).ToList();
@@ -143,7 +217,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
     static readonly HashSet<string> Edits = new()
     {
         nameof(ArtistRowViewModel.Name), nameof(ArtistRowViewModel.Bandcamp), nameof(ArtistRowViewModel.SoundCloud),
-        nameof(ArtistRowViewModel.YouTube), nameof(ArtistRowViewModel.Focus), nameof(ArtistRowViewModel.YoutubeLookup),
+        nameof(ArtistRowViewModel.YouTube), nameof(ArtistRowViewModel.Groups), nameof(ArtistRowViewModel.YoutubeLookup),
         nameof(ArtistRowViewModel.Remove), nameof(ArtistRowViewModel.KeepSeparate),
     };
 
@@ -151,7 +225,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
     {
         if (_loading || !Edits.Contains(e.PropertyName ?? "")) return;
         Dirty = true;
-        if (e.PropertyName == nameof(ArtistRowViewModel.Remove)) RefreshShowCounts();
+        if (e.PropertyName is nameof(ArtistRowViewModel.Remove) or nameof(ArtistRowViewModel.Groups)) RefreshShowCounts();
     }
 
     readonly (string Key, string Label, Func<ArtistRowViewModel, bool> Test)[] _shows =
@@ -162,9 +236,14 @@ public partial class TrackedArtistsViewModel : ObservableObject
         ("empty", "No posts yet", r => r.Id != null && r.PostCount == 0),
         ("new", "New, not saved yet", r => r.Id == null),
         ("youtube", "Ticked for YouTube search", r => r.YoutubeLookup),
-        ("focus", "Ticked for Focus", r => r.Focus),
         ("removed", "Marked for removal", r => r.Remove),
     };
+
+    /// <summary>The row filters: the fixed ones, with one for each workspace before "Marked for removal".</summary>
+    List<(string Key, string Label, Func<ArtistRowViewModel, bool> Test)> Shows() =>
+        _shows.Take(_shows.Length - 1)
+            .Concat(Spaces.Select(w => ("ws:" + w.Id, $"In {w.Name}", (Func<ArtistRowViewModel, bool>)(r => r.InGroup(w.Id)))))
+            .Append(_shows[^1]).ToList();
 
     void RefreshShowCounts()
     {
@@ -172,8 +251,9 @@ public partial class TrackedArtistsViewModel : ObservableObject
         var counted = Rows.Where(r => !r.IsBlank).ToList();
         _loading = true;
         ShowOptions.Clear();
-        foreach (var (key, label, test) in _shows.Where(s => s.Key != "youtube" || YouTubeOn))
+        foreach (var (key, label, test) in Shows().Where(s => s.Key != "youtube" || YouTubeOn))
             ShowOptions.Add(new Option(key, $"{label} ({counted.Count(test)})"));
+        foreach (var w in Spaces) w.Count = counted.Count(r => !r.Remove && r.InGroup(w.Id));
         Show = ShowOptions.FirstOrDefault(o => o.Value == keep) ?? ShowOptions[0];
         _loading = false;
     }
@@ -183,7 +263,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
         RefreshShowCounts();
         Visible.Clear();
         var words = FilterText.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var test = _shows.First(s => s.Key == (Show?.Value ?? "")).Test;
+        var test = Shows().FirstOrDefault(s => s.Key == (Show?.Value ?? "")).Test ?? (_ => true);
         foreach (var r in Rows)
         {
             if (!r.IsBlank)
@@ -205,7 +285,9 @@ public partial class TrackedArtistsViewModel : ObservableObject
     void AddRow()
     {
         if (Rows.Count > 0 && Rows[^1].IsBlank && Rows[^1].IsNew) return;
-        Add(new ArtistRowViewModel());
+        var row = new ArtistRowViewModel();
+        row.SetSpaces(Spaces);
+        Add(row);
         RefreshView();
     }
 
@@ -288,7 +370,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
         {
             var row = new TableRow
             {
-                Id = r.Id, Name = r.Name, Focus = r.Focus, Remove = r.Remove, KeepSeparate = r.KeepSeparate,
+                Id = r.Id, Name = r.Name, Groups = r.Groups, Remove = r.Remove, KeepSeparate = r.KeepSeparate,
                 Skip = r.Skip.Where(c => c != "name").ToList(), Rejected = r.Rejected,
                 YoutubeLookup = youtubeOn ? r.YoutubeLookup : null,
             };
@@ -298,7 +380,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
         Saving = true;
         try
         {
-            var added = Engine.Table.Save(rows);
+            var added = Engine.Table.Save(rows, Spaces.Select(w => (w.Id, w.Name)).ToList());
             Load();
             _main.SitesOrArtistsChanged();
             if (added.Count > 0)
@@ -371,8 +453,228 @@ public partial class TrackedArtistsViewModel : ObservableObject
             Rows[^1].PropertyChanged -= RowChanged;
             Rows.RemoveAt(Rows.Count - 1);
         }
-        foreach (var r in rows) Add(ArtistRowViewModel.From(r));
+        foreach (var r in rows) Add(ArtistRowViewModel.From(r, Spaces));
         if (rows.Count > 0) Dirty = true;
         RefreshView();
+    }
+
+    // ---------- workspaces (kept with the table, on Save) ----------
+
+    [RelayCommand]
+    void ToggleSpaces() => ShowSpaces = !ShowSpaces;
+
+    void SpacesChanged()
+    {
+        foreach (var r in Rows) r.SetSpaces(Spaces);
+        Dirty = true;
+        RefreshView();
+        OnPropertyChanged(nameof(SpaceChoices));
+        SpacesEdited?.Invoke();
+    }
+
+    /// <summary>Raised when workspaces are added, removed or moved, so the window can redraw its columns.</summary>
+    public event Action? SpacesEdited;
+
+    [RelayCommand]
+    void AddSpace()
+    {
+        int n = Spaces.Count + 1;
+        var name = "New workspace";
+        while (Spaces.Any(w => string.Equals(w.Name, name, StringComparison.OrdinalIgnoreCase))) name = $"New workspace {++n}";
+        var w = new WorkspaceDraft("w" + DateTime.UtcNow.Ticks.ToString("x"), name);
+        w.PropertyChanged += SpaceRenamed;
+        Spaces.Add(w);
+        SpacesChanged();
+    }
+
+    void SpaceRenamed(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(WorkspaceDraft.Name)) return;
+        Dirty = true;
+        RefreshShowCounts();
+        OnPropertyChanged(nameof(SpaceChoices));
+    }
+
+    [RelayCommand]
+    void RemoveSpace(WorkspaceDraft w)
+    {
+        w.PropertyChanged -= SpaceRenamed;
+        Spaces.Remove(w);
+        SpacesChanged();
+    }
+
+    [RelayCommand]
+    void MoveSpaceUp(WorkspaceDraft w)
+    {
+        var i = Spaces.IndexOf(w);
+        if (i <= 0) return;
+        Spaces.Move(i, i - 1);
+        SpacesChanged();
+    }
+
+    [RelayCommand]
+    void MoveSpaceDown(WorkspaceDraft w)
+    {
+        var i = Spaces.IndexOf(w);
+        if (i < 0 || i >= Spaces.Count - 1) return;
+        Spaces.Move(i, i + 1);
+        SpacesChanged();
+    }
+
+    // ---------- Import follows: the artists and labels an account follows ----------
+
+    public List<Option> FollowSites { get; } = new() { new("soundcloud", "SoundCloud"), new("bandcamp", "Bandcamp") };
+    public ObservableCollection<FollowItem> FollowItems { get; } = new();
+    /// <summary>"No workspace", then each workspace, for putting imported artists in one.</summary>
+    public List<Option> SpaceChoices => new[] { new Option("", "no workspace") }.Concat(Spaces.Select(w => new Option(w.Id, w.Name))).ToList();
+
+    [ObservableProperty] private bool _showFollows;
+    [ObservableProperty] private Option? _followSite;
+    [ObservableProperty] private string _followUser = "";
+    [ObservableProperty] private string _followStatus = "";
+    [ObservableProperty] private string _followCount = "";
+    [ObservableProperty] private bool _followAll;
+    [ObservableProperty] private bool _reading;
+    [ObservableProperty] private Option? _followSpace;
+    string _followsFrom = "";
+    bool _counting;
+
+    public bool HasFollows => FollowItems.Count > 0;
+
+    [RelayCommand]
+    void ToggleFollows()
+    {
+        ShowFollows = !ShowFollows;
+        if (!ShowFollows) return;
+        FollowSite ??= FollowSites[0];
+        FollowSpace = SpaceChoices.FirstOrDefault(o => o.Value == FollowSpace?.Value) ?? SpaceChoices[0];
+        if (FollowUser.Trim().Length == 0) FollowUser = Engine.Follows.Defaults().GetValueOrDefault(FollowSite.Value) ?? "";
+    }
+
+    partial void OnFollowSiteChanged(Option? oldValue, Option? newValue)
+    {
+        var defaults = Engine.Follows.Defaults();
+        if (newValue != null && (FollowUser.Trim().Length == 0 || defaults.Values.Contains(FollowUser.Trim())))
+            FollowUser = defaults.GetValueOrDefault(newValue.Value) ?? "";
+    }
+
+    bool InTable(string site, string handle)
+    {
+        var shortName = Engine.Sites.Get(site)?.Short(handle) ?? handle;
+        var want = new[] { handle.ToLowerInvariant(), shortName.ToLowerInvariant() };
+        return Rows.Any(r => !r.Remove && r.Cell(site).Split(new[] { ',', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(p => Regex.Replace(p.Trim().ToLowerInvariant(), @"^https?://|/+$|^(www\.|m\.)?soundcloud\.com/", ""))
+            .Any(want.Contains));
+    }
+
+    [RelayCommand]
+    async Task ReadFollows()
+    {
+        var site = FollowSite?.Value ?? "soundcloud";
+        var user = FollowUser.Trim();
+        if (user.Length == 0) { FollowStatus = "Enter a username first."; return; }
+        Reading = true;
+        FollowStatus = $"Reading who {user} follows on {FollowSite?.Text}…";
+        try
+        {
+            var found = await Task.Run(() => Engine.Follows.ReadAsync(site, user));
+            ClearFollows();
+            _followsFrom = site;
+            foreach (var f in found)
+            {
+                var item = new FollowItem(f, !f.Tracked && InTable(site, f.Handle));
+                item.PropertyChanged += FollowPicked;
+                FollowItems.Add(item);
+            }
+            var fresh = FollowItems.Count(i => i.Open);
+            FollowStatus = found.Count > 0 ? $"{user} follows {found.Count}; {fresh} not tracked yet."
+                : $"{user} doesn't follow anyone (or the list is private).";
+        }
+        catch (Exception e)
+        {
+            ClearFollows();
+            FollowStatus = e is FollowsException or SourceException ? e.Message : $"Couldn't read those follows ({e.GetType().Name}).";
+        }
+        finally
+        {
+            Reading = false;
+            CountFollows();
+        }
+    }
+
+    void ClearFollows()
+    {
+        foreach (var i in FollowItems) i.PropertyChanged -= FollowPicked;
+        FollowItems.Clear();
+    }
+
+    void FollowPicked(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(FollowItem.Pick)) CountFollows();
+    }
+
+    void CountFollows()
+    {
+        var open = FollowItems.Where(i => i.Open).ToList();
+        var picked = open.Count(i => i.Pick);
+        FollowCount = $"{picked} of {open.Count} picked" + (open.Count < FollowItems.Count ? $" · {FollowItems.Count - open.Count} already tracked or in the table" : "");
+        _counting = true;
+        FollowAll = open.Count > 0 && picked == open.Count;
+        _counting = false;
+        OnPropertyChanged(nameof(HasFollows));
+        AddFollowsCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnFollowAllChanged(bool value)
+    {
+        if (_counting) return;
+        foreach (var i in FollowItems.Where(i => i.Open)) i.Pick = value;
+    }
+
+    bool CanAddFollows() => FollowItems.Any(i => i.Open && i.Pick);
+
+    [RelayCommand(CanExecute = nameof(CanAddFollows))]
+    void AddFollows()
+    {
+        var site = _followsFrom;
+        if (!Engine.Sites.IsOn(site)) { FollowStatus = $"{Engine.Sites.Get(site)?.Label ?? site} is switched off in Settings."; return; }
+        while (Rows.Count > 0 && Rows[^1].IsBlank)
+        {
+            Rows[^1].PropertyChanged -= RowChanged;
+            Rows.RemoveAt(Rows.Count - 1);
+        }
+        var space = FollowSpace?.Value ?? "";
+        int added = 0, joined = 0;
+        foreach (var item in FollowItems.Where(i => i.Open && i.Pick).ToList())
+        {
+            var f = item.Followed;
+            var name = Names.Norm(f.Name);
+            var page = Engine.Sites.Get(site)?.Short(f.Handle) ?? f.Handle;
+            // A row for someone of the same name takes the page; otherwise a new row.
+            var row = name.Length == 0 ? null : Rows.FirstOrDefault(r => !r.Remove && Names.SplitNames(r.Name).Any(n => Names.Norm(n) == name));
+            if (row != null)
+            {
+                var have = row.Cell(site).Trim();
+                row.SetCell(site, have.Length > 0 ? $"{have}, {page}" : page);
+                joined++;
+            }
+            else
+            {
+                row = new ArtistRowViewModel { Name = f.Name };
+                row.SetSpaces(Spaces);
+                row.SetCell(site, page);
+                Add(row);
+                added++;
+            }
+            if (space.Length > 0)
+                foreach (var t in row.Ticks.Where(t => t.Space.Id == space)) t.IsIn = true;
+            item.InTable = true;
+        }
+        if (added + joined == 0) return;
+        Dirty = true;
+        RefreshView();
+        CountFollows();
+        Note = $"Added {added} row{(added == 1 ? "" : "s")}" + (joined > 0 ? $" and {joined} page{(joined == 1 ? "" : "s")} to rows with the same name" : "") +
+               ". Check them, then Save changes.";
     }
 }
