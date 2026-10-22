@@ -174,7 +174,7 @@
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <CheckBox IsChecked="{Binding YoutubeLookup}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0"
-                        ToolTip.Tip="Link Finder may look for this artist's tracks on YouTube (kept for the web app; Link Finder comes in a later version)" />
+                        ToolTip.Tip="Link Finder may look for this artist's tracks on YouTube (when YouTube is ticked for Link Finder in Settings)" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

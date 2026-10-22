@@ -466,4 +466,132 @@ public class UiTests
         win.Close();
         w.Close();
     }
+
+    [AvaloniaFact]
+    public async Task LinkFinderLooksUpEditsAndSaves()
+    {
+        using var t = new LinkFinderTests.Lookups();
+        await t.App.AddAsync(("bandcamp", "nightferry"), ("soundcloud", "nightferry"));
+        var vm = new MainViewModel(t.App.Engine, t.App.Folder);
+        var main = new MainWindow { DataContext = vm, Width = 1320, Height = 880 };
+        main.Show();
+        var lf = new LinkFinderViewModel(vm);
+        var win = new LinkFinderWindow { DataContext = lf, Width = 1280, Height = 820 };
+        win.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        lf.LookUpPastedCommand.Execute(null);
+        Assert.Contains("Paste some rows", lf.LookupError);
+        lf.PasteText = "#\tArtist\tTitle\n1\tNight Ferry\tintro\n2\tMasot\tEspecies Endémicas\n3\tIdpa & Saša Delimar\tState I\n" +
+                       "4\tNobody Known\tZzz\n5\tGhost Person\tQqq Rrr\n6\tRiver\tUnheard Of Tune";
+        lf.LookUpPastedCommand.Execute(null);
+        Assert.Equal(6, lf.Rows.Count);
+        for (int i = 0; i < 1500 && (lf.Busy || !lf.Rows.All(r => r.Done) || !lf.LookupStatus.StartsWith("Done")); i++)
+        {
+            await Task.Delay(20);
+            Dispatcher.UIThread.RunJobs();
+        }
+        Assert.False(lf.Busy);
+        Assert.StartsWith("Done: 3 of 6 on Bandcamp", lf.LookupStatus);
+        Assert.True(lf.CanExport);
+        var masot = lf.Rows.Single(r => r.Artist == "Masot");
+        Assert.Equal(("masot.bandcamp.com/album/flora", "Bandcamp release", "2023", "on Flora"), (masot.LinkText, masot.Tag, masot.Year, masot.ReleaseText));
+        var river = lf.Rows.Single(r => r.Artist == "River");
+        Assert.True(river.HasReview);                         // a profile picked by name alone
+        Assert.True(river.CanLooksRight);
+        Save(win, "18-link-finder");
+
+        // set a link by hand: saved, and shown at once
+        var ghost = lf.Rows.Single(r => r.Artist == "Ghost Person");
+        lf.EditLinkCommand.Execute(ghost);
+        Assert.True(ghost.Editing);
+        ghost.EditUrl = "not a link";
+        await lf.SaveLinkCommand.ExecuteAsync(ghost);
+        Assert.Contains("web address", ghost.EditError);
+        ghost.EditUrl = "https://example.org/ghost";
+        ghost.EditYear = "2020";
+        await lf.SaveLinkCommand.ExecuteAsync(ghost);
+        Assert.False(ghost.Editing);
+        Assert.Equal(("Link you set", "example.org/ghost", "2020"), (ghost.Tag, ghost.LinkText, ghost.Year));
+        await lf.LooksRightCommand.ExecuteAsync(river);
+        Assert.Equal("Link you set", river.Tag);
+        Assert.False(river.HasReview);
+
+        // the fallback setting re-points the rows on screen
+        lf.Fallback = lf.FallbackOptions.Single(o => o.Value == "soundcloud");
+        Assert.Equal("soundcloud", t.F.FallbackPref());
+        lf.Fallback = lf.FallbackOptions.Single(o => o.Value == "bandcamp");
+
+        // purchases and the Downloads button
+        lf.FanName = "https://bandcamp.com/divided_eye";
+        lf.ReadPurchasesCommand.Execute(null);
+        Assert.Equal("divided_eye", lf.FanName);
+        for (int i = 0; i < 500 && (t.F.Collection.Syncing || !lf.FanStatus.Contains("purchases")); i++)
+        {
+            await Task.Delay(20);
+            Dispatcher.UIThread.RunJobs();
+        }
+        Assert.Contains("purchases", lf.FanStatus);
+        Assert.True(vm.DownloadsOff);
+        lf.DownloadsOn = true;
+        Assert.False(vm.DownloadsOff);
+        Assert.Contains("Nothing new to download", vm.DownloadsTip);
+
+        // Saved results: filtered, sorted, spellings edited
+        lf.Tab = 1;
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(lf.SavedRows.Count >= 4);
+        Assert.Contains(lf.SavedFilterOptions, o => o.Text.StartsWith("Links you set (2)"));
+        lf.SavedFilter = lf.SavedFilterOptions.Single(o => o.Value == "manual");
+        Assert.Equal(2, lf.SavedRows.Count);
+        lf.SortSaved("artist");
+        Assert.Equal(new[] { "ghost person", "river" }, lf.SavedRows.Select(r => r.TidyArtist));
+        var row = lf.SavedRows.First();
+        lf.EditSpellingCommand.Execute(row);
+        row.SpellArtist = "GHOST person";
+        row.SpellTitle = "Qqq Rrr";
+        lf.SaveSpellingCommand.Execute(row);
+        Assert.Equal("GHOST person", lf.SavedRows.First().ListArtist);
+        lf.SavedFilter = lf.SavedFilterOptions.Single(o => o.Value == "");
+        Dispatcher.UIThread.RunJobs();
+        Save(win, "19-link-finder-saved");
+        win.Close();
+
+        vm.RefreshDownloads();
+        Dispatcher.UIThread.RunJobs();
+        Save(main, "20-downloads-button");
+        main.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task SettingsForLinkFinder()
+    {
+        var (app, vm, w) = await OpenAsync(data: false);
+        using var _ = app;
+        var s = new SettingsViewModel(vm);
+        var win = new SettingsWindow { DataContext = s };
+        win.Show();
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal(new[] { "bandcamp", "beatport", "soundcloud", "youtube", "discogs" }, s.LookupSites.Select(x => x.Key));
+        Assert.False(s.LookupSites.Single(x => x.Key == "beatport").Available);        // switched off above
+        s.Sites.Single(x => x.Key == "discogs").On = true;
+        Assert.True(s.LookupSites.Single(x => x.Key == "discogs").Available);
+        s.LookupSites.Single(x => x.Key == "discogs").On = true;
+        Assert.True(s.ShowDiscogs);
+        s.DiscogsToken = "dg-secret";
+        s.SoundCloudMe = "https://soundcloud.com/MeFan";
+        Assert.True(s.Dirty);
+        Save(win, "21-settings-link-finder");
+        s.SaveCommand.Execute(null);
+        Assert.Equal("Saved", s.SavedNote);
+        Assert.Contains("discogs", app.Engine.Sites.LookupSites());
+        Assert.Equal("dg-secret", app.Engine.LinkFinder.DiscogsToken());
+        Assert.True(s.HasDiscogsToken);
+        Assert.Equal("", s.DiscogsToken);
+        Assert.Equal("mefan", app.Engine.LinkFinder.SoundCloudMe());
+        s.RemoveDiscogsTokenCommand.Execute(null);
+        Assert.Equal("", app.Engine.LinkFinder.DiscogsToken());
+        win.Close();
+        w.Close();
+    }
 }

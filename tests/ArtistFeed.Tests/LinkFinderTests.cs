@@ -9,7 +9,7 @@ namespace ArtistFeed.Tests;
 public sealed partial class LinkFinderTests
 {
     /// <summary>A test app whose web answers are the web version's recorded stand-in pages.</summary>
-    sealed class Lookups : IDisposable
+    internal sealed class Lookups : IDisposable
     {
         public readonly TestApp App = new();
         public readonly WebReplay Replay = new();

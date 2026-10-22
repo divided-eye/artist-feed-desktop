@@ -1,0 +1,336 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ArtistFeed.App.ViewModels"
+        x:Class="ArtistFeed.App.Views.LinkFinderWindow"
+        x:DataType="vm:LinkFinderViewModel"
+        x:Name="Root"
+        Title="Link Finder — Artist Feed"
+        Width="1280" Height="820" MinWidth="780" MinHeight="460"
+        WindowStartupLocation="CenterOwner">
+  <Window.Styles>
+    <Style Selector="Border.tag">
+      <Setter Property="CornerRadius" Value="999" />
+      <Setter Property="Padding" Value="8,1" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+    <Style Selector="Border.tag > TextBlock">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.spelt">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontStyle" Value="Italic" />
+      <Setter Property="Foreground" Value="{DynamicResource AccentInk}" />
+    </Style>
+    <Style Selector="DataGridRow.review">
+      <Setter Property="Background" Value="#16c98a12" />
+    </Style>
+    <Style Selector="TabItem">
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="MinHeight" Value="36" />
+      <Setter Property="Padding" Value="12,4" />
+    </Style>
+  </Window.Styles>
+  <DockPanel Margin="16,10,16,16">
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,4">
+      <TextBlock Classes="h2" Text="Link Finder" VerticalAlignment="Center" />
+      <Button Grid.Column="1" Content="Close" Click="CloseClicked" />
+    </Grid>
+    <TabControl SelectedIndex="{Binding Tab}" Padding="0,8,0,0">
+      <!-- ================= Look up ================= -->
+      <TabItem Header="Look up">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Top" Spacing="8">
+            <WrapPanel Orientation="Horizontal" ItemSpacing="8" LineSpacing="8">
+              <Button Content="Choose file…" Command="{Binding ChooseFileCommand}" IsEnabled="{Binding !Busy}"
+                      ToolTip.Tip="An Excel (.xlsx) or CSV file with artist and title columns" />
+              <Button Content="Look up pasted rows" Classes="primary" Command="{Binding LookUpPastedCommand}" IsEnabled="{Binding !Busy}" />
+              <CheckBox Content="Search again for saved results" IsChecked="{Binding Fresh}"
+                        ToolTip.Tip="Normally a track you've looked up before is answered from the saved result" />
+              <CheckBox Content="Search again for not-found rows only" IsChecked="{Binding RetryMissing}"
+                        ToolTip.Tip="Keep saved answers for tracks that were found, and search again only for the ones saved as not found (those that got an artist page or nothing)" />
+              <Button Content="Export results" Command="{Binding ExportResultsCommand}" IsVisible="{Binding CanExport}"
+                      ToolTip.Tip="Save these results as a spreadsheet (CSV)" />
+            </WrapPanel>
+            <TextBlock Text="{Binding LookupStatus}" Classes="muted" TextWrapping="Wrap" />
+            <Border Classes="subpanel">
+              <StackPanel Spacing="6">
+                <WrapPanel Orientation="Horizontal" ItemSpacing="8" LineSpacing="8">
+                  <TextBlock Text="Your Bandcamp username" VerticalAlignment="Center" />
+                  <TextBox Text="{Binding FanName}" PlaceholderText="username" Width="170" />
+                  <Button Classes="small" Content="{Binding SyncLabel}" Command="{Binding ReadPurchasesCommand}" IsEnabled="{Binding CanSync}"
+                          ToolTip.Tip="Read the purchases in your public Bandcamp collection: Link Finder answers tracks you own first" />
+                  <Button Classes="small" Content="Read full track lists" Command="{Binding ReadTracklistsCommand}" IsVisible="{Binding ShowDeep}"
+                          ToolTip.Tip="Open each purchased release and save its whole track list, so tracks you own are found instantly" />
+                  <CheckBox Content="Show the Downloads button" IsChecked="{Binding DownloadsOn}"
+                            ToolTip.Tip="The Downloads button (main window, top right) counts Bandcamp purchases and pre-orders ready to download, and opens your collection. Off by default. Switched off, it stays greyed out and purchases aren't watched for it; Link Finder still uses your purchases either way." />
+                  <TextBlock Text="If a track isn't found, link to the artist's" VerticalAlignment="Center" Margin="12,0,0,0" />
+                  <ComboBox ItemsSource="{Binding FallbackOptions}" SelectedItem="{Binding Fallback}"
+                            ToolTip.Tip="Which artist link to give when the track itself isn't found. Saved results follow without searching again." />
+                </WrapPanel>
+                <TextBlock Text="{Binding FanStatus}" Classes="muted small" Classes.error="{Binding FanError}" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+            <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap" Text="{Binding Intro}" />
+            <TextBlock Classes="error" Text="{Binding LookupError}" TextWrapping="Wrap" IsVisible="{Binding LookupError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <TextBox Text="{Binding PasteText}" AcceptsReturn="True" AcceptsTab="True" Height="96" TextWrapping="NoWrap"
+                     FontFamily="Consolas, Menlo, monospace" FontSize="13"
+                     PlaceholderText="Track #&#9;Artist&#9;Title&#9;…&#10;1&#9;Masot&#9;Especies Endémicas&#9;…" />
+          </StackPanel>
+          <DataGrid x:Name="Results" ItemsSource="{Binding Rows}" Margin="0,10,0,0" CanUserSortColumns="False" CanUserReorderColumns="False"
+                    CanUserResizeColumns="True" HeadersVisibility="Column" SelectionMode="Single" IsReadOnly="True" RowHeight="NaN"
+                    LoadingRow="ResultsLoadingRow">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="#" Binding="{Binding N}" Width="54" />
+              <DataGridTemplateColumn Header="Artist" Width="1.3*" MinWidth="110">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:LookupRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="1">
+                      <TextBlock Text="{Binding Artist}" TextWrapping="Wrap" />
+                      <TextBlock Classes="spelt" Text="{Binding SpeltArtist}" IsVisible="{Binding HasSpeltArtist}" TextWrapping="Wrap"
+                                 ToolTip.Tip="As written in your list" />
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="Title" Width="1.5*" MinWidth="120">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:LookupRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="1">
+                      <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
+                      <TextBlock Classes="spelt" Text="{Binding SpeltTitle}" IsVisible="{Binding HasSpeltTitle}" TextWrapping="Wrap"
+                                 ToolTip.Tip="As written in your list" />
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="Link" Width="2.4*" MinWidth="220">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:LookupRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="5">
+                      <StackPanel Spacing="5" IsVisible="{Binding ShowLink}">
+                        <Button Classes="link" IsVisible="{Binding HasUrl}" Click="OpenLink" Tag="{Binding Url}" ToolTip.Tip="{Binding Url}">
+                          <TextBlock Text="{Binding LinkText}" Foreground="{DynamicResource AccentInk}" TextWrapping="Wrap" TextDecorations="Underline" />
+                        </Button>
+                        <WrapPanel Orientation="Horizontal" ItemSpacing="4" LineSpacing="4">
+                          <Button Classes="small" Content="Skip" IsVisible="{Binding CanSkip}" ToolTip.Tip="{Binding SkipTip}"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).SkipCommand}" CommandParameter="{Binding}" />
+                          <TextBlock Classes="muted small" Text="Skipping…" IsVisible="{Binding Skipping}" VerticalAlignment="Center" />
+                          <Button Classes="small ghost" Content="Add link" IsVisible="{Binding Waiting}"
+                                  ToolTip.Tip="You know the link: set it now and this track isn't searched"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).EditLinkCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small" Content="Looks right" IsVisible="{Binding CanLooksRight}"
+                                  ToolTip.Tip="Keep this link: it is saved as yours, and the review mark goes"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).LooksRightCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small" Content="{Binding EditLabel}" IsVisible="{Binding Done}"
+                                  ToolTip.Tip="Set the correct link for this track; it is saved for future lookups"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).EditLinkCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small ghost" Content="Search again" IsVisible="{Binding CanSearchAgain}"
+                                  ToolTip.Tip="Search for this one track again now, ignoring what was saved for it"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).SearchRowAgainCommand}" CommandParameter="{Binding}" />
+                        </WrapPanel>
+                      </StackPanel>
+                      <StackPanel Spacing="5" IsVisible="{Binding Editing}">
+                        <TextBox Text="{Binding EditUrl}" PlaceholderText="https://…bandcamp.com/album/…" />
+                        <WrapPanel Orientation="Horizontal" ItemSpacing="4" LineSpacing="4">
+                          <TextBox Text="{Binding EditYear}" PlaceholderText="Year" Width="72" MaxLength="4" />
+                          <Button Classes="small primary" Content="Save"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).SaveLinkCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small" Content="Cancel"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).CancelLinkCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small ghost" Content="Remove my link" IsVisible="{Binding IsManual}"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).RemoveLinkCommand}" CommandParameter="{Binding}" />
+                        </WrapPanel>
+                        <TextBlock Classes="error small" Text="{Binding EditError}" TextWrapping="Wrap" />
+                      </StackPanel>
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="Found as" Width="1.6*" MinWidth="120">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:LookupRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="1">
+                      <TextBlock Text="{Binding Found}" TextWrapping="Wrap" />
+                      <TextBlock Classes="muted small" Text="{Binding ReleaseText}" IsVisible="{Binding HasRelease}" TextWrapping="Wrap" />
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="74" />
+              <DataGridTemplateColumn Header="Result" Width="1.8*" MinWidth="170">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:LookupRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="3">
+                      <Border Classes="tag" Background="#2ec98a12" IsVisible="{Binding HasReview}">
+                        <TextBlock Text="Needs review" Foreground="#c98a12" />
+                      </Border>
+                      <TextBlock Classes="small" Text="{Binding ReviewText}" IsVisible="{Binding HasReview}" TextWrapping="Wrap" />
+                      <Border Classes="tag" Background="{Binding TagBack}">
+                        <TextBlock Text="{Binding Tag}" Foreground="{Binding TagFore}" />
+                      </Border>
+                      <TextBlock Classes="muted small" Text="{Binding Note}" IsVisible="{Binding HasNote}" TextWrapping="Wrap" />
+                      <Button Classes="link small" IsVisible="{Binding HasSteps}"
+                              Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).ToggleStepsCommand}" CommandParameter="{Binding}">
+                        <TextBlock Text="What was tried" Classes="muted small" TextDecorations="Underline" />
+                      </Button>
+                      <SelectableTextBlock Classes="muted small" Text="{Binding Steps}" IsVisible="{Binding ShowSteps}" TextWrapping="Wrap" />
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+            </DataGrid.Columns>
+          </DataGrid>
+        </DockPanel>
+      </TabItem>
+
+      <!-- ================= Saved results ================= -->
+      <TabItem Header="Saved results" ToolTip.Tip="Every track looked up so far, with its saved link">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Top" Spacing="8">
+            <WrapPanel Orientation="Horizontal" ItemSpacing="8" LineSpacing="8">
+              <TextBox Text="{Binding SavedQuery}" PlaceholderText="Search saved results" Width="240" />
+              <ComboBox ItemsSource="{Binding SavedFilterOptions}" SelectedItem="{Binding SavedFilter}" ToolTip.Tip="Which saved results to show" />
+              <TextBlock Classes="muted" Text="{Binding SavedStatus}" VerticalAlignment="Center" />
+              <Button Content="Import your list…" Command="{Binding ImportListCommand}"
+                      ToolTip.Tip="A spreadsheet or CSV of how artists and titles should be written, with links if you have them" />
+              <Button Content="Export" Command="{Binding ExportSavedCommand}" ToolTip.Tip="Save every row that matches the search and filter (CSV)" />
+              <Button Content="Remove my list" Classes="ghost" Command="{Binding RemoveListCommand}" IsVisible="{Binding HasKnown}" />
+            </WrapPanel>
+            <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap" Text="{Binding SavedIntro}" />
+            <TextBlock FontSize="13" TextWrapping="Wrap" Text="{Binding KnownInfo}" />
+            <TextBlock Classes="error" Text="{Binding SavedError}" TextWrapping="Wrap" IsVisible="{Binding SavedError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+          </StackPanel>
+          <Button DockPanel.Dock="Bottom" Content="Load more" Command="{Binding LoadMoreCommand}" IsVisible="{Binding CanLoadMore}"
+                  HorizontalAlignment="Center" Margin="0,8,0,0" />
+          <DataGrid x:Name="Saved" ItemsSource="{Binding SavedRows}" Margin="0,10,0,0" CanUserSortColumns="True" CanUserReorderColumns="False"
+                    CanUserResizeColumns="True" HeadersVisibility="Column" SelectionMode="Single" IsReadOnly="True" RowHeight="NaN"
+                    Sorting="SavedSorting" LoadingRow="SavedLoadingRow">
+            <DataGrid.Columns>
+              <DataGridTemplateColumn Header="Artist (tidied)" Width="1.2*" MinWidth="110" SortMemberPath="artist" Tag="artist">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:SavedRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="1">
+                      <TextBlock Text="{Binding TidyArtist}" TextWrapping="Wrap" />
+                      <TextBlock Classes="muted small" Text="{Binding TypedArtist}" IsVisible="{Binding HasTypedArtist}" TextWrapping="Wrap" />
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="Title (tidied)" Width="1.4*" MinWidth="120" SortMemberPath="title" Tag="title">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:SavedRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="1">
+                      <TextBlock Text="{Binding TidyTitle}" TextWrapping="Wrap" />
+                      <TextBlock Classes="muted small" Text="{Binding TypedTitle}" IsVisible="{Binding HasTypedTitle}" TextWrapping="Wrap" />
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="Your spelling" Width="2*" MinWidth="190" SortMemberPath="list_title" Tag="list_title">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:SavedRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="4">
+                      <StackPanel Spacing="1" IsVisible="{Binding ShowSpell}">
+                        <TextBlock Text="{Binding ListArtist}" Classes.muted="{Binding NoListArtist}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding ListTitle}" Classes.muted="{Binding NoListTitle}" TextWrapping="Wrap" />
+                        <TextBlock Classes="spelt" Text="closest in your list" IsVisible="{Binding Guess}"
+                                   ToolTip.Tip="This track's saved name doesn't match your list exactly; this is the nearest entry. Edit it if it's wrong." />
+                        <Button Classes="small ghost" Content="{Binding SpellLabel}" HorizontalAlignment="Left" Margin="-8,2,0,0"
+                                ToolTip.Tip="Set how this artist and title should be written"
+                                Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).EditSpellingCommand}" CommandParameter="{Binding}" />
+                      </StackPanel>
+                      <StackPanel Spacing="4" IsVisible="{Binding EditingSpell}">
+                        <TextBox Text="{Binding SpellArtist}" PlaceholderText="Artist, as it should be written" />
+                        <TextBox Text="{Binding SpellTitle}" PlaceholderText="Title, as it should be written" />
+                        <WrapPanel Orientation="Horizontal" ItemSpacing="4" LineSpacing="4">
+                          <Button Classes="small primary" Content="Save"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).SaveSpellingCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small" Content="Cancel"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).CancelSpellingCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small ghost" Content="Remove" ToolTip.Tip="Take this track out of your list"
+                                  IsVisible="{Binding !NoListTitle}"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).RemoveSpellingCommand}" CommandParameter="{Binding}" />
+                        </WrapPanel>
+                      </StackPanel>
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="Link" Width="2.4*" MinWidth="220" SortMemberPath="link" Tag="link">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:SavedRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="4">
+                      <StackPanel Spacing="3" IsVisible="{Binding ShowLink}">
+                        <Button Classes="link" IsVisible="{Binding HasUrl}" Click="OpenLink" Tag="{Binding Url}" ToolTip.Tip="{Binding Url}">
+                          <TextBlock Text="{Binding LinkText}" Foreground="{DynamicResource AccentInk}" TextWrapping="Wrap" TextDecorations="Underline" />
+                        </Button>
+                        <TextBlock Classes="muted small" Text="{Binding ListNote}" IsVisible="{Binding HasListNote}" TextWrapping="Wrap" />
+                        <TextBlock Classes="muted small" Text="{Binding ListHad}" IsVisible="{Binding HasListHad}" TextWrapping="Wrap" />
+                        <WrapPanel Orientation="Horizontal" ItemSpacing="4" LineSpacing="4">
+                          <Button Classes="small" Content="Looks right" IsVisible="{Binding CanLooksRight}"
+                                  ToolTip.Tip="Keep this link as one you set; the review mark goes"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).SavedLooksRightCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small" Content="{Binding EditLabel}" ToolTip.Tip="Set the link for this track; it is used from now on"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).EditSavedLinkCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small ghost" Content="Search again" ToolTip.Tip="Look this track up again now, ignoring what is saved for it"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).SearchSavedAgainCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small ghost" Content="Forget" IsVisible="{Binding CanForget}"
+                                  ToolTip.Tip="Choose what to forget: the saved answer, the entry in your list, or both"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).ToggleForgetCommand}" CommandParameter="{Binding}" />
+                        </WrapPanel>
+                      </StackPanel>
+                      <StackPanel Spacing="4" IsVisible="{Binding EditingLink}">
+                        <TextBox Text="{Binding EditUrl}" PlaceholderText="https://… (empty removes a link you set)" />
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <Button Classes="small primary" Content="Save"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).SaveSavedLinkCommand}" CommandParameter="{Binding}" />
+                          <Button Classes="small" Content="Cancel"
+                                  Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).CancelSavedLinkCommand}" CommandParameter="{Binding}" />
+                        </StackPanel>
+                      </StackPanel>
+                      <WrapPanel Orientation="Horizontal" ItemSpacing="4" LineSpacing="4" IsVisible="{Binding Forgetting}">
+                        <TextBlock Classes="muted small" Text="Forget:" VerticalAlignment="Center" />
+                        <Button Classes="small" Content="Saved answer" IsVisible="{Binding CanForgetAnswer}"
+                                ToolTip.Tip="Remove the saved answer; the track is searched for next time"
+                                Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).ForgetAnswerCommand}" CommandParameter="{Binding}" />
+                        <Button Classes="small" Content="{Binding EntryLabel}" IsVisible="{Binding CanForgetEntry}"
+                                ToolTip.Tip="Take this entry out of your list"
+                                Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).ForgetEntryCommand}" CommandParameter="{Binding}" />
+                        <Button Classes="small" Content="Both" IsVisible="{Binding CanForgetBoth}"
+                                ToolTip.Tip="Remove the saved answer and the entry in your list"
+                                Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).ForgetBothCommand}" CommandParameter="{Binding}" />
+                        <Button Classes="small ghost" Content="Cancel"
+                                Command="{Binding #Root.((vm:LinkFinderViewModel)DataContext).ToggleForgetCommand}" CommandParameter="{Binding}" />
+                        <TextBlock Classes="muted small" Text="{Binding EntryNote}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                      </WrapPanel>
+                      <TextBlock Classes="error small" Text="{Binding Error}" TextWrapping="Wrap" />
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" SortMemberPath="year" Tag="year" />
+              <DataGridTemplateColumn Header="Result" Width="1.7*" MinWidth="160" SortMemberPath="result" Tag="result">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:SavedRowViewModel">
+                    <StackPanel Margin="6,6" Spacing="3">
+                      <Border Classes="tag" Background="#2ec98a12" IsVisible="{Binding HasReview}">
+                        <TextBlock Text="Needs review" Foreground="#c98a12" />
+                      </Border>
+                      <TextBlock Classes="small" Text="{Binding ReviewText}" IsVisible="{Binding HasReview}" TextWrapping="Wrap" />
+                      <Border Classes="tag" Background="{Binding TagBack}">
+                        <TextBlock Text="{Binding Tag}" Foreground="{Binding TagFore}" />
+                      </Border>
+                      <TextBlock Classes="muted small" Text="{Binding Note}" IsVisible="{Binding HasNote}" TextWrapping="Wrap" />
+                    </StackPanel>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTextColumn Header="Saved" Binding="{Binding Saved}" Width="116" SortMemberPath="saved" Tag="saved" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </DockPanel>
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+</Window>

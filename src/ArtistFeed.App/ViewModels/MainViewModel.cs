@@ -17,7 +17,9 @@ public interface IUi
     Task<string?> SaveFileAsync(string title, string suggestedName, string text);
     Task<string?> OpenTextFileAsync(string title);
     Task<string?> OpenDatabaseFileAsync();
+    Task<byte[]?> OpenTableFileAsync(string title);
     Task ShowTrackedArtistsAsync();
+    Task ShowLinkFinderAsync();
     Task ShowSettingsAsync();
     void ShowPlayer(PlayItem item, PlayerPage page);
     void HidePlayer();
@@ -429,6 +431,7 @@ public partial class MainViewModel : ObservableObject
         if (onHold && !refreshing && !(r.LastResult?.Held > 0)) Status += " · Bandcamp on hold";
         StatusTip = onHold ? "Bandcamp checks are on hold while Bandcamp has asked for a pause; they resume on the next refresh." : "";
         RefreshDisabled = refreshing && r.Queued;
+        RefreshDownloads();
         _statusTimer.Interval = TimeSpan.FromSeconds(refreshing ? 2 : 15);
         if (_wasRefreshing && !refreshing)
         {
@@ -545,6 +548,63 @@ public partial class MainViewModel : ObservableObject
     async Task OpenTrackedArtists()
     {
         if (Ui != null) await Ui.ShowTrackedArtistsAsync();
+    }
+
+    [RelayCommand]
+    async Task OpenLinkFinder()
+    {
+        if (Ui != null) await Ui.ShowLinkFinderAsync();
+    }
+
+    // ---------- the Downloads button ----------
+
+    [ObservableProperty] private bool _downloadsOff = true;
+    [ObservableProperty] private int _downloadsCount;
+    [ObservableProperty] private string _downloadsTip = "";
+    string _downloadsUrl = "";
+    public bool HasDownloads => DownloadsCount > 0;
+    public string DownloadsBadge => DownloadsCount > 99 ? "99+" : DownloadsCount.ToString();
+    partial void OnDownloadsCountChanged(int value)
+    {
+        OnPropertyChanged(nameof(HasDownloads));
+        OnPropertyChanged(nameof(DownloadsBadge));
+    }
+
+    /// <summary>Bandcamp purchases and pre-orders ready to download, as the Downloads button shows them.</summary>
+    public void RefreshDownloads()
+    {
+        JsonObject d;
+        try { d = Engine.LinkFinder.Downloads(); }
+        catch (Exception) { return; }                        // the database is closing (the app is shutting down)
+        var on = d["on"]?.GetValue<bool>() == true;
+        var fan = d["fan"]?.GetValue<string>() ?? "";
+        DownloadsOff = !on || fan.Length == 0;
+        if (DownloadsOff)
+        {
+            DownloadsCount = 0;
+            _downloadsUrl = "";
+            DownloadsTip = !on
+                ? "Downloads is switched off. Turn it on in Link Finder (tick Show the Downloads button, beside your Bandcamp username) to see when your Bandcamp purchases and pre-orders are ready to download."
+                : "Set your Bandcamp username in Link Finder to use Downloads.";
+            return;
+        }
+        _downloadsUrl = d["url"]?.GetValue<string>() ?? "";
+        var items = (d["items"] as JsonArray ?? new JsonArray()).OfType<JsonObject>()
+            .Select(x => $"{x["band"]?.GetValue<string>()} \u2014 {x["title"]?.GetValue<string>()}").ToList();
+        DownloadsCount = items.Count;
+        DownloadsTip = items.Count > 0
+            ? "Ready to download on Bandcamp:\n" + string.Join("\n", items.Take(10)) + (items.Count > 10 ? $"\n…and {items.Count - 10} more" : "")
+              + "\n\nOpens your Bandcamp collection and clears this list."
+            : "Nothing new to download. Opens your Bandcamp collection.";
+    }
+
+    [RelayCommand]
+    void OpenDownloads()
+    {
+        if (DownloadsOff || _downloadsUrl.Length == 0) return;
+        Services.Desktop.Open(_downloadsUrl);
+        Engine.LinkFinder.ClearDownloads();
+        RefreshDownloads();
     }
 
     [RelayCommand]

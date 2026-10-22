@@ -14,6 +14,11 @@ public partial class MainWindow : Window, IUi
     NativeWebView? _web;
     PlayItem? _playing;
     TrackedArtistsWindow? _artists;
+    LinkFinderWindow? _finder;
+
+    /// <summary>The window a dialog belongs to: whichever of this app's windows is in front.</summary>
+    Window Front => OwnedWindows.FirstOrDefault(w => w.IsActive && w.IsVisible)
+                    ?? (_artists is { IsVisible: true } ? _artists : _finder is { IsVisible: true } ? _finder : this);
 
     public MainWindow()
     {
@@ -171,12 +176,12 @@ public partial class MainWindow : Window, IUi
     // ---------- dialogs and other windows ----------
 
     public Task<bool> ConfirmAsync(string title, string message, string yes = "OK", string no = "Cancel") =>
-        ConfirmDialog.AskAsync(_artists is { IsVisible: true } ? _artists : this, title, message, yes, no);
+        ConfirmDialog.AskAsync(Front, title, message, yes, no);
 
     public async Task<string?> SaveFileAsync(string title, string suggestedName, string text)
     {
-        var owner = (TopLevel?)(_artists is { IsVisible: true } ? _artists : this);
-        var file = await owner!.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        var owner = (TopLevel)Front;
+        var file = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = title,
             SuggestedFileName = suggestedName,
@@ -193,8 +198,8 @@ public partial class MainWindow : Window, IUi
 
     public async Task<string?> OpenTextFileAsync(string title)
     {
-        var owner = (TopLevel?)(_artists is { IsVisible: true } ? _artists : this);
-        var files = await owner!.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        var owner = (TopLevel)Front;
+        var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = title,
             AllowMultiple = false,
@@ -230,6 +235,43 @@ public partial class MainWindow : Window, IUi
         _artists = new TrackedArtistsWindow { DataContext = vm };
         _artists.Closed += (_, _) => _artists = null;
         _artists.Show(this);
+        return Task.CompletedTask;
+    }
+
+    public async Task<byte[]?> OpenTableFileAsync(string title)
+    {
+        var files = await ((TopLevel)Front).StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = title,
+            AllowMultiple = false,
+            FileTypeFilter = new[]
+            {
+                new FilePickerFileType("Excel, CSV or text") { Patterns = new[] { "*.xlsx", "*.csv", "*.tsv", "*.txt" } },
+                FilePickerFileTypes.All,
+            },
+        });
+        if (files.Count == 0) return null;
+        await using var stream = await files[0].OpenReadAsync();
+        using var copy = new MemoryStream();
+        await stream.CopyToAsync(copy);
+        return copy.ToArray();
+    }
+
+    public Task ShowLinkFinderAsync()
+    {
+        if (Vm == null) return Task.CompletedTask;
+        if (_finder is { IsVisible: true })
+        {
+            _finder.Activate();
+            return Task.CompletedTask;
+        }
+        _finder = new LinkFinderWindow { DataContext = new LinkFinderViewModel(Vm) { Ui = this } };
+        _finder.Closed += (_, _) =>
+        {
+            _finder = null;
+            Vm?.RefreshDownloads();
+        };
+        _finder.Show(this);
         return Task.CompletedTask;
     }
 

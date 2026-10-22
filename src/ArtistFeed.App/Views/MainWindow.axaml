@@ -60,6 +60,17 @@
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
             <TextBlock Classes="muted" Text="Show" VerticalAlignment="Center" />
             <ComboBox ItemsSource="{Binding MaxOptions}" SelectedItem="{Binding Max}" ToolTip.Tip="Limit how many results are shown (and exported)" Margin="0,0,8,0" />
+            <Button Command="{Binding OpenDownloadsCommand}" ToolTip.Tip="{Binding DownloadsTip}" Classes.off="{Binding DownloadsOff}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Path Data="M0,11 L6,0 L19,0 L13,11 Z" Fill="#1da0c3" Width="19" Height="11" VerticalAlignment="Center" />
+                <TextBlock Text="Downloads" />
+                <Border Background="{DynamicResource Accent}" CornerRadius="999" Padding="6,0" IsVisible="{Binding HasDownloads}" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding DownloadsBadge}" Foreground="{DynamicResource OnAccent}" FontSize="12" FontWeight="SemiBold" />
+                </Border>
+              </StackPanel>
+            </Button>
+            <Button Content="Link Finder" Command="{Binding OpenLinkFinderCommand}"
+                    ToolTip.Tip="Find links for a tracklist on the sites chosen in Settings" />
             <Button Content="Tracked Artists" Command="{Binding OpenTrackedArtistsCommand}"
                     ToolTip.Tip="Add, edit or remove the artists and labels in your feed, and their Bandcamp, SoundCloud and YouTube pages" />
             <Button Content="Settings" Command="{Binding OpenSettingsCommand}" ToolTip.Tip="Which sites the app uses, and where your data is kept" />

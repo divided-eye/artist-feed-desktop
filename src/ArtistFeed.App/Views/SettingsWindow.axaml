@@ -4,8 +4,9 @@
         x:Class="ArtistFeed.App.Views.SettingsWindow"
         x:DataType="vm:SettingsViewModel"
         Title="Settings — Artist Feed"
-        Width="620" SizeToContent="Height" CanResize="False"
+        Width="680" SizeToContent="Height" MaxHeight="900" CanResize="False"
         WindowStartupLocation="CenterOwner">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
   <StackPanel Margin="20" Spacing="18">
     <Grid ColumnDefinitions="*,Auto">
       <TextBlock Classes="h2" Text="Settings" VerticalAlignment="Center" />
@@ -31,14 +32,36 @@
     <StackPanel Spacing="6">
       <TextBlock Classes="h3" Text="Sites" />
       <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
-                 Text="A site switched off is gone from the app: no button for it at the top, no column in Tracked Artists, and no checks for new posts. The pages you track there are kept, so switching it back on brings them back. At least one site has to stay on." />
+                 Text="A site switched off is gone from the app: no button for it at the top, no column in Tracked Artists, no checks for new posts, and Link Finder doesn't use it. The pages you track there are kept, so switching it back on brings them back. At least one feed site has to stay on. Beatport and Discogs have no feed: they are extra places for Link Finder to look, Beatport for a track to buy and Discogs for releases found nowhere else (often vinyl-only), linking the release's main page. Both start switched off, and both are experimental: they were built without access to the real sites, so their results may be missing or wrong. Check their links before relying on them." />
       <ItemsControl ItemsSource="{Binding Sites}">
         <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="18" /></ItemsPanelTemplate>
+          <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" ItemSpacing="18" LineSpacing="6" /></ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:SiteToggle">
-            <CheckBox IsChecked="{Binding On}">
+            <CheckBox IsChecked="{Binding On}" ToolTip.Tip="{Binding Tip}">
+              <StackPanel Orientation="Horizontal" Spacing="7">
+                <Ellipse Width="8" Height="8" Fill="{Binding Dot}" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Label}" />
+                <TextBlock Text="{Binding Note}" IsVisible="{Binding HasNote}" Classes="muted" FontSize="12" VerticalAlignment="Center" />
+              </StackPanel>
+            </CheckBox>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <TextBlock Classes="error" Text="{Binding Error}" TextWrapping="Wrap" />
+    </StackPanel>
+    <StackPanel Spacing="6">
+      <TextBlock Classes="h3" Text="Link Finder searches" />
+      <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
+                 Text="Tick the sites Link Finder looks on. A track found on one higher in the list is preferred: Bandcamp, then Beatport, then SoundCloud, then YouTube, then Discogs. Beatport and Discogs need switching on above first; Discogs is a last resort, searched only when the track wasn't found elsewhere, and can turn up vinyl-only releases. YouTube is only searched for the artists and labels ticked in the YouTube search column of Tracked Artists (for a label, the uploads of its channel you track there are looked through)." />
+      <ItemsControl ItemsSource="{Binding LookupSites}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" ItemSpacing="18" LineSpacing="6" /></ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:SiteToggle">
+            <CheckBox IsChecked="{Binding On}" IsEnabled="{Binding Available}" ToolTip.Tip="{Binding AvailableTip}" ToolTip.ShowOnDisabled="True">
               <StackPanel Orientation="Horizontal" Spacing="7">
                 <Ellipse Width="8" Height="8" Fill="{Binding Dot}" VerticalAlignment="Center" />
                 <TextBlock Text="{Binding Label}" />
@@ -47,7 +70,26 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
-      <TextBlock Classes="error" Text="{Binding Error}" TextWrapping="Wrap" />
+      <StackPanel Spacing="6" IsVisible="{Binding ShowDiscogs}">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBox Text="{Binding DiscogsToken}" PasswordChar="•" Width="300"
+                   PlaceholderText="{Binding HasDiscogsToken, Converter={x:Static vm:SettingsViewModel.TokenPlaceholder}}" />
+          <Button Classes="small" Content="Remove token" Command="{Binding RemoveDiscogsTokenCommand}" IsVisible="{Binding HasDiscogsToken}" />
+        </StackPanel>
+        <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
+                   Text="Discogs only lets signed-in apps search it: make a free personal access token at discogs.com → Settings → Developers → Generate new token, paste it here, then press Save." />
+      </StackPanel>
+    </StackPanel>
+    <StackPanel Spacing="6">
+      <TextBlock Classes="h3" Text="Your SoundCloud account" />
+      <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
+                 Text="Many SoundCloud profiles share a name. Enter your SoundCloud username and the profiles you follow there are preferred whenever a profile has to be picked by name: by Find missing links in Tracked Artists, and by Link Finder when a track isn't on SoundCloud. The list is read again every 12 hours. Your follows must be public." />
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBox Text="{Binding SoundCloudMe}" PlaceholderText="username" Width="220" />
+        <Button Classes="small" Content="Read follows now" Command="{Binding ReadFollowsCommand}" IsEnabled="{Binding !ReadingFollows}"
+                ToolTip.Tip="Read the profiles your saved username follows again now" />
+        <TextBlock Classes="muted" FontSize="13" Text="{Binding FollowsStatus}" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="320" />
+      </StackPanel>
     </StackPanel>
     <StackPanel Spacing="6">
       <TextBlock Classes="h3" Text="Your data" />
@@ -61,6 +103,7 @@
       <TextBlock Text="{Binding ImportNote}" Foreground="{DynamicResource AccentInk}" TextWrapping="Wrap" FontSize="13" />
     </StackPanel>
     <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap"
-               Text="Changes to Display and Sites take effect when you press Save." />
+               Text="Changes take effect when you press Save." />
   </StackPanel>
+  </ScrollViewer>
 </Window>

@@ -82,6 +82,10 @@
     <Setter Property="BorderBrush" Value="Transparent" />
     <Setter Property="Foreground" Value="{DynamicResource Danger}" />
   </Style>
+  <!-- the Downloads button while it is switched off or has no Bandcamp username: greyed out, with a tooltip saying why -->
+  <Style Selector="Button.off">
+    <Setter Property="Opacity" Value="0.45" />
+  </Style>
   <Style Selector="Button.link">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />

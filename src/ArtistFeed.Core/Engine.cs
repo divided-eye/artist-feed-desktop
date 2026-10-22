@@ -114,7 +114,19 @@ public sealed class Engine : IDisposable
     }
 
     /// <summary>Start the regular refresh (every hour, with catch-up visits in between).</summary>
-    public void StartSchedule() => _ = Task.Run(() => Refresher.RunScheduleAsync(_stop.Token));
+    /// <summary>Started with the app: the refresh schedule, and Link Finder's background work (reading purchases'
+    /// full track lists, and new purchases for the Downloads button).</summary>
+    public void StartSchedule()
+    {
+        try
+        {
+            LinkFinder.RekeyOldAnswers();                     // answers saved under older keys, as the web version does at start
+            LinkFinder.RekeyKnown();
+        }
+        catch (Exception) { }
+        _ = Task.Run(() => Refresher.RunScheduleAsync(_stop.Token));
+        LinkFinder.StartBackground(Refresher.Every);
+    }
 
     /// <summary>Tracked Artists' "Check now": read one artist's pages straight away.</summary>
     public async Task CheckArtistAsync(long artistId)
@@ -132,6 +144,7 @@ public sealed class Engine : IDisposable
     public void Dispose()
     {
         _stop.Cancel();
+        LinkFinder.Stop();
         Db.Dispose();
     }
 }
