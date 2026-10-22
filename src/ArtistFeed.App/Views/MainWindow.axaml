@@ -265,7 +265,19 @@
             <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" Tag="year" SortMemberPath="year" />
             <DataGridTextColumn Header="Released" Binding="{Binding Released}" Width="118" Tag="date" SortMemberPath="date" />
             <DataGridTextColumn Header="Posted" Binding="{Binding Posted}" Width="118" Tag="posted" SortMemberPath="posted" />
-            <DataGridTextColumn Header="Site" Binding="{Binding Site}" Width="110" CanUserSort="False" Tag="site" />
+            <DataGridTemplateColumn Header="Site" Width="120" CanUserSort="False" Tag="site">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="vm:TrackRowViewModel">
+                  <Button Classes="link" Margin="12,0,0,0" VerticalAlignment="Center" ToolTip.Tip="{Binding Site, StringFormat='Open on {0}'}"
+                          Command="{Binding #Root.((vm:MainViewModel)DataContext).OpenCommand}" CommandParameter="{Binding Row.Url}">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                      <Ellipse Width="8" Height="8" Fill="{Binding SiteDot}" VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding Site}" />
+                    </StackPanel>
+                  </Button>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
             <DataGridTemplateColumn Header="" Width="40" CanUserSort="False" CanUserResize="False" CanUserReorder="False">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate x:DataType="vm:TrackRowViewModel">

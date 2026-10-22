@@ -5,6 +5,7 @@
     <RootNamespace>ArtistFeed.App</RootNamespace>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <NoWarn>$(NoWarn);MVVMTK0034</NoWarn>
   </PropertyGroup>
@@ -16,6 +17,9 @@
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
     <PackageReference Include="Avalonia.Controls.WebView" Version="12.1.1" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ArtistFeed.Core\ArtistFeed.Core.csproj" />

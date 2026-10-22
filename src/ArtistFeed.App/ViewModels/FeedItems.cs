@@ -86,6 +86,7 @@ public partial class TrackRowViewModel : ObservableObject
 {
     public TrackRow Row { get; }
     public string Site { get; }
+    public IBrush SiteDot { get; }
     public PlayItem Item { get; }
     public bool CanPlay { get; }
 
@@ -96,6 +97,7 @@ public partial class TrackRowViewModel : ObservableObject
     {
         Row = r;
         Site = source?.Label ?? r.Source;
+        SiteDot = new SolidColorBrush(Color.Parse(source?.Color ?? "#888888"));
         var key = r.TrackId != null ? "t" + r.TrackId : "p" + r.PostId;
         var title = string.IsNullOrEmpty(r.Track) ? r.Release : r.Track;
         Item = new PlayItem(key, r.PostId, r.TrackKey, r.Source, r.Url, r.Embed, r.TrackExtId, $"{title} — {r.Artist}",
