@@ -17,9 +17,12 @@ jobs:
         run: dotnet test tests/ArtistFeed.Tests
       - name: Publish
         run: |
+          # a tag such as v0.5.0 sets the version shown in the app; other runs use Directory.Build.props
+          version=""
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then version="-p:Version=${GITHUB_REF_NAME#v}"; fi
           for rid in win-x64 osx-arm64 osx-x64 linux-x64; do
             dotnet publish src/ArtistFeed.App -c Release -r $rid --self-contained true \
-              -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none \
+              -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none $version \
               -o publish/ArtistFeed-$rid
           done
       - uses: actions/upload-artifact@v4

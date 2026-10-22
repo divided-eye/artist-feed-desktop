@@ -4,7 +4,11 @@ namespace ArtistFeed.Core;
 /// <summary>Everything the app runs on, wired together: storage, sites, the refresh and Tracked Artists.</summary>
 public sealed class Engine : IDisposable
 {
-    public const string Version = "1";
+    /// <summary>This build's version (Directory.Build.props, or the tag a release was built from), such as "0.4.0".</summary>
+    public static readonly string Version =
+        (typeof(Engine).Assembly.GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
+            .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion ?? "0")
+        .Split('+')[0];
 
     public Db Db { get; }
     public Pace Pace { get; }
