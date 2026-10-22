@@ -594,4 +594,76 @@ public class UiTests
         win.Close();
         w.Close();
     }
+
+    [AvaloniaFact]
+    public async Task RelatedTracksAndListColumns()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        var replay = new WebReplay();
+        int related = 0;
+        app.Web.Extra = r =>
+        {
+            if (r.RequestUri!.AbsolutePath.EndsWith("/related")) Interlocked.Increment(ref related);
+            return r.RequestUri.AbsolutePath.EndsWith("/related") ? replay.Answer(r) : null;
+        };
+        // the web version's checks on the related tracks themselves
+        var (first, total) = await app.Engine.RelatedAsync("900");
+        Assert.Equal(10, total);
+        Assert.Equal(new[] { "Rel 0", "Rel 1", "Rel 2" }, first.Select(t => t["track"]!.GetValue<string>()));
+        Assert.Equal(("Pub Artist", "Uploader 1", 181L), (first[0]["artist"]!.GetValue<string>(), first[1]["artist"]!.GetValue<string>(), (long)Html.AsNumber(first[0]["duration"])!));
+        Assert.StartsWith("2025-01-01", first[0]["posted"]!.GetValue<string>());
+        var (more, _) = await app.Engine.RelatedAsync("900", 3, 5);
+        Assert.Equal(new[] { "Rel 3", "Rel 4", "Rel 5", "Rel 6", "Rel 7" }, more.Select(t => t["track"]!.GetValue<string>()));
+        Assert.Equal(1, related);                               // read once, then handed out from the saved copy
+        await Assert.ThrowsAsync<SourceException>(() => app.Engine.RelatedAsync("abc"));
+
+        vm.ShowListCommand.Execute(null);
+        Dispatcher.UIThread.RunJobs();
+        var demo = vm.Rows.Single(r => r.Track == "Demo");
+        Assert.True(demo.CanRelate);
+        Assert.False(vm.Rows.Single(r => r.Track == "Intro").CanRelate);       // Bandcamp: no related tracks
+        await vm.ToggleRelatedCommand.ExecuteAsync(demo);
+        Assert.True(demo.RelatedOpen);
+        Assert.Equal(3, demo.Related.Count);
+        Assert.Equal("Show 5 more", demo.MoreRelatedLabel);
+        await vm.MoreRelatedCommand.ExecuteAsync(demo);
+        Assert.Equal(8, demo.Related.Count);
+        Assert.Equal("Show 2 more", demo.MoreRelatedLabel);
+        vm.PlayRelatedCommand.Execute(demo.Related[1]);
+        Assert.True(demo.Related[1].IsPlaying);
+        Dispatcher.UIThread.RunJobs();
+        Save(w, "22-related-tracks");
+        await vm.MoreRelatedCommand.ExecuteAsync(demo);
+        Assert.Equal("That's all SoundCloud lists.", demo.RelatedFoot);
+        await vm.ToggleRelatedCommand.ExecuteAsync(demo);
+        Assert.False(demo.RelatedOpen);
+        vm.ClosePlayerCommand.Execute(null);
+
+        // Edit Columns: hide, reorder, remembered, reset
+        Assert.Equal(new[] { "artist", "label", "release", "track", "duration", "year", "date", "posted", "site" }, vm.Columns.Select(c => c.Key));
+        Assert.False(vm.Columns.Single(c => c.Key == "year").Shown);
+        var grid = Find<DataGrid>(w, g => g.Name == "List");
+        DataGridColumn Col(string key) => grid.Columns.Single(c => c.Tag as string == key);
+        Assert.False(Col("year").IsVisible);
+        vm.Columns.Single(c => c.Key == "label").Shown = false;
+        vm.MoveColumnUpCommand.Execute(vm.Columns.Single(c => c.Key == "track"));
+        vm.Columns.Single(c => c.Key == "year").Shown = true;
+        Assert.False(Col("label").IsVisible);
+        Assert.True(Col("track").DisplayIndex < Col("release").DisplayIndex);
+        Assert.True(Col("year").IsVisible);
+        Assert.False(vm.ColumnsDefault);
+        Dispatcher.UIThread.RunJobs();
+        Save(w, "23-list-columns");
+        var again = new MainViewModel(app.Engine, app.Folder);                  // remembered
+        Assert.Equal(new[] { "artist", "label", "track", "release" }, again.Columns.Take(4).Select(c => c.Key));
+        Assert.False(again.Columns.Single(c => c.Key == "label").Shown);
+        foreach (var c in vm.Columns.Where(c => c.Key != "artist")) c.Shown = false;
+        Assert.False(vm.Columns.Single(c => c.Key == "artist").CanHide);        // always keep one column
+        vm.ResetColumnsCommand.Execute(null);
+        Assert.True(vm.ColumnsDefault);
+        Assert.True(Col("label").IsVisible);
+        Assert.False(Col("year").IsVisible);
+        w.Close();
+    }
 }

@@ -30,6 +30,8 @@ public partial class MainWindow : Window, IUi
             {
                 vm.Ui = this;
                 ShowSortMark(vm);
+                ApplyColumns(vm);
+                vm.ColumnsChanged += () => ApplyColumns(vm);
                 vm.PropertyChanged += (_, e) =>
                 {
                     if (e.PropertyName is nameof(MainViewModel.SortKey) or nameof(MainViewModel.SortAscending)) ShowSortMark(vm);
@@ -61,8 +63,43 @@ public partial class MainWindow : Window, IUi
     static readonly Dictionary<string, string> Headers = new()
     {
         ["artist"] = "Artist", ["label"] = "Label", ["release"] = "Release", ["track"] = "Track",
-        ["duration"] = "Length", ["date"] = "Released", ["posted"] = "Posted",
+        ["duration"] = "Length", ["date"] = "Released", ["posted"] = "Posted", ["year"] = "Year",
     };
+
+    bool _placing;
+
+    /// <summary>Show the list's columns in the chosen order, leaving out the ones switched off.
+    /// The play and related buttons stay first and the hide button last.</summary>
+    void ApplyColumns(MainViewModel vm)
+    {
+        _placing = true;
+        try
+        {
+            var byKey = List.Columns.Where(c => c.Tag is string).ToDictionary(c => (string)c.Tag!);
+            var fixedFirst = List.Columns.Where(c => c.Tag == null).Take(2).ToList();
+            var last = List.Columns.Last(c => c.Tag == null);
+            int i = 0;
+            foreach (var c in fixedFirst) c.DisplayIndex = i++;
+            foreach (var choice in vm.Columns)
+                if (byKey.TryGetValue(choice.Key, out var col))
+                {
+                    col.IsVisible = choice.Shown;
+                    col.DisplayIndex = i++;
+                }
+            last.DisplayIndex = i;
+        }
+        finally { _placing = false; }
+    }
+
+    /// <summary>A heading dragged to a new place: the order is kept (the same as using Edit Columns).</summary>
+    void ListColumnReordered(object? sender, DataGridColumnEventArgs e)
+    {
+        if (_placing || Vm == null || e.Column.Tag is not string key) return;
+        var order = List.Columns.Where(c => c.Tag is string).OrderBy(c => c.DisplayIndex).Select(c => (string)c.Tag!).ToList();
+        var shownBefore = Vm.Columns.Select(c => c.Key).ToList();
+        Vm.MoveColumn(key, order.IndexOf(key));
+        if (Vm.Columns.Select(c => c.Key).SequenceEqual(shownBefore)) ApplyColumns(Vm);   // dropped beside the fixed buttons: put back
+    }
 
     void ShowSortMark(MainViewModel vm)
     {
@@ -92,6 +129,7 @@ public partial class MainWindow : Window, IUi
         r.Classes.Set("played", row.IsPlayed && !row.IsPlaying);
         r.Classes.Set("playing", row.IsPlaying);
         r.Classes.Set("hidden", row.IsHidden);
+        r.AreDetailsVisible = row.RelatedOpen;                // its related tracks, open under it
     }
 
     void ListDoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)

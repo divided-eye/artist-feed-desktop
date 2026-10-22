@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -114,8 +115,62 @@ public partial class TrackRowViewModel : ObservableObject
     public bool IsHidden => Row.Hidden;
     public string PlayGlyph => CanPlay ? "▶" : "↗";
     public string HideGlyph => Row.Hidden ? "↺" : "✕";
+    public string Year => Row.Released is { Length: >= 4 } y ? y[..4] : "";
 
     static string Day(string? iso) => iso is { Length: >= 10 } ? iso[..10] : "";
+
+    // ---------- Related tracks (SoundCloud): opened under the row on request ----------
+
+    public bool CanRelate => Row.Source == "soundcloud" && !string.IsNullOrEmpty(Row.TrackExtId) && Row.TrackExtId.All(char.IsAsciiDigit);
+    public ObservableCollection<RelatedTrackViewModel> Related { get; } = new();
+    public int? RelatedTotal { get; set; }
+    [ObservableProperty] private bool _relatedOpen;
+    [ObservableProperty] private bool _relatedBusy;
+    [ObservableProperty] private string _relatedError = "";
+    public string RelatedGlyph => RelatedOpen ? "−" : "+";
+    public string RelatedTip => RelatedOpen ? "Hide related tracks" : "Show tracks SoundCloud lists as related to this one";
+    int Left => RelatedTotal is { } t ? t - Related.Count : 0;
+    public bool CanMoreRelated => !RelatedBusy && RelatedError.Length == 0 && Left > 0;
+    public string MoreRelatedLabel => $"Show {Math.Min(5, Left)} more";
+    public bool HasRelated => Related.Count > 0;
+    public string RelatedFoot => RelatedBusy ? "Asking SoundCloud…"
+        : RelatedError.Length > 0 ? "Couldn't load related tracks: " + RelatedError
+        : RelatedTotal == 0 ? "SoundCloud lists no related tracks for this one."
+        : Left <= 0 && Related.Count > 0 ? "That's all SoundCloud lists." : "";
+    public bool HasRelatedFoot => RelatedFoot.Length > 0;
+
+    partial void OnRelatedOpenChanged(bool value) { OnPropertyChanged(nameof(RelatedGlyph)); OnPropertyChanged(nameof(RelatedTip)); }
+    partial void OnRelatedBusyChanged(bool value) => RelatedChanged();
+    partial void OnRelatedErrorChanged(string value) => RelatedChanged();
+
+    public void RelatedChanged()
+    {
+        foreach (var n in new[] { nameof(CanMoreRelated), nameof(MoreRelatedLabel), nameof(HasRelated), nameof(RelatedFoot), nameof(HasRelatedFoot) })
+            OnPropertyChanged(n);
+    }
+}
+
+/// <summary>One of a SoundCloud track's related tracks, listed under its row.</summary>
+public partial class RelatedTrackViewModel : ObservableObject
+{
+    public PlayItem Item { get; }
+    public string Artist { get; }
+    public string Track { get; }
+    public string Url { get; }
+    public string Duration { get; }
+    public string Posted { get; }
+    [ObservableProperty] private bool _isPlaying;
+
+    public RelatedTrackViewModel(System.Text.Json.Nodes.JsonObject t)
+    {
+        string S(string k) => t[k]?.GetValueKind() == System.Text.Json.JsonValueKind.String ? t[k]!.GetValue<string>() : "";
+        Artist = S("artist").Length > 0 ? S("artist") : S("uploader");
+        Track = S("track");
+        Url = S("url");
+        Duration = Show.Clock(Html.AsNumber(t["duration"]));
+        Posted = S("posted") is { Length: >= 10 } p ? p[..10] : "";
+        Item = new PlayItem("rel-" + S("id"), 0, "", "soundcloud", Url, null, S("id"), $"{Track} — {Artist}");
+    }
 }
 
 /// <summary>A site button at the top of the feed.</summary>
@@ -136,4 +191,15 @@ public sealed record Option(string Value, string Text)
 public sealed record ArtistOption(long? Id, string Name)
 {
     public override string ToString() => Name;
+}
+
+/// <summary>A list column in Edit Columns: shown or not, and its place.</summary>
+public partial class ColumnChoice(string key, string label, bool shown) : ObservableObject
+{
+    public string Key { get; } = key;
+    public string Label { get; } = label;
+    [ObservableProperty] private bool _shown = shown;
+    [ObservableProperty] private bool _canUp;
+    [ObservableProperty] private bool _canDown;
+    [ObservableProperty] private bool _canHide = true;
 }

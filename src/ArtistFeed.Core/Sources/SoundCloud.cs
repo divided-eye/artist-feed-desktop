@@ -191,6 +191,33 @@ public sealed class SoundCloud(Db db) : ISource
 
     static List<JsonNode?> Items(JsonNode? data) => (data?["collection"] as JsonArray)?.ToList() ?? new List<JsonNode?>();
 
+    /// <summary>The "Related tracks" a SoundCloud track page lists, as plain rows (the web version's shape).</summary>
+    public async Task<List<JsonObject>> RelatedAsync(HttpClient client, string trackId, int limit = 50, CancellationToken ct = default)
+    {
+        var data = await ApiAsync(client, $"/tracks/{long.Parse(trackId, System.Globalization.CultureInfo.InvariantCulture)}/related",
+                                  new() { ["limit"] = limit.ToString(System.Globalization.CultureInfo.InvariantCulture), ["linked_partitioning"] = "1" }, ct);
+        var rows = new List<JsonObject>();
+        foreach (var t in (data?["collection"] as JsonArray ?? new JsonArray()).OfType<JsonObject>())
+        {
+            var url = Html.AsString(t["permalink_url"]);
+            if (string.IsNullOrEmpty(url) || (Html.AsString(t["kind"]) ?? "track") != "track") continue;
+            var pub = t["publisher_metadata"] as JsonObject;
+            var user = t["user"] as JsonObject;
+            var ms = Html.AsNumber(t["full_duration"]) is { } f && f != 0 ? f : Html.AsNumber(t["duration"]);
+            rows.Add(new JsonObject
+            {
+                ["id"] = Html.AsNumber(t["id"]) is { } id ? ((long)id).ToString(System.Globalization.CultureInfo.InvariantCulture) : url,
+                ["artist"] = (Html.AsString(pub?["artist"]) is { Length: > 0 } a ? a : Html.AsString(user?["username"]) ?? "").Trim(),
+                ["uploader"] = Html.AsString(user?["username"]) ?? "",
+                ["track"] = Html.AsString(t["title"]) is { Length: > 0 } title ? title : "Untitled",
+                ["url"] = url,
+                ["duration"] = ms is { } m && m != 0 ? Math.Round(m / 1000) : null,
+                ["posted"] = Date(Html.AsString(t["created_at"])),
+            });
+        }
+        return rows;
+    }
+
     public async Task<FetchResult> FetchAsync(HttpClient client, Account account, HashSet<string> knownIds, CancellationToken ct = default)
     {
         var meta = account.Meta;

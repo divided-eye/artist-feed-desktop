@@ -130,7 +130,9 @@ public partial class MainViewModel : ObservableObject
 
     void LoadPrefs()
     {
-        if (Html.ParseJson(Engine.Db.KvGet("desktop_prefs")) is not JsonObject p) return;
+        var saved = Html.ParseJson(Engine.Db.KvGet("desktop_prefs")) as JsonObject;
+        LoadColumns(saved);
+        if (saved is not JsonObject p) return;
         _isGrid = p["view"]?.GetValue<string>() != "list";
         _previewOnly = p["hideNoPreview"]?.GetValue<bool>() ?? false;
         var max = p["maxResults"]?.GetValue<string>() ?? "";
@@ -145,6 +147,8 @@ public partial class MainViewModel : ObservableObject
         {
             ["view"] = IsGrid ? "grid" : "list", ["hideNoPreview"] = PreviewOnly, ["maxResults"] = Max?.Value ?? "",
             ["sort"] = SortKey, ["sortAsc"] = SortAscending,
+            ["list_order"] = new JsonArray(Columns.Select(c => (JsonNode?)c.Key).ToArray()),
+            ["list_hidden"] = new JsonArray(Columns.Where(c => !c.Shown).Select(c => (JsonNode?)c.Key).ToArray()),
         };
         Engine.Db.KvSet("desktop_prefs", p.ToJsonString());
     }
@@ -491,9 +495,13 @@ public partial class MainViewModel : ObservableObject
         if (page == null) return;
         Playing = item;
         foreach (var c in Posts) c.IsPlaying = c.Item.Key == item.Key;
-        foreach (var r in Rows) r.IsPlaying = r.Item.Key == item.Key;
+        foreach (var r in Rows)
+        {
+            r.IsPlaying = r.Item.Key == item.Key;
+            foreach (var t in r.Related) t.IsPlaying = t.Item.Key == item.Key;
+        }
         Ui?.ShowPlayer(item, page);
-        Engine.Db.SetPlayed(item.PostId, item.TrackKey);
+        if (item.PostId > 0) Engine.Db.SetPlayed(item.PostId, item.TrackKey);
     }
 
     [RelayCommand]
@@ -501,8 +509,119 @@ public partial class MainViewModel : ObservableObject
     {
         Playing = null;
         foreach (var c in Posts) c.IsPlaying = false;
-        foreach (var r in Rows) r.IsPlaying = false;
+        foreach (var r in Rows)
+        {
+            r.IsPlaying = false;
+            foreach (var t in r.Related) t.IsPlaying = false;
+        }
         Ui?.HidePlayer();
+    }
+
+    // ---------- Related tracks: read from SoundCloud only when asked, 3 first, 5 more a click ----------
+
+    [RelayCommand]
+    async Task ToggleRelated(TrackRowViewModel row)
+    {
+        if (!row.CanRelate) return;
+        row.RelatedOpen = !row.RelatedOpen;
+        if (row.RelatedOpen && row.Related.Count == 0 && !row.RelatedBusy) await MoreRelatedAsync(row, 3);
+    }
+
+    [RelayCommand]
+    Task MoreRelated(TrackRowViewModel row) => MoreRelatedAsync(row, 5);
+
+    async Task MoreRelatedAsync(TrackRowViewModel row, int count)
+    {
+        row.RelatedBusy = true;
+        row.RelatedError = "";
+        try
+        {
+            var (tracks, total) = await Engine.RelatedAsync(row.Row.TrackExtId!, row.Related.Count, count);
+            foreach (var t in tracks)
+                row.Related.Add(new RelatedTrackViewModel(t) { IsPlaying = Playing?.Key == "rel-" + t["id"]?.GetValue<string>() });
+            row.RelatedTotal = total;
+        }
+        catch (Exception e)
+        {
+            row.RelatedError = e.Message;
+        }
+        row.RelatedBusy = false;
+        row.RelatedChanged();
+    }
+
+    [RelayCommand]
+    void PlayRelated(RelatedTrackViewModel t) => Play(t.Item);
+
+    // ---------- which list columns show, and in what order (Edit Columns, or dragging a heading) ----------
+
+    public static readonly (string Key, string Label)[] ListColumns =
+    {
+        ("artist", "Artist"), ("label", "Label"), ("release", "Release"), ("track", "Track"), ("duration", "Length"),
+        ("year", "Year"), ("date", "Released"), ("posted", "Posted"), ("site", "Site"),
+    };
+    static readonly string[] HiddenByDefault = { "year" };
+    public ObservableCollection<ColumnChoice> Columns { get; } = new();
+    public event Action? ColumnsChanged;
+    [ObservableProperty] private bool _columnsDefault = true;
+
+    void LoadColumns(JsonObject? prefs)
+    {
+        var known = ListColumns.Select(c => c.Key).ToList();
+        var order = (prefs?["list_order"] as JsonArray)?.Select(x => x?.GetValue<string>() ?? "").Where(known.Contains).ToList() ?? new();
+        var hidden = (prefs?["list_hidden"] as JsonArray)?.Select(x => x?.GetValue<string>() ?? "").Where(known.Contains).ToHashSet()
+                     ?? HiddenByDefault.ToHashSet();
+        if (hidden.Count >= known.Count) hidden.Clear();
+        Columns.Clear();
+        foreach (var key in order.Concat(known).Distinct())
+        {
+            var c = new ColumnChoice(key, ListColumns.First(x => x.Key == key).Label, !hidden.Contains(key));
+            c.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(ColumnChoice.Shown)) ColumnLayoutChanged(); };
+            Columns.Add(c);
+        }
+        Recount();
+    }
+
+    void Recount()
+    {
+        var shown = Columns.Count(c => c.Shown);
+        for (int i = 0; i < Columns.Count; i++)
+        {
+            Columns[i].CanUp = i > 0;
+            Columns[i].CanDown = i < Columns.Count - 1;
+            Columns[i].CanHide = !Columns[i].Shown || shown > 1;          // always keep one column
+        }
+        ColumnsDefault = Columns.Select(c => c.Key).SequenceEqual(ListColumns.Select(c => c.Key))
+                         && Columns.All(c => c.Shown != HiddenByDefault.Contains(c.Key));
+    }
+
+    void ColumnLayoutChanged()
+    {
+        Recount();
+        SavePrefs();
+        ColumnsChanged?.Invoke();
+    }
+
+    [RelayCommand]
+    void MoveColumnUp(ColumnChoice c) => MoveColumn(c.Key, Columns.IndexOf(c) - 1);
+
+    [RelayCommand]
+    void MoveColumnDown(ColumnChoice c) => MoveColumn(c.Key, Columns.IndexOf(c) + 1);
+
+    /// <summary>Move a column to a place in the order (also used when a heading is dragged in the list).</summary>
+    public void MoveColumn(string key, int to)
+    {
+        var c = Columns.FirstOrDefault(x => x.Key == key);
+        if (c == null || to < 0 || to >= Columns.Count || Columns.IndexOf(c) == to) return;
+        Columns.Move(Columns.IndexOf(c), to);
+        ColumnLayoutChanged();
+    }
+
+    [RelayCommand]
+    void ResetColumns()
+    {
+        LoadColumns(null);
+        SavePrefs();
+        ColumnsChanged?.Invoke();
     }
 
     [RelayCommand]

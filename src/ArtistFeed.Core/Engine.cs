@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 namespace ArtistFeed.Core;
 
 /// <summary>Everything the app runs on, wired together: storage, sites, the refresh and Tracked Artists.</summary>
@@ -126,6 +127,30 @@ public sealed class Engine : IDisposable
         catch (Exception) { }
         _ = Task.Run(() => Refresher.RunScheduleAsync(_stop.Token));
         LinkFinder.StartBackground(Refresher.Every);
+    }
+
+    public const int RelatedHours = 24;
+
+    /// <summary>A SoundCloud track's "Related tracks", read only when asked (the + beside a row in the list),
+    /// kept for a day, and handed out a few at a time.</summary>
+    public async Task<(List<JsonObject> Tracks, int Total)> RelatedAsync(string trackId, int offset = 0, int limit = 3, CancellationToken ct = default)
+    {
+        if (string.IsNullOrEmpty(trackId) || !trackId.All(char.IsAsciiDigit))
+            throw new SourceException("Related tracks are only available for SoundCloud tracks.");
+        var rows = (LinkFinder.CacheGet("sc_related", trackId, RelatedHours / 24.0) as JsonArray)?.OfType<JsonObject>().ToList();
+        if (rows == null)
+        {
+            if (Sites.Get("soundcloud") is not SoundCloud sc) throw new SourceException("SoundCloud isn't available.");
+            using var client = MakeClient();
+            try { rows = await sc.RelatedAsync(client, trackId, ct: ct); }
+            catch (SourceException) { throw; }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { throw; }
+            catch (Exception) { throw new SourceException("Couldn't reach SoundCloud for related tracks."); }
+            LinkFinder.CachePut("sc_related", trackId, new JsonArray(rows.Select(r => (JsonNode?)r.DeepClone()).ToArray()));
+        }
+        offset = Math.Max(0, offset);
+        limit = Math.Clamp(limit, 1, 50);
+        return (rows.Skip(offset).Take(limit).Select(r => (JsonObject)r.DeepClone()).ToList(), rows.Count);
     }
 
     /// <summary>Tracked Artists' "Check now": read one artist's pages straight away.</summary>

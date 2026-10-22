@@ -58,6 +58,33 @@
             <TextBlock Classes="error" Text="{Binding Error}" />
           </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+            <Button Classes="small" Content="Edit Columns" IsVisible="{Binding IsList}" Margin="0,0,8,0" VerticalAlignment="Center"
+                    ToolTip.Tip="Choose which list columns are shown, and their order">
+              <Button.Flyout>
+                <Flyout Placement="BottomEdgeAlignedRight">
+                  <StackPanel Spacing="8" Width="260">
+                    <TextBlock Classes="muted small" TextWrapping="Wrap"
+                               Text="Tick the columns to show. Use the arrows here, or drag a heading in the list, to reorder." />
+                    <ItemsControl ItemsSource="{Binding Columns}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ColumnChoice">
+                          <Grid ColumnDefinitions="*,Auto,Auto">
+                            <CheckBox Content="{Binding Label}" IsChecked="{Binding Shown}" IsEnabled="{Binding CanHide}" />
+                            <Button Grid.Column="1" Classes="small ghost" Content="↑" IsEnabled="{Binding CanUp}"
+                                    ToolTip.Tip="{Binding Label, StringFormat='Move {0} up'}"
+                                    Command="{Binding #Root.((vm:MainViewModel)DataContext).MoveColumnUpCommand}" CommandParameter="{Binding}" />
+                            <Button Grid.Column="2" Classes="small ghost" Content="↓" IsEnabled="{Binding CanDown}"
+                                    ToolTip.Tip="{Binding Label, StringFormat='Move {0} down'}"
+                                    Command="{Binding #Root.((vm:MainViewModel)DataContext).MoveColumnDownCommand}" CommandParameter="{Binding}" />
+                          </Grid>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Classes="small" Content="Reset to default" Command="{Binding ResetColumnsCommand}" IsEnabled="{Binding !ColumnsDefault}" />
+                  </StackPanel>
+                </Flyout>
+              </Button.Flyout>
+            </Button>
             <TextBlock Classes="muted" Text="Show" VerticalAlignment="Center" />
             <ComboBox ItemsSource="{Binding MaxOptions}" SelectedItem="{Binding Max}" ToolTip.Tip="Limit how many results are shown (and exported)" Margin="0,0,8,0" />
             <Button Command="{Binding OpenDownloadsCommand}" ToolTip.Tip="{Binding DownloadsTip}" Classes.off="{Binding DownloadsOff}">
@@ -172,9 +199,47 @@
         <Button DockPanel.Dock="Bottom" Content="Load more" HorizontalAlignment="Center" Margin="8" Command="{Binding LoadMoreCommand}" IsVisible="{Binding CanLoadMore}" />
         <DataGrid x:Name="List" ItemsSource="{Binding Rows}" IsReadOnly="True" CanUserSortColumns="True" CanUserReorderColumns="True"
                   CanUserResizeColumns="True" SelectionMode="Single" HeadersVisibility="Column" Margin="8,4,8,0"
-                  Sorting="ListSorting" LoadingRow="ListLoadingRow" DoubleTapped="ListDoubleTapped">
+                  Sorting="ListSorting" LoadingRow="ListLoadingRow" DoubleTapped="ListDoubleTapped"
+                  ColumnReordered="ListColumnReordered" RowDetailsVisibilityMode="Collapsed">
+          <DataGrid.RowDetailsTemplate>
+            <DataTemplate x:DataType="vm:TrackRowViewModel">
+              <Border Margin="88,0,16,10" Padding="12,8" CornerRadius="8" Background="{DynamicResource Panel}" BorderBrush="{DynamicResource Line}" BorderThickness="1">
+                <StackPanel Spacing="6">
+                  <Grid ColumnDefinitions="36,2*,3*,80,110" IsVisible="{Binding HasRelated}">
+                    <TextBlock Grid.Column="1" Classes="muted small" Text="Artist" />
+                    <TextBlock Grid.Column="2" Classes="muted small" Text="Track" />
+                    <TextBlock Grid.Column="3" Classes="muted small" Text="Duration" />
+                    <TextBlock Grid.Column="4" Classes="muted small" Text="Posted" />
+                  </Grid>
+                  <ItemsControl ItemsSource="{Binding Related}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:RelatedTrackViewModel">
+                        <Grid ColumnDefinitions="36,2*,3*,80,110" Margin="0,1">
+                          <Button Classes="small link" Content="▶" HorizontalAlignment="Left" Classes.playing="{Binding IsPlaying}"
+                                  ToolTip.Tip="{Binding Track, StringFormat='Play {0}'}"
+                                  Command="{Binding #Root.((vm:MainViewModel)DataContext).PlayRelatedCommand}" CommandParameter="{Binding}" />
+                          <TextBlock Grid.Column="1" Text="{Binding Artist}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding Artist}" />
+                          <Button Grid.Column="2" Classes="link" HorizontalAlignment="Left" ToolTip.Tip="{Binding Track, StringFormat='{}{0} · open on SoundCloud'}"
+                                  Command="{Binding #Root.((vm:MainViewModel)DataContext).OpenCommand}" CommandParameter="{Binding Url}">
+                            <TextBlock Text="{Binding Track}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource AccentInk}" />
+                          </Button>
+                          <TextBlock Grid.Column="3" Classes="muted" Text="{Binding Duration}" VerticalAlignment="Center" />
+                          <TextBlock Grid.Column="4" Classes="muted" Text="{Binding Posted}" VerticalAlignment="Center" />
+                        </Grid>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Classes="muted small" Text="{Binding RelatedFoot}" IsVisible="{Binding HasRelatedFoot}" VerticalAlignment="Center" />
+                    <Button Classes="small" Content="{Binding MoreRelatedLabel}" IsVisible="{Binding CanMoreRelated}"
+                            Command="{Binding #Root.((vm:MainViewModel)DataContext).MoreRelatedCommand}" CommandParameter="{Binding}" />
+                  </StackPanel>
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </DataGrid.RowDetailsTemplate>
           <DataGrid.Columns>
-            <DataGridTemplateColumn Header="" Width="44" CanUserSort="False" CanUserResize="False">
+            <DataGridTemplateColumn Header="" Width="44" CanUserSort="False" CanUserResize="False" CanUserReorder="False">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate x:DataType="vm:TrackRowViewModel">
                   <Button Classes="small link" Content="{Binding PlayGlyph}" HorizontalAlignment="Center"
@@ -183,15 +248,25 @@
                 </DataTemplate>
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="" Width="34" CanUserSort="False" CanUserResize="False" CanUserReorder="False">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="vm:TrackRowViewModel">
+                  <Button Classes="ghost" Content="{Binding RelatedGlyph}" FontSize="17" Padding="6,0" HorizontalAlignment="Center" IsVisible="{Binding CanRelate}"
+                          ToolTip.Tip="{Binding RelatedTip}"
+                          Command="{Binding #Root.((vm:MainViewModel)DataContext).ToggleRelatedCommand}" CommandParameter="{Binding}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
             <DataGridTextColumn Header="Artist" Binding="{Binding Artist}" Width="170" Tag="artist" SortMemberPath="artist" />
             <DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="140" Tag="label" SortMemberPath="label" />
             <DataGridTextColumn Header="Release" Binding="{Binding Release}" Width="190" Tag="release" SortMemberPath="release" />
             <DataGridTextColumn Header="Track" Binding="{Binding Track}" Width="*" MinWidth="160" Tag="track" SortMemberPath="track" />
             <DataGridTextColumn Header="Length" Binding="{Binding Duration}" Width="86" Tag="duration" SortMemberPath="duration" />
+            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" Tag="year" SortMemberPath="year" />
             <DataGridTextColumn Header="Released" Binding="{Binding Released}" Width="118" Tag="date" SortMemberPath="date" />
             <DataGridTextColumn Header="Posted" Binding="{Binding Posted}" Width="118" Tag="posted" SortMemberPath="posted" />
-            <DataGridTextColumn Header="Site" Binding="{Binding Site}" Width="110" CanUserSort="False" />
-            <DataGridTemplateColumn Header="" Width="40" CanUserSort="False" CanUserResize="False">
+            <DataGridTextColumn Header="Site" Binding="{Binding Site}" Width="110" CanUserSort="False" Tag="site" />
+            <DataGridTemplateColumn Header="" Width="40" CanUserSort="False" CanUserResize="False" CanUserReorder="False">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate x:DataType="vm:TrackRowViewModel">
                   <Button Classes="small ghost" Content="{Binding HideGlyph}" HorizontalAlignment="Center"
