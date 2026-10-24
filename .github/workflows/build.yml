@@ -30,6 +30,7 @@ jobs:
             dotnet publish src/ArtistFeed.App -c Release -r $rid --self-contained true \
               -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none \
               -o publish/ArtistFeed-$rid
+            rm -f publish/ArtistFeed-$rid/*.pdb      # debug data from the graphics libraries; the app doesn't use it
             cp web/docs/"Artist Feed User Guide.docx" web/docs/"Artist Feed User Guide.md" publish/ArtistFeed-$rid/
             cp LICENSE publish/ArtistFeed-$rid/LICENSE.txt
             cp src/ArtistFeed.App/Assets/ICON-NOTICE.txt publish/ArtistFeed-$rid/
