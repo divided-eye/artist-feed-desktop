@@ -8,6 +8,13 @@ artists and labels you track.
 This is an experiment. It now does everything the web version does: the feed, Tracked Artists and Link
 Finder. See [What's in this version](#whats-in-this-version).
 
+**User guide.** The full guide, covering every feature, is kept with the web version:
+[read it online](https://github.com/divided-eye/artist-feed/blob/main/docs/Artist%20Feed%20User%20Guide.md), or
+[download it as a Word file](https://github.com/divided-eye/artist-feed/raw/main/docs/Artist%20Feed%20User%20Guide.docx).
+It describes the app as it appears in a browser; the desktop app has the same features in its own windows, and
+the guide's section *The desktop app (no Docker)* covers getting, running and updating it. Each ready-to-run
+copy (below) also comes with the guide.
+
 ## Running it
 
 You need the .NET 10 SDK (`winget install Microsoft.DotNet.SDK.10` on Windows, or from
@@ -27,7 +34,8 @@ Downloads button on, looks for new purchases and pre-orders that have come out.
 
 **Ready-to-run copies.** The **Build** workflow (GitHub → Actions → Build → Run workflow) makes copies for
 Windows, macOS (Apple silicon and Intel) and Linux that don't need .NET installed. Download one from the run's
-Artifacts, unzip it, and run `ArtistFeed` (`ArtistFeed.exe` on Windows). They aren't signed, so Windows
+Artifacts, unzip it, and run `ArtistFeed` (`ArtistFeed.exe` on Windows). The zip also holds the user guide
+(`Artist Feed User Guide.docx`, with a `.md` copy), the licence and the icon's notice. They aren't signed, so Windows
 SmartScreen and macOS Gatekeeper ask before the first run (on a Mac: right-click → Open).
 
 ## Your data

@@ -13,6 +13,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0          # the tags, which give the version shown in the app
+      - name: Get the user guide (kept with the web version)
+        uses: actions/checkout@v4
+        with:
+          repository: divided-eye/artist-feed
+          path: web
+          sparse-checkout: docs
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
@@ -24,6 +30,9 @@ jobs:
             dotnet publish src/ArtistFeed.App -c Release -r $rid --self-contained true \
               -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none \
               -o publish/ArtistFeed-$rid
+            cp web/docs/"Artist Feed User Guide.docx" web/docs/"Artist Feed User Guide.md" publish/ArtistFeed-$rid/
+            cp LICENSE publish/ArtistFeed-$rid/LICENSE.txt
+            cp src/ArtistFeed.App/Assets/ICON-NOTICE.txt publish/ArtistFeed-$rid/
           done
       - uses: actions/upload-artifact@v4
         with: { name: ArtistFeed-windows, path: publish/ArtistFeed-win-x64 }
