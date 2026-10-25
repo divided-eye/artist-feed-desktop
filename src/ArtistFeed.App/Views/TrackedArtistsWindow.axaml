@@ -33,7 +33,7 @@
         <ComboBox ItemsSource="{Binding ShowOptions}" SelectedItem="{Binding Show}" ToolTip.Tip="Which rows to show" />
       </WrapPanel>
       <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="13"
-                 Text="One row per artist. Type in the cells, or import or paste a list. Leave a cell empty if the artist isn't on that site; separate several pages in one cell with commas. The Artist cell can hold other names the artist goes by, after commas: the first is shown in the feed (put a name that contains a comma in &quot;double quotes&quot;). Find missing links fills empty Bandcamp, SoundCloud and name cells with its best guess, highlighted: check them, then Save changes. A cell you clear stays empty on later runs unless you tick that row's Rescan box. Changes take effect when you press Save changes." />
+                 Text="One row per artist. Type in the cells, or import or paste a list. Leave a cell empty if the artist isn't on that site; separate several pages in one cell with commas. The Artist cell can hold other names the artist goes by, after commas: the first is shown in the feed (put a name that contains a comma in &quot;double quotes&quot;). Find missing links fills empty Bandcamp, SoundCloud and name cells with its best guess, highlighted: check them, then Save changes. A cell you clear stays empty on later runs unless you tick that row's Rescan box. Changes take effect when you press Save changes. Click a heading (Artist, a site, Status) to sort by it; again to reverse; a third time to go back to name order." />
       <Border Classes="subpanel" IsVisible="{Binding ShowFollows}">
         <StackPanel Spacing="8">
           <StackPanel Orientation="Horizontal" Spacing="8">
@@ -110,10 +110,10 @@
       </DockPanel>
     </Border>
 
-    <DataGrid x:Name="Table" ItemsSource="{Binding Visible}" Margin="0,10,0,0" CanUserSortColumns="False" CanUserReorderColumns="False"
+    <DataGrid x:Name="Table" ItemsSource="{Binding Visible}" Margin="0,10,0,0" CanUserSortColumns="True" CanUserReorderColumns="False" Sorting="TableSorting"
               CanUserResizeColumns="True" HeadersVisibility="Column" SelectionMode="Single" IsReadOnly="True" RowHeight="NaN">
       <DataGrid.Columns>
-        <DataGridTemplateColumn Header="" Width="40">
+        <DataGridTemplateColumn Header="" Width="40" CanUserSort="False">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <Button Classes="small ghost" Content="{Binding RemoveGlyph}" ToolTip.Tip="{Binding RemoveTip}" VerticalAlignment="Top" Margin="0,6,0,0"
@@ -121,7 +121,7 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Artist" Width="2*" MinWidth="160">
+        <DataGridTemplateColumn Header="Artist" Width="2*" MinWidth="160" Tag="name" SortMemberPath="name">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <StackPanel Margin="2,4" Spacing="2">
@@ -132,28 +132,28 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Bandcamp" Width="2*" MinWidth="140" Tag="bandcamp">
+        <DataGridTemplateColumn Header="Bandcamp" Width="2*" MinWidth="140" Tag="bandcamp" SortMemberPath="bandcamp">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <TextBox Text="{Binding Bandcamp}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="artistname" Classes.auto="{Binding AutoBandcamp}" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="SoundCloud" Width="2*" MinWidth="140" Tag="soundcloud">
+        <DataGridTemplateColumn Header="SoundCloud" Width="2*" MinWidth="140" Tag="soundcloud" SortMemberPath="soundcloud">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <TextBox Text="{Binding SoundCloud}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="username" Classes.auto="{Binding AutoSoundCloud}" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="YouTube" Width="2*" MinWidth="140" Tag="youtube">
+        <DataGridTemplateColumn Header="YouTube" Width="2*" MinWidth="140" Tag="youtube" SortMemberPath="youtube">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <TextBox Text="{Binding YouTube}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="@handle" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Workspaces" Width="1.4*" MinWidth="120">
+        <DataGridTemplateColumn Header="Workspaces" Width="1.4*" CanUserSort="False" MinWidth="120">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <ItemsControl ItemsSource="{Binding Ticks}" Margin="4,4">
@@ -170,7 +170,7 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="YouTube search" Width="142" Tag="youtube_lookup">
+        <DataGridTemplateColumn Header="YouTube search" Width="142" CanUserSort="False" Tag="youtube_lookup">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <CheckBox IsChecked="{Binding YoutubeLookup}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0"
@@ -178,7 +178,7 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Rescan" Width="92">
+        <DataGridTemplateColumn Header="Rescan" Width="92" CanUserSort="False">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <CheckBox IsChecked="{Binding Rescan}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0"
@@ -186,7 +186,7 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Status" Width="2*" MinWidth="150">
+        <DataGridTemplateColumn Header="Status" Width="2*" MinWidth="150" Tag="state" SortMemberPath="state">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <StackPanel Margin="6,8,6,6" Spacing="2" ToolTip.Tip="{Binding StatusText}">
@@ -196,7 +196,7 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="" Width="96">
+        <DataGridTemplateColumn Header="" Width="96" CanUserSort="False">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <StackPanel Spacing="4" Margin="0,6,0,0">

@@ -233,9 +233,8 @@ public partial class TrackedArtistsViewModel : ObservableObject
         }
         OnPropertyChanged(nameof(SpaceChoices));
         var rows = Engine.Table.Rows();
-        // Problems first, then fewest posts, so what needs attention is on top.
-        var ordered = rows.Select(r => ArtistRowViewModel.From(r, Spaces))
-            .OrderBy(r => r.HasIssue ? 0 : r.IsChecking ? 1 : 2).ThenBy(r => r.PostCount).ToList();
+        // In name order, alphabetically (case and accents aside), as the web version loads them.
+        var ordered = rows.Select(r => ArtistRowViewModel.From(r, Spaces)).OrderBy(r => r.Name.Trim(), NameOrder).ToList();
         foreach (var r in ordered) Add(r);
         _savedIds = rows.Select(r => r.Id).ToList();
         Error = "";
@@ -394,13 +393,62 @@ public partial class TrackedArtistsViewModel : ObservableObject
         _loading = false;
     }
 
+    static readonly StringComparer NameOrder = StringComparer.Create(System.Globalization.CultureInfo.CurrentCulture,
+        System.Globalization.CompareOptions.IgnoreCase | System.Globalization.CompareOptions.IgnoreNonSpace);
+
+    // ---------- sorting: click a heading to sort by it; again to reverse; a third time to go back ----------
+
+    [ObservableProperty] private string _sortKey = "";
+    [ObservableProperty] private bool _sortDesc;
+
+    public void SortBy(string key)
+    {
+        if (SortKey != key) (SortKey, SortDesc) = (key, false);
+        else if (!SortDesc) SortDesc = true;
+        else (SortKey, SortDesc) = ("", false);
+        RefreshView();
+    }
+
+    string SortText(ArtistRowViewModel r) => SortKey switch
+    {
+        "name" => r.Name.Trim(), "bandcamp" => r.Bandcamp.Trim(), "soundcloud" => r.SoundCloud.Trim(), "youtube" => r.YouTube.Trim(), _ => "",
+    };
+
+    /// <summary>The rows in the chosen order: problems first then fewest posts for Status, empty cells last either way,
+    /// and rows not yet typed into always at the bottom.</summary>
+    IEnumerable<ArtistRowViewModel> Sorted(IEnumerable<ArtistRowViewModel> rows)
+    {
+        var list = rows.ToList();
+        var blanks = list.Where(r => r.IsBlank).ToList();
+        var rest = list.Where(r => !r.IsBlank).ToList();
+        if (SortKey.Length == 0) return rest.Concat(blanks);
+        int dir = SortDesc ? -1 : 1;
+        rest.Sort((a, b) =>
+        {
+            int c;
+            if (SortKey == "state")
+            {
+                (int, long) Rank(ArtistRowViewModel r) => (r.HasIssue ? 0 : r.IsChecking ? 1 : 2, r.IsNew ? -1 : r.PostCount);
+                c = Rank(a).CompareTo(Rank(b)) * dir;
+            }
+            else
+            {
+                string x = SortText(a), y = SortText(b);
+                if ((x.Length == 0) != (y.Length == 0)) return x.Length == 0 ? 1 : -1;      // empty cells last
+                c = NameOrder.Compare(x, y) * dir;
+            }
+            return c != 0 ? c : a.Order.CompareTo(b.Order);
+        });
+        return rest.Concat(blanks);
+    }
+
     public void RefreshView()
     {
         RefreshShowCounts();
         Visible.Clear();
         var words = FilterText.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var test = Shows().FirstOrDefault(s => s.Key == (Show?.Value ?? "")).Test ?? (_ => true);
-        foreach (var r in Rows)
+        foreach (var r in Sorted(Rows))
         {
             if (!r.IsBlank)
             {

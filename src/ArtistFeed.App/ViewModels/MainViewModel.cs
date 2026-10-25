@@ -118,7 +118,11 @@ public partial class MainViewModel : ObservableObject
         _statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(15) };
         _statusTimer.Tick += (_, _) => UpdateStatus();
         _statusTimer.Start();
-        engine.Refresher.Changed += () => Dispatcher.UIThread.Post(UpdateStatus);
+        engine.Refresher.Changed += () => Dispatcher.UIThread.Post(() =>
+        {
+            try { UpdateStatus(); }
+            catch (InvalidOperationException) { }            // the database has closed: the app is shutting down
+        });
         RebuildChips();
         LoadArtists();
         LoadFacets();

@@ -34,6 +34,22 @@ public partial class TrackedArtistsWindow : Window
         }
     }
 
+    static readonly Dictionary<string, string> Headers = new()
+    {
+        ["name"] = "Artist", ["bandcamp"] = "Bandcamp", ["soundcloud"] = "SoundCloud", ["youtube"] = "YouTube", ["state"] = "Status",
+    };
+
+    /// <summary>Click a heading to sort by it; again to reverse; a third time to go back to name order.</summary>
+    void TableSorting(object? sender, DataGridColumnEventArgs e)
+    {
+        e.Handled = true;
+        if (Vm == null || e.Column.Tag is not string key || !Headers.ContainsKey(key)) return;
+        Vm.SortBy(key);
+        foreach (var col in Table.Columns)
+            if (col.Tag is string k && Headers.TryGetValue(k, out var text))
+                col.Header = k == Vm.SortKey ? text + (Vm.SortDesc ? " ▼" : " ▲") : text;
+    }
+
     void CloseClicked(object? sender, RoutedEventArgs e) => Close();
 
     protected override async void OnClosing(WindowClosingEventArgs e)

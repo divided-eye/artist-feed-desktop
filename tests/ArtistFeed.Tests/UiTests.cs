@@ -717,4 +717,38 @@ public class UiTests
         Assert.False(vm.CanCheckQuiet);
         w.Close();
     }
+
+    [AvaloniaFact]
+    public async Task TrackedArtistsInNameOrderAndSortable()
+    {
+        var (app, vm, w) = await OpenAsync(data: false);
+        using var _ = app;
+        app.Engine.Table.Save(new List<TableRow>
+        {
+            new() { Name = "zed", Cells = { ["soundcloud"] = "zed" } },
+            new() { Name = "Ōme", Cells = { ["soundcloud"] = "ome", ["bandcamp"] = "omemusic" } },
+            new() { Name = "Alpha", Cells = { ["soundcloud"] = "alpha" } },
+            new() { Name = "beta", Cells = { ["soundcloud"] = "beta", ["bandcamp"] = "betamusic" } },
+        });
+        var ta = new TrackedArtistsViewModel(vm);
+        var win = new TrackedArtistsWindow { DataContext = ta, Width = 1240, Height = 800 };
+        win.Show();
+        Dispatcher.UIThread.RunJobs();
+        string[] Names() => ta.Visible.Where(r => !r.IsBlank).Select(r => r.Name).ToArray();
+        Assert.Equal(new[] { "Alpha", "beta", "Ōme", "zed" }, Names());               // alphabetical, case and accents aside
+        ta.SortBy("name");
+        Assert.Equal(new[] { "Alpha", "beta", "Ōme", "zed" }, Names());
+        ta.SortBy("name");
+        Assert.Equal(new[] { "zed", "Ōme", "beta", "Alpha" }, Names());               // reversed
+        ta.SortBy("bandcamp");
+        Assert.Equal(new[] { "beta", "Ōme", "Alpha", "zed" }, Names());               // by Bandcamp; empty cells last
+        ta.SortBy("bandcamp");
+        Assert.Equal(new[] { "Ōme", "beta", "Alpha", "zed" }, Names());               // reversed, empty still last
+        ta.SortBy("bandcamp");
+        Assert.Equal(new[] { "Alpha", "beta", "Ōme", "zed" }, Names());               // third click: back to the loaded order
+        Dispatcher.UIThread.RunJobs();
+        Save(win, "26-tracked-artists-sorted");
+        win.Close();
+        w.Close();
+    }
 }
