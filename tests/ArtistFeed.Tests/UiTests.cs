@@ -751,4 +751,55 @@ public class UiTests
         win.Close();
         w.Close();
     }
+
+    [AvaloniaFact]
+    public async Task ClickingATrackedArtistsHeadingSorts()
+    {
+        var (app, vm, w) = await OpenAsync(data: false);
+        using var _ = app;
+        app.Engine.Table.Save(new List<TableRow>
+        {
+            new() { Name = "zed", Cells = { ["soundcloud"] = "zed" } },
+            new() { Name = "Alpha", Cells = { ["soundcloud"] = "alpha" } },
+        });
+        var ta = new TrackedArtistsViewModel(vm);
+        var win = new TrackedArtistsWindow { DataContext = ta, Width = 1240, Height = 800 };
+        win.Show();
+        Dispatcher.UIThread.RunJobs();
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        var header = Find<Avalonia.Controls.DataGridColumnHeader>(win, h => (h.Content as string ?? "").StartsWith("Artist"));
+        var at = header.TranslatePoint(new Point(header.Bounds.Width / 2, header.Bounds.Height / 2), win)!.Value;
+        win.MouseMove(at);
+        win.MouseDown(at, MouseButton.Left);
+        win.MouseUp(at, MouseButton.Left);
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("name", ta.SortKey);
+        Assert.False(ta.SortDesc);
+        win.MouseDown(at, MouseButton.Left);
+        win.MouseUp(at, MouseButton.Left);
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(ta.SortDesc);
+        Assert.Equal(new[] { "zed", "Alpha" }, ta.Visible.Where(r => !r.IsBlank).Select(r => r.Name));
+        win.Close();
+        w.Close();
+    }
+
+    [AvaloniaFact]
+    public async Task ClickingAListHeadingSorts()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        vm.ShowListCommand.Execute(null);
+        Dispatcher.UIThread.RunJobs();
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        var header = Find<Avalonia.Controls.DataGridColumnHeader>(w, h => (h.Content as string ?? "").StartsWith("Artist"));
+        var at = header.TranslatePoint(new Point(header.Bounds.Width / 2, header.Bounds.Height / 2), w)!.Value;
+        Assert.Equal("posted", vm.SortKey);
+        w.MouseMove(at);
+        w.MouseDown(at, MouseButton.Left);
+        w.MouseUp(at, MouseButton.Left);
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal("artist", vm.SortKey);              // a click on the list's Artist heading sorts by it
+        w.Close();
+    }
 }

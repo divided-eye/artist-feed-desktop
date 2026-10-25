@@ -207,7 +207,7 @@
                     CanUserResizeColumns="True" HeadersVisibility="Column" SelectionMode="Single" IsReadOnly="True" RowHeight="NaN"
                     Sorting="SavedSorting" LoadingRow="SavedLoadingRow">
             <DataGrid.Columns>
-              <DataGridTemplateColumn Header="Artist (tidied)" Width="1.2*" MinWidth="110" SortMemberPath="artist" Tag="artist">
+              <DataGridTemplateColumn Header="Artist (tidied)" Width="1.2*" MinWidth="110" SortMemberPath="artist" CanUserSort="True" Tag="artist">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate x:DataType="vm:SavedRowViewModel">
                     <StackPanel Margin="6,6" Spacing="1">
@@ -217,7 +217,7 @@
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTemplateColumn Header="Title (tidied)" Width="1.4*" MinWidth="120" SortMemberPath="title" Tag="title">
+              <DataGridTemplateColumn Header="Title (tidied)" Width="1.4*" MinWidth="120" SortMemberPath="title" CanUserSort="True" Tag="title">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate x:DataType="vm:SavedRowViewModel">
                     <StackPanel Margin="6,6" Spacing="1">
@@ -227,7 +227,7 @@
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTemplateColumn Header="Your spelling" Width="2*" MinWidth="190" SortMemberPath="list_title" Tag="list_title">
+              <DataGridTemplateColumn Header="Your spelling" Width="2*" MinWidth="190" SortMemberPath="list_title" CanUserSort="True" Tag="list_title">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate x:DataType="vm:SavedRowViewModel">
                     <StackPanel Margin="6,6" Spacing="4">
@@ -257,7 +257,7 @@
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTemplateColumn Header="Link" Width="2.4*" MinWidth="220" SortMemberPath="link" Tag="link">
+              <DataGridTemplateColumn Header="Link" Width="2.4*" MinWidth="220" SortMemberPath="link" CanUserSort="True" Tag="link">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate x:DataType="vm:SavedRowViewModel">
                     <StackPanel Margin="6,6" Spacing="4">
@@ -309,8 +309,8 @@
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" SortMemberPath="year" Tag="year" />
-              <DataGridTemplateColumn Header="Result" Width="1.7*" MinWidth="160" SortMemberPath="result" Tag="result">
+              <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" SortMemberPath="year" CanUserSort="True" Tag="year" />
+              <DataGridTemplateColumn Header="Result" Width="1.7*" MinWidth="160" SortMemberPath="result" CanUserSort="True" Tag="result">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate x:DataType="vm:SavedRowViewModel">
                     <StackPanel Margin="6,6" Spacing="3">
@@ -326,7 +326,7 @@
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTextColumn Header="Saved" Binding="{Binding Saved}" Width="116" SortMemberPath="saved" Tag="saved" />
+              <DataGridTextColumn Header="Saved" Binding="{Binding Saved}" Width="116" SortMemberPath="saved" CanUserSort="True" Tag="saved" />
             </DataGrid.Columns>
           </DataGrid>
         </DockPanel>

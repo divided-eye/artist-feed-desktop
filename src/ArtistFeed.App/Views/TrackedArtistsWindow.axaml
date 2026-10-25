@@ -121,7 +121,7 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Artist" Width="2*" MinWidth="160" Tag="name" SortMemberPath="name">
+        <DataGridTemplateColumn Header="Artist" Width="2*" MinWidth="160" Tag="name" SortMemberPath="name" CanUserSort="True">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <StackPanel Margin="2,4" Spacing="2">
@@ -132,21 +132,21 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Bandcamp" Width="2*" MinWidth="140" Tag="bandcamp" SortMemberPath="bandcamp">
+        <DataGridTemplateColumn Header="Bandcamp" Width="2*" MinWidth="140" Tag="bandcamp" SortMemberPath="bandcamp" CanUserSort="True">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <TextBox Text="{Binding Bandcamp}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="artistname" Classes.auto="{Binding AutoBandcamp}" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="SoundCloud" Width="2*" MinWidth="140" Tag="soundcloud" SortMemberPath="soundcloud">
+        <DataGridTemplateColumn Header="SoundCloud" Width="2*" MinWidth="140" Tag="soundcloud" SortMemberPath="soundcloud" CanUserSort="True">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <TextBox Text="{Binding SoundCloud}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="username" Classes.auto="{Binding AutoSoundCloud}" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="YouTube" Width="2*" MinWidth="140" Tag="youtube" SortMemberPath="youtube">
+        <DataGridTemplateColumn Header="YouTube" Width="2*" MinWidth="140" Tag="youtube" SortMemberPath="youtube" CanUserSort="True">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <TextBox Text="{Binding YouTube}" Margin="2,4" VerticalAlignment="Top" PlaceholderText="@handle" />
@@ -186,7 +186,7 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Status" Width="2*" MinWidth="150" Tag="state" SortMemberPath="state">
+        <DataGridTemplateColumn Header="Status" Width="2*" MinWidth="150" Tag="state" SortMemberPath="state" CanUserSort="True">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate x:DataType="vm:ArtistRowViewModel">
               <StackPanel Margin="6,8,6,6" Spacing="2" ToolTip.Tip="{Binding StatusText}">

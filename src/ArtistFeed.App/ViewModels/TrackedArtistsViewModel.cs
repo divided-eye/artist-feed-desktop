@@ -581,9 +581,13 @@ public partial class TrackedArtistsViewModel : ObservableObject
                     catch (Exception) { }
                     Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                     {
-                        if (!Dirty) Load();
-                        Note = "";
-                        _main.SitesOrArtistsChanged();
+                        try
+                        {
+                            if (!Dirty) Load();
+                            Note = "";
+                            _main.SitesOrArtistsChanged();
+                        }
+                        catch (InvalidOperationException) { }        // the database has closed: the app is shutting down
                     });
                 });
             }

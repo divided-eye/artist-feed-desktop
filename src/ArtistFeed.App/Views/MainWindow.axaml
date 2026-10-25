@@ -279,14 +279,14 @@
                 </DataTemplate>
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTextColumn Header="Artist" Binding="{Binding Artist}" Width="170" Tag="artist" SortMemberPath="artist" />
-            <DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="140" Tag="label" SortMemberPath="label" CellStyleClasses="dim" />
-            <DataGridTextColumn Header="Release" Binding="{Binding Release}" Width="190" Tag="release" SortMemberPath="release" />
-            <DataGridTextColumn Header="Track" Binding="{Binding Track}" Width="*" MinWidth="160" Tag="track" SortMemberPath="track" />
-            <DataGridTextColumn Header="Length" Binding="{Binding Duration}" Width="86" Tag="duration" SortMemberPath="duration" CellStyleClasses="dim" />
-            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" Tag="year" SortMemberPath="year" CellStyleClasses="dim" />
-            <DataGridTextColumn Header="Released" Binding="{Binding Released}" Width="118" Tag="date" SortMemberPath="date" CellStyleClasses="dim" />
-            <DataGridTextColumn Header="Posted" Binding="{Binding Posted}" Width="118" Tag="posted" SortMemberPath="posted" CellStyleClasses="dim" />
+            <DataGridTextColumn Header="Artist" Binding="{Binding Artist}" Width="170" Tag="artist" SortMemberPath="artist" CanUserSort="True" />
+            <DataGridTextColumn Header="Label" Binding="{Binding Label}" Width="140" Tag="label" SortMemberPath="label" CanUserSort="True" CellStyleClasses="dim" />
+            <DataGridTextColumn Header="Release" Binding="{Binding Release}" Width="190" Tag="release" SortMemberPath="release" CanUserSort="True" />
+            <DataGridTextColumn Header="Track" Binding="{Binding Track}" Width="*" MinWidth="160" Tag="track" SortMemberPath="track" CanUserSort="True" />
+            <DataGridTextColumn Header="Length" Binding="{Binding Duration}" Width="86" Tag="duration" SortMemberPath="duration" CanUserSort="True" CellStyleClasses="dim" />
+            <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" Tag="year" SortMemberPath="year" CanUserSort="True" CellStyleClasses="dim" />
+            <DataGridTextColumn Header="Released" Binding="{Binding Released}" Width="118" Tag="date" SortMemberPath="date" CanUserSort="True" CellStyleClasses="dim" />
+            <DataGridTextColumn Header="Posted" Binding="{Binding Posted}" Width="118" Tag="posted" SortMemberPath="posted" CanUserSort="True" CellStyleClasses="dim" />
             <DataGridTemplateColumn Header="Site" Width="120" CanUserSort="False" Tag="site">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate x:DataType="vm:TrackRowViewModel">
