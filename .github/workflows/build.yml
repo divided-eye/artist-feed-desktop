@@ -1,11 +1,16 @@
-# Builds ready-to-run copies for Windows, macOS and Linux: run it from the Actions tab
-# (Build → Run workflow), or push a tag such as v0.5.0. The builds appear under the run's Artifacts.
+# Builds ready-to-run copies for Windows, macOS and Linux.
+# - Push a tag such as v0.5.0: the builds are also published as a release of that name on the repository's
+#   Releases page, with the tag's message as its description. Anyone can download them there, with no
+#   GitHub account, and they don't expire.
+# - Or run it from the Actions tab (Build → Run workflow): the builds appear only under the run's Artifacts.
 # The version shown in the app is the newest tag's (see Directory.Build.targets).
 name: Build
 on:
   workflow_dispatch:
   push:
     tags: ["v*"]
+permissions:
+  contents: write              # to publish a release when a tag is pushed
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,3 +48,17 @@ jobs:
         with: { name: ArtistFeed-mac-intel, path: publish/ArtistFeed-osx-x64 }
       - uses: actions/upload-artifact@v5
         with: { name: ArtistFeed-linux, path: publish/ArtistFeed-linux-x64 }
+      - name: Publish a release (tag pushes only)
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd publish
+          zip -qr ../ArtistFeed-windows.zip ArtistFeed-win-x64
+          zip -qr ../ArtistFeed-mac-apple-silicon.zip ArtistFeed-osx-arm64
+          zip -qr ../ArtistFeed-mac-intel.zip ArtistFeed-osx-x64
+          zip -qr ../ArtistFeed-linux.zip ArtistFeed-linux-x64
+          cd ..
+          gh release create "$GITHUB_REF_NAME" ArtistFeed-windows.zip ArtistFeed-mac-apple-silicon.zip \
+            ArtistFeed-mac-intel.zip ArtistFeed-linux.zip \
+            --title "Artist Feed $GITHUB_REF_NAME" --notes-from-tag --verify-tag --latest

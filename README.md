@@ -35,11 +35,18 @@ beside the status line adds what it has found so far. While it is open it also r
 your Bandcamp purchases in the background (when a Bandcamp username is set in Link Finder) and, with the
 Downloads button on, looks for new purchases and pre-orders that have come out.
 
-**Ready-to-run copies.** The **Build** workflow (GitHub → Actions → Build → Run workflow) makes copies for
-Windows, macOS (Apple silicon and Intel) and Linux that don't need .NET installed. Download one from the run's
-Artifacts, unzip it, and run `ArtistFeed` (`ArtistFeed.exe` on Windows). The zip also holds the user guide
-(`Artist Feed User Guide.docx`, with a `.md` copy), the licence and the icon's notice. They aren't signed, so Windows
-SmartScreen and macOS Gatekeeper ask before the first run (on a Mac: right-click → Open).
+**Ready-to-run copies.** Download the newest version from the
+[Releases page](https://github.com/divided-eye/artist-feed-desktop/releases/latest): pick the zip for your system
+(Windows, Mac with Apple silicon, Mac with Intel, or Linux), unzip it, and run `ArtistFeed` (`ArtistFeed.exe` on
+Windows). No .NET or GitHub account is needed. They aren't signed, so Windows SmartScreen and macOS Gatekeeper
+ask before the first run (on Windows: More info → Run anyway; on a Mac: right-click → Open). The zip also holds the
+user guide (`Artist Feed User Guide.docx`, with a `.md` copy), the licence and the icon's notice.
+
+**Publishing a new version** (for the maintainer): push a tag, for example
+`git tag -a v0.5.0 -m "What changed"` then `git push origin v0.5.0`. The **Build** workflow tests the app, builds
+all four copies and publishes them as a release of that name, with the tag's message as its description. Running
+the workflow by hand (Actions → Build → Run workflow) builds the same copies without publishing a release; they
+appear under that run's Artifacts.
 
 ## Your data
 
