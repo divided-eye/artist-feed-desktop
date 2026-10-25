@@ -15,9 +15,18 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
     /// YouTube) never wait behind Bandcamp, whose requests are spaced out (see Pace).</summary>
     public int Concurrency { get; set; } = 3;
 
-    public sealed record Summary(int Pages, int Checked, int New, int Errors, int Held, bool LookupRunning, string At);
+    /// <summary>Quiet Bandcamp pages rest between checks: a page whose newest release is older than QuietDays is checked
+    /// at most every QuietHours, instead of on every refresh. Pages with a recent release, pages never read, and pages
+    /// with older releases still to load are checked every time. QuietHours 0 = off.</summary>
+    public double QuietDays { get; set; } = 90;
+    public double QuietHours { get; set; } = 6;
+
+    /// <summary>Resting: quiet Bandcamp pages left for a later check. Sites: pages read on each site.</summary>
+    public sealed record Summary(int Pages, int Checked, int New, int Errors, int Held, bool LookupRunning, string At,
+                                 int Resting = 0, IReadOnlyDictionary<string, int>? Sites = null);
     /// <summary>New: posts saved so far by the refreshes running now, which the window offers to show.</summary>
-    public sealed record Progress(int Pages, int Done, int? SecondsLeft, int New = 0);
+    public sealed record Progress(int Pages, int Done, int? SecondsLeft, int New = 0,
+                                  IReadOnlyDictionary<string, (int Pages, int Done)>? By = null);
 
     readonly object _gate = new();
     int _refreshing;
@@ -84,7 +93,14 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
                     left = Math.Max(left, remaining * each);
                 }
             }
-            return new Progress(pages, done, known ? (int)Math.Round(left) : null, _runs.Sum(r => Volatile.Read(ref r.Tally.New)));
+            var by = new Dictionary<string, (int Pages, int Done)>();          // pages per site, for "Bandcamp 40 of 110"
+            foreach (var run in _runs)
+                foreach (var (key, site) in run.By)
+                {
+                    var (p, d) = by.GetValueOrDefault(key);
+                    by[key] = (p + site.Pages, d + site.Done);
+                }
+            return new Progress(pages, done, known ? (int)Math.Round(left) : null, _runs.Sum(r => Volatile.Read(ref r.Tally.New)), by);
         }
     }
 
@@ -156,10 +172,34 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
         }
     }
 
-    /// <summary>Read every page (or just these), several at a time.</summary>
-    public async Task RefreshAsync(IReadOnlyCollection<long>? accountIds = null, CancellationToken ct = default)
+    /// <summary>The quiet Bandcamp pages not due for a check this time: no release in QuietDays, and checked less
+    /// than QuietHours ago.</summary>
+    public HashSet<long> Resting(IEnumerable<Account> accounts)
+    {
+        var resting = new HashSet<long>();
+        if (QuietHours <= 0) return resting;
+        var newest = db.Query("SELECT account_id, MAX(COALESCE(published_at, posted_at)) AS newest FROM posts GROUP BY account_id")
+            .Where(r => r["newest"] is string).ToDictionary(r => (long)r["account_id"]!, r => (string)r["newest"]!);
+        var now = DateTime.UtcNow;
+        var quietBefore = now.AddDays(-QuietDays).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", System.Globalization.CultureInfo.InvariantCulture);
+        var checkedAfter = now.AddHours(-QuietHours).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", System.Globalization.CultureInfo.InvariantCulture);
+        foreach (var a in accounts)
+        {
+            if (a.Source != "bandcamp" || string.IsNullOrEmpty(a.LastChecked) || (a.LastError ?? "").Contains("still to load")) continue;
+            if (newest.TryGetValue(a.Id, out var last) && string.CompareOrdinal(last, quietBefore) < 0
+                && string.CompareOrdinal(a.LastChecked, checkedAfter) > 0)
+                resting.Add(a.Id);
+        }
+        return resting;
+    }
+
+    /// <summary>Read every page (or just these), several at a time. A full refresh leaves out quiet Bandcamp pages not
+    /// due yet (see QuietDays) unless everything is asked for; pages asked for by id (new pages, Check now) are always read.</summary>
+    public async Task RefreshAsync(IReadOnlyCollection<long>? accountIds = null, CancellationToken ct = default, bool everything = false)
     {
         var accounts = db.ListAccounts(accountIds).Where(a => sites.IsOn(a.Source)).ToList();
+        var resting = accountIds == null && !everything ? Resting(accounts) : new HashSet<long>();
+        accounts = accounts.Where(a => !resting.Contains(a.Id)).ToList();
         if (accounts.Count == 0) return;
         Interlocked.Increment(ref _refreshing);
         Held = 0;
@@ -195,7 +235,10 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
                 db.KvSet("refresh_pace", JsonSerializer.Serialize(now));
                 LastRefresh = Db.Now();
                 db.KvSet("last_refresh", LastRefresh);
-                LastResult = new Summary(accounts.Count, tally.Checked, tally.New, tally.Errors, tally.Held, lookupRunning, LastRefresh);
+                Dictionary<string, int> perSite;
+                lock (_gate) perSite = run.By.ToDictionary(kv => kv.Key, kv => kv.Value.Pages);
+                LastResult = new Summary(accounts.Count, tally.Checked, tally.New, tally.Errors, tally.Held, lookupRunning, LastRefresh,
+                                         resting.Count, perSite);
             }
         }
         finally
@@ -206,11 +249,15 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
         }
     }
 
-    /// <summary>The Refresh Feed button: "started", or "queued" behind a refresh already running.</summary>
-    public string RequestRefresh()
+    bool _queuedEverything;
+
+    /// <summary>The Refresh Feed button: "started", or "queued" behind a refresh already running.
+    /// everything: the quiet Bandcamp pages too (Check them now).</summary>
+    public string RequestRefresh(bool everything = false)
     {
         lock (_gate)
         {
+            if (everything && Refreshing) _queuedEverything = true;
             if (_queued) return "queued";
             if (Refreshing)
             {
@@ -220,7 +267,13 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
                     try
                     {
                         while (Refreshing) await Task.Delay(1000);
-                        await RefreshAsync();
+                        bool all;
+                        lock (_gate)
+                        {
+                            all = _queuedEverything;
+                            _queuedEverything = false;
+                        }
+                        await RefreshAsync(everything: all);
                     }
                     catch (Exception) { }
                     finally { _queued = false; Changed?.Invoke(); }
@@ -229,14 +282,14 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
                 return "queued";
             }
         }
-        RefreshInBackground();
+        RefreshInBackground(everything: everything);
         return "started";
     }
 
-    public void RefreshInBackground(IReadOnlyCollection<long>? accountIds = null) =>
+    public void RefreshInBackground(IReadOnlyCollection<long>? accountIds = null, bool everything = false) =>
         _ = Task.Run(async () =>
         {
-            try { await RefreshAsync(accountIds); }
+            try { await RefreshAsync(accountIds, everything: everything); }
             catch (Exception) { }
         });
 

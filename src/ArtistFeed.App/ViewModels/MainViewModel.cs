@@ -400,14 +400,61 @@ public partial class MainViewModel : ObservableObject
 
     static string Plural(int n, string word) => $"{n} {word}{(n == 1 ? "" : "s")}";
 
-    static string Summary(Refresher.Summary? r)
+    static string Summary(Refresher.Summary? r) =>
+        r == null ? "" : " · " + (r.New > 0 ? Plural(r.New, "new post") : "nothing new");
+
+    // "Bandcamp 40 of 110, SoundCloud 80 of 190": pages per site, in the site buttons' order.
+    string SitesText(IEnumerable<(string Key, int Pages, int Done)> sites, bool done)
     {
-        if (r == null) return "";
-        var parts = new List<string> { r.New > 0 ? Plural(r.New, "new post") : "nothing new" };
-        if (r.Held > 0)
-            parts.Add($"{Plural(r.Held, "Bandcamp page")} skipped{(r.LookupRunning ? " while a lookup ran" : "")}, tried again next time");
-        if (r.Errors > 0) parts.Add($"{r.Errors} page{(r.Errors > 1 ? "s" : "")} couldn't be read (see Tracked Artists)");
-        return " · " + string.Join(" · ", parts);
+        var list = sites.ToList();
+        if (list.Count < 2) return "";
+        var order = Engine.Sites.All.Select(x => x.Key).ToList();
+        return string.Join(", ", list.OrderBy(x => order.IndexOf(x.Key) is var i && i >= 0 ? i : 99)
+            .Select(x => $"{Engine.Sites.Label(x.Key)} {(done ? $"{x.Done:N0} of " : "")}{x.Pages:N0}"));
+    }
+
+    public ObservableCollection<string> StatusDetails { get; } = new();
+    [ObservableProperty] private bool _hasStatusDetails;
+    [ObservableProperty] private bool _statusWarn;
+    [ObservableProperty] private bool _canCheckQuiet;
+
+    /// <summary>The details behind the ⓘ beside the status line: one line each.</summary>
+    void ShowStatusDetails(Refresher r, bool refreshing, Refresher.Progress? progress, bool onHold)
+    {
+        var lines = new List<string>();
+        var last = r.LastResult;
+        if (refreshing)
+        {
+            var per = SitesText((progress?.By ?? new Dictionary<string, (int Pages, int Done)>()).Select(kv => (kv.Key, kv.Value.Pages, kv.Value.Done)), true);
+            if (per.Length > 0) lines.Add("Pages checked so far: " + per);
+            if (r.Queued) lines.Add("A full refresh follows when this one ends.");
+        }
+        else if (last != null)
+        {
+            var per = SitesText((last.Sites ?? new Dictionary<string, int>()).Select(kv => (kv.Key, kv.Value, 0)), false);
+            if (per.Length > 0) lines.Add("Pages checked: " + per);
+            if (last.Errors > 0) lines.Add($"{Plural(last.Errors, "page")} couldn't be read (see Tracked Artists).");
+            if (last.Held > 0) lines.Add($"{Plural(last.Held, "Bandcamp page")} skipped{(last.LookupRunning ? " while a lookup ran" : "")}; tried again next time.");
+            if (last.Resting > 0) lines.Add($"{Plural(last.Resting, "quiet Bandcamp page")} (no release in the last few months) left for a later check.");
+        }
+        if (onHold) lines.Add("Bandcamp checks are on hold while a lookup runs or Bandcamp has asked for a pause; they resume on the next refresh.");
+        if (!lines.SequenceEqual(StatusDetails))
+        {
+            StatusDetails.Clear();
+            foreach (var l in lines) StatusDetails.Add(l);
+        }
+        CanCheckQuiet = !refreshing && last?.Resting > 0;
+        HasStatusDetails = lines.Count > 0 || CanCheckQuiet;
+        StatusWarn = !refreshing && last?.Errors > 0;
+    }
+
+    [RelayCommand]
+    void CheckQuiet()
+    {
+        var state = Engine.Refresher.RequestRefresh(everything: true);
+        _wasRefreshing = true;
+        CanCheckQuiet = false;
+        Status = state == "queued" ? "Checking for new posts… (a full refresh follows)" : "Checking for new posts…";
     }
 
     static string ProgressText(Refresher.Progress? p)
@@ -435,10 +482,9 @@ public partial class MainViewModel : ObservableObject
         NewWaiting = refreshing ? Math.Max(0, _newSoFar - _newShown) : 0;
         var onHold = Engine.Pace.OnHold || r.Held > 0;
         Status = refreshing
-            ? "Checking for new posts…" + ProgressText(progress) + (r.Queued ? " (a full refresh follows)" : "")
+            ? "Checking for new posts…" + ProgressText(progress)
             : r.LastRefresh != null ? "Updated " + Show.Ago(r.LastRefresh) + Summary(r.LastResult) : "";
-        if (onHold && !refreshing && !(r.LastResult?.Held > 0)) Status += " · Bandcamp on hold";
-        StatusTip = onHold ? "Bandcamp checks are on hold while Bandcamp has asked for a pause; they resume on the next refresh." : "";
+        ShowStatusDetails(r, refreshing, progress, onHold);
         RefreshDisabled = refreshing && r.Queued;
         RefreshDownloads();
         _statusTimer.Interval = TimeSpan.FromSeconds(refreshing ? 2 : 15);

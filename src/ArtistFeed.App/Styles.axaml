@@ -90,6 +90,33 @@
   <Style Selector="Button.off">
     <Setter Property="Opacity" Value="0.45" />
   </Style>
+  <!-- the ⓘ beside the status line -->
+  <Style Selector="Button.infobtn">
+    <Setter Property="Width" Value="18" />
+    <Setter Property="Height" Value="18" />
+    <Setter Property="MinHeight" Value="18" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="9" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Muted}" />
+    <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+    <Setter Property="FontFamily" Value="Georgia, Times New Roman, serif" />
+    <Setter Property="FontStyle" Value="Italic" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Cursor" Value="Help" />
+  </Style>
+  <Style Selector="Button.infobtn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Text}" />
+    <Setter Property="Foreground" Value="{DynamicResource Text}" />
+  </Style>
+  <Style Selector="Button.infobtn.warn">
+    <Setter Property="BorderBrush" Value="{DynamicResource Warn}" />
+    <Setter Property="Foreground" Value="{DynamicResource Warn}" />
+  </Style>
   <Style Selector="Button.link">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />

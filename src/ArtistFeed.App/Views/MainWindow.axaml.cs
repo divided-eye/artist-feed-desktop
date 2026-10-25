@@ -47,6 +47,12 @@ public partial class MainWindow : Window, IUi
 
     MainViewModel? Vm => DataContext as MainViewModel;
 
+    /// <summary>The ⓘ beside the status line opens its details on hover as well as on click.</summary>
+    void StatusInfoEntered(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        if (sender is Button { Flyout: { IsOpen: false } flyout } b) flyout.ShowAt(b);
+    }
+
     void ClearSearch(object? sender, RoutedEventArgs e)
     {
         if (Vm != null) Vm.Search = "";

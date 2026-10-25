@@ -682,4 +682,39 @@ public class UiTests
         Assert.False(vm.HasNewWaiting);
         w.Close();
     }
+
+    [AvaloniaFact]
+    public async Task RefreshDetailsBehindTheInfoIcon()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        var db = app.Engine.Db;
+        // a quiet Bandcamp page: checked an hour ago, newest release long ago
+        foreach (var a in db.ListAccounts().Where(a => a.Source == "bandcamp"))
+        {
+            db.Execute("UPDATE accounts SET last_checked=? WHERE id=?", DateTime.UtcNow.AddHours(-1).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'"), a.Id);
+            db.Execute("UPDATE posts SET published_at='2020-01-01T00:00:00Z', posted_at=NULL WHERE account_id=?", a.Id);
+        }
+        await app.Engine.Refresher.RefreshAsync();
+        vm.UpdateStatus();
+        Dispatcher.UIThread.RunJobs();
+        Assert.StartsWith("Updated", vm.Status);
+        Assert.DoesNotContain("quiet", vm.Status);                        // the line stays short
+        Assert.True(vm.HasStatusDetails);
+        Assert.Contains(vm.StatusDetails, l => l.StartsWith("Pages checked: "));
+        Assert.Contains(vm.StatusDetails, l => l.Contains("1 quiet Bandcamp page "));
+        Assert.True(vm.CanCheckQuiet);
+        var info = Find<Button>(w, b => b.Name == "StatusInfo");
+        info.Flyout!.ShowAt(info);
+        Dispatcher.UIThread.RunJobs();
+        Save(w, "25-refresh-details");
+        info.Flyout.Hide();
+        vm.CheckQuietCommand.Execute(null);
+        for (int i = 0; i < 200 && app.Engine.Refresher.Refreshing; i++) await Task.Delay(20);
+        await Task.Delay(100);
+        vm.UpdateStatus();
+        Assert.Equal(0, app.Engine.Refresher.LastResult!.Resting);
+        Assert.False(vm.CanCheckQuiet);
+        w.Close();
+    }
 }

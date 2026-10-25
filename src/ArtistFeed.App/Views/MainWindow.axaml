@@ -54,7 +54,27 @@
         </Grid>
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-            <TextBlock Classes="muted" Text="{Binding Status}" ToolTip.Tip="{Binding StatusTip}" TextTrimming="CharacterEllipsis" />
+            <TextBlock Classes="muted" Text="{Binding Status}" TextTrimming="CharacterEllipsis" MaxWidth="560" VerticalAlignment="Center" />
+            <!-- the refresh's details, on hover or click -->
+            <Button x:Name="StatusInfo" Classes="infobtn" Classes.warn="{Binding StatusWarn}" Content="i" IsVisible="{Binding HasStatusDetails}"
+                    VerticalAlignment="Center" PointerEntered="StatusInfoEntered" AutomationProperties.Name="Refresh details">
+              <Button.Flyout>
+                <Flyout Placement="BottomEdgeAlignedLeft" ShowMode="TransientWithDismissOnPointerMoveAway">
+                  <StackPanel Spacing="4" MaxWidth="440" MinWidth="280">
+                    <ItemsControl ItemsSource="{Binding StatusDetails}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                          <TextBlock Text="{Binding}" TextWrapping="Wrap" FontSize="13" Margin="0,0,0,4" />
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Classes="small" Content="Check them now" IsVisible="{Binding CanCheckQuiet}" Command="{Binding CheckQuietCommand}"
+                            HorizontalAlignment="Left" Margin="0,4,0,0"
+                            ToolTip.Tip="Check the quiet Bandcamp pages now as well: a full refresh of every page" />
+                  </StackPanel>
+                </Flyout>
+              </Button.Flyout>
+            </Button>
             <Button Classes="small" Content="{Binding NewWaitingLabel}" IsVisible="{Binding HasNewWaiting}" Command="{Binding ShowNewCommand}"
                     VerticalAlignment="Center" ToolTip.Tip="Add the posts this refresh has found so far; the refresh carries on" />
             <TextBlock Classes="error" Text="{Binding Error}" />

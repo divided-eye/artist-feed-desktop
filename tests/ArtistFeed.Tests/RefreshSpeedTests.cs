@@ -68,4 +68,69 @@ public class RefreshSpeedTests
         var later = await app.Engine.Bandcamp.FetchAsync(client, account, first.Posts.Select(p => p.ExternalId).ToHashSet());
         Assert.Equal(2, later.Posts.Count);                // then MaxNew (2 in the tests) at a time
     }
+
+    static string Ago(TimeSpan t) => (DateTime.UtcNow - t).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", System.Globalization.CultureInfo.InvariantCulture);
+
+    [Fact]
+    public void Quiet_bandcamp_pages_rest_between_checks()
+    {
+        using var app = new TestApp();
+        var db = app.Engine.Db;
+        var r = app.Engine.Refresher;
+        long Page(string site, string? newest, TimeSpan? checkedAgo, string? error = null)
+        {
+            var artist = db.AddArtist("A" + Guid.NewGuid().ToString("N")[..6]);
+            var id = db.AddAccount(artist, site, "h" + artist, $"https://x/{site}/{artist}");
+            db.Execute("UPDATE accounts SET last_checked=?, last_error=? WHERE id=?", checkedAgo is { } c ? Ago(c) : null, error, id);
+            if (newest != null)
+                db.Execute("INSERT INTO posts(account_id, external_id, title, url, published_at, first_seen) VALUES(?,?,?,?,?,?)",
+                           id, "p" + id, "t", "https://x/t" + id, newest, Ago(TimeSpan.Zero));
+            return id;
+        }
+        var old = Ago(TimeSpan.FromDays(400));
+        var quiet = Page("bandcamp", old, TimeSpan.FromHours(1));                              // rests
+        var recent = Page("bandcamp", Ago(TimeSpan.FromDays(10)), TimeSpan.FromHours(1));      // released lately: checked
+        var due = Page("bandcamp", old, TimeSpan.FromHours(7));                                // quiet, but due again
+        var never = Page("bandcamp", old, null);                                               // never read
+        var loading = Page("bandcamp", old, TimeSpan.FromHours(1), "3 older release(s) still to load");
+        var sc = Page("soundcloud", old, TimeSpan.FromHours(1));                               // other sites: always
+        var empty = Page("bandcamp", null, TimeSpan.FromHours(1));                             // nothing saved yet
+        Assert.Equal(new HashSet<long> { quiet }, r.Resting(db.ListAccounts()));
+        r.QuietHours = 0;
+        Assert.Empty(r.Resting(db.ListAccounts()));                                            // switched off
+        _ = (recent, due, never, loading, sc, empty);
+    }
+
+    [Fact]
+    public async Task Check_them_now_reads_the_quiet_pages_too()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "artistfeed-quiet-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var finished = new ConcurrentQueue<string>();
+        var seen = new List<int>();
+        var bc = new Fake("bandcamp", 0, finished: finished, seenNew: seen);
+        var sc = new Fake("soundcloud", 0, finished: finished, seenNew: seen);
+        using (var db = new Db(Path.Combine(folder, "feed.db")))
+        {
+            var refresher = new Refresher(db, new Sites(db, new ISource[] { bc, sc }), new Pace(0, 0, 0), () => new HttpClient());
+            bc.Watch = sc.Watch = refresher;
+            var quiet = db.AddAccount(db.AddArtist("Quiet"), "bandcamp", "q", "https://x/q");
+            db.AddAccount(db.AddArtist("Busy"), "bandcamp", "b", "https://x/b");
+            db.AddAccount(db.AddArtist("Sc"), "soundcloud", "s", "https://x/s");
+            db.Execute("UPDATE accounts SET last_checked=? WHERE id=?", Ago(TimeSpan.FromHours(1)), quiet);
+            db.Execute("INSERT INTO posts(account_id, external_id, title, url, published_at, first_seen) VALUES(?,?,?,?,?,?)",
+                       quiet, "old", "t", "https://x/old", Ago(TimeSpan.FromDays(400)), Ago(TimeSpan.Zero));
+            await refresher.RefreshAsync();
+            Assert.Equal(2, finished.Count);
+            Assert.Equal(1, refresher.LastResult!.Resting);
+            Assert.Equal(new Dictionary<string, int> { ["bandcamp"] = 1, ["soundcloud"] = 1 }, refresher.LastResult.Sites);
+            finished.Clear();
+            db.Execute("UPDATE accounts SET last_checked=? WHERE id=?", Ago(TimeSpan.FromHours(1)), quiet);
+            await refresher.RefreshAsync(everything: true);
+            Assert.Equal(3, finished.Count);
+            Assert.Equal(0, refresher.LastResult!.Resting);
+            Assert.Equal(new Dictionary<string, int> { ["bandcamp"] = 2, ["soundcloud"] = 1 }, refresher.LastResult.Sites);
+        }
+        try { Directory.Delete(folder, true); } catch (IOException) { }
+    }
 }

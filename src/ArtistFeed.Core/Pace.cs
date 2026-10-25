@@ -4,7 +4,7 @@ namespace ArtistFeed.Core;
 
 /// <summary>
 /// One shared pace for every request the app makes to Bandcamp: together they never ask faster
-/// than one request per Gap seconds. When Bandcamp answers 429 ("slow down"), everything pauses
+/// than one request per Gap seconds (1 by default; ARTIST_FEED_BANDCAMP_GAP overrides it). When Bandcamp answers 429 ("slow down"), everything pauses
 /// for the time it asks, and the gap widens for a while afterwards.
 /// Work you are waiting on is "foreground"; the regular feed refresh is "background" and stands
 /// aside completely while foreground work runs or a pause is in force.
@@ -22,7 +22,7 @@ public sealed class Pace
     DateTime _pausedUntil = DateTime.MinValue;
     int _foreground;
 
-    public Pace(double gap = 2, double maxGap = 8, double backoff = 30)
+    public Pace(double gap = 1, double maxGap = 8, double backoff = 30)
     {
         Gap = gap;
         MaxGap = maxGap;

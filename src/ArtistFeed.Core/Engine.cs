@@ -26,7 +26,8 @@ public sealed class Engine : IDisposable
     public Engine(string dbPath, HttpMessageHandler? handler = null, Pace? pace = null)
     {
         Db = new Db(dbPath);
-        Pace = pace ?? new Pace();
+        Pace = pace ?? new Pace(gap: double.TryParse(Environment.GetEnvironmentVariable("ARTIST_FEED_BANDCAMP_GAP"),
+            System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var gap) && gap >= 0 ? gap : 1);
         Bandcamp = new Bandcamp(Db, Pace);
         SoundCloud = new SoundCloud(Db);
         YouTube = new YouTube();
