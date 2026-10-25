@@ -32,7 +32,8 @@ for pages whose older releases are still loading. Each site is read in its own q
 YouTube don't wait behind Bandcamp's spaced-out requests; a Bandcamp page read for the first time opens only
 its two newest releases (the rest follow on the catch-up visits); and while a refresh runs, **Show new posts**
 beside the status line adds what it has found so far. Quiet Bandcamp pages (no release in the last 90 days) are
-checked every 6 hours instead of every hour; **Check them now**, behind the small ⓘ beside the status line, reads
+checked every 6 hours instead of every hour, and when they are due (after the app has been closed for a while,
+say) they are read after the active pages, so new releases don't wait behind them; **Check them now**, behind the small ⓘ beside the status line, reads
 them straight away. That ⓘ also shows the pages checked on each site and anything that went wrong.
 Requests to Bandcamp go one second apart; if Bandcamp keeps asking the app to pause, set the environment variable
 `ARTIST_FEED_BANDCAMP_GAP` to `2` (seconds) before starting the app. While it is open it also reads the full track lists of

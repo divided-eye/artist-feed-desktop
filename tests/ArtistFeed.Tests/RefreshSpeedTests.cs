@@ -133,4 +133,46 @@ public class RefreshSpeedTests
         }
         try { Directory.Delete(folder, true); } catch (IOException) { }
     }
+
+    sealed class Recorder(ConcurrentQueue<long> order) : ISource
+    {
+        public string Key => "bandcamp";
+        public string Label => "Bandcamp";
+        public string Color => "#888888";
+        public string Placeholder => "";
+        public (string Handle, string Url) Normalize(string text) => (text, "https://x/" + text);
+        public Task<FetchResult> FetchAsync(HttpClient client, Account account, HashSet<string> knownIds, CancellationToken ct = default)
+        {
+            order.Enqueue(account.Id);
+            return Task.FromResult(new FetchResult());
+        }
+    }
+
+    [Fact]
+    public async Task Pages_with_recent_releases_are_read_before_quiet_pages_that_are_due()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), "artistfeed-order-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        var order = new ConcurrentQueue<long>();
+        using (var db = new Db(Path.Combine(folder, "feed.db")))
+        {
+            var refresher = new Refresher(db, new Sites(db, new ISource[] { new Recorder(order) }), new Pace(0, 0, 0), () => new HttpClient()) { Concurrency = 1 };
+            long Page(string newest)
+            {
+                var id = db.AddAccount(db.AddArtist("A" + Guid.NewGuid().ToString("N")[..6]), "bandcamp", "h" + Guid.NewGuid().ToString("N")[..6], "https://x/" + Guid.NewGuid());
+                db.Execute("UPDATE accounts SET last_checked=? WHERE id=?", Ago(TimeSpan.FromHours(30)), id);   // the app was closed for a day
+                db.Execute("INSERT INTO posts(account_id, external_id, title, url, published_at, first_seen) VALUES(?,?,?,?,?,?)",
+                           id, "p" + id, "t", "https://x/t" + id, newest, Ago(TimeSpan.Zero));
+                return id;
+            }
+            var quiet1 = Page(Ago(TimeSpan.FromDays(400)));
+            var quiet2 = Page(Ago(TimeSpan.FromDays(300)));
+            var active = Page(Ago(TimeSpan.FromDays(5)));
+            var fresh = db.AddAccount(db.AddArtist("New"), "bandcamp", "new", "https://x/new");      // never read
+            await refresher.RefreshAsync();
+            Assert.Equal(new[] { active, fresh, quiet1, quiet2 }, order.ToArray());                // every page is due; quiet ones last
+            Assert.Equal(0, refresher.LastResult!.Resting);
+        }
+        try { Directory.Delete(folder, true); } catch (IOException) { }
+    }
 }

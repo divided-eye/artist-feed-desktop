@@ -109,19 +109,11 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
         public int Checked, New, Errors, Held;
     }
 
-    async Task ReadOneAsync(HttpClient client, SemaphoreSlim sem, Account account, Tally tally, Run run, CancellationToken ct)
+    async Task ReadOneAsync(HttpClient client, Account account, Tally tally, Run run, CancellationToken ct)
     {
         try
         {
-            await sem.WaitAsync(ct);
-            try
-            {
-                await ReadAsync(client, account, tally, ct);
-            }
-            finally
-            {
-                sem.Release();
-            }
+            await ReadAsync(client, account, tally, ct);
         }
         finally
         {
@@ -174,10 +166,14 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
 
     /// <summary>The quiet Bandcamp pages not due for a check this time: no release in QuietDays, and checked less
     /// than QuietHours ago.</summary>
-    public HashSet<long> Resting(IEnumerable<Account> accounts)
+    public HashSet<long> Resting(IEnumerable<Account> accounts) => QuietPages(accounts, onlyResting: true);
+
+    /// <summary>Bandcamp pages with no release in QuietDays (read before, nothing still to load). onlyResting: just the
+    /// ones checked less than QuietHours ago, which a normal refresh leaves out.</summary>
+    public HashSet<long> QuietPages(IEnumerable<Account> accounts, bool onlyResting = false)
     {
         var resting = new HashSet<long>();
-        if (QuietHours <= 0) return resting;
+        if (onlyResting && QuietHours <= 0) return resting;
         var newest = db.Query("SELECT account_id, MAX(COALESCE(published_at, posted_at)) AS newest FROM posts GROUP BY account_id")
             .Where(r => r["newest"] is string).ToDictionary(r => (long)r["account_id"]!, r => (string)r["newest"]!);
         var now = DateTime.UtcNow;
@@ -187,7 +183,7 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
         {
             if (a.Source != "bandcamp" || string.IsNullOrEmpty(a.LastChecked) || (a.LastError ?? "").Contains("still to load")) continue;
             if (newest.TryGetValue(a.Id, out var last) && string.CompareOrdinal(last, quietBefore) < 0
-                && string.CompareOrdinal(a.LastChecked, checkedAfter) > 0)
+                && (!onlyResting || string.CompareOrdinal(a.LastChecked, checkedAfter) > 0))
                 resting.Add(a.Id);
         }
         return resting;
@@ -215,16 +211,19 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
         Changed?.Invoke();
         try
         {
-            var sems = run.By.Keys.ToDictionary(k => k, _ => new SemaphoreSlim(Concurrency));     // one queue per site
+            // One queue per site, read in order by a few workers each. Quiet Bandcamp pages that are due go last, so pages
+            // with recent releases (and new pages) are read first: after the app has been closed for a while, every quiet
+            // page is due again, and new releases shouldn't wait behind them.
+            var quiet = QuietPages(accounts);
+            var queues = accounts.GroupBy(a => a.Source)
+                .Select(g => new System.Collections.Concurrent.ConcurrentQueue<Account>(g.OrderBy(a => quiet.Contains(a.Id) ? 1 : 0)))
+                .ToList();
             using var client = makeClient();
-            try
+            async Task Worker(System.Collections.Concurrent.ConcurrentQueue<Account> queue)
             {
-                await Task.WhenAll(accounts.Select(a => ReadOneAsync(client, sems[a.Source], a, tally, run, ct)));
+                while (queue.TryDequeue(out var a)) await ReadOneAsync(client, a, tally, run, ct);
             }
-            finally
-            {
-                foreach (var sem in sems.Values) sem.Dispose();
-            }
+            await Task.WhenAll(queues.SelectMany(q => Enumerable.Range(0, Math.Min(Math.Max(1, Concurrency), q.Count)).Select(_ => Worker(q))));
             if (accountIds == null)
             {
                 var now = SavedPace();                           // each site's pace, remembered for the next estimate
