@@ -428,9 +428,14 @@ public partial class MainViewModel : ObservableObject
     {
         var r = Engine.Refresher;
         var refreshing = r.Refreshing;
+        var progress = refreshing ? r.CurrentProgress() : null;
+        // Posts found while a refresh runs can be shown straight away, without waiting for it to end.
+        _newSoFar = progress?.New ?? 0;
+        if (_newSoFar < _newShown) _newShown = 0;                // a new refresh has started
+        NewWaiting = refreshing ? Math.Max(0, _newSoFar - _newShown) : 0;
         var onHold = Engine.Pace.OnHold || r.Held > 0;
         Status = refreshing
-            ? "Checking for new posts…" + ProgressText(r.CurrentProgress()) + (r.Queued ? " (a full refresh follows)" : "")
+            ? "Checking for new posts…" + ProgressText(progress) + (r.Queued ? " (a full refresh follows)" : "")
             : r.LastRefresh != null ? "Updated " + Show.Ago(r.LastRefresh) + Summary(r.LastResult) : "";
         if (onHold && !refreshing && !(r.LastResult?.Held > 0)) Status += " · Bandcamp on hold";
         StatusTip = onHold ? "Bandcamp checks are on hold while Bandcamp has asked for a pause; they resume on the next refresh." : "";
@@ -439,11 +444,33 @@ public partial class MainViewModel : ObservableObject
         _statusTimer.Interval = TimeSpan.FromSeconds(refreshing ? 2 : 15);
         if (_wasRefreshing && !refreshing)
         {
+            _newShown = 0;
             LoadArtists();
             LoadFacets();
             Reload();
         }
         _wasRefreshing = refreshing;
+    }
+
+    int _newSoFar, _newShown;
+    [ObservableProperty] private int _newWaiting;
+    public bool HasNewWaiting => NewWaiting > 0;
+    public string NewWaitingLabel => $"Show {NewWaiting:N0} new post{(NewWaiting == 1 ? "" : "s")}";
+    partial void OnNewWaitingChanged(int value)
+    {
+        OnPropertyChanged(nameof(HasNewWaiting));
+        OnPropertyChanged(nameof(NewWaitingLabel));
+    }
+
+    /// <summary>Add the posts a running refresh has found so far; the refresh carries on.</summary>
+    [RelayCommand]
+    void ShowNew()
+    {
+        _newShown = _newSoFar;
+        NewWaiting = 0;
+        LoadArtists();
+        LoadFacets();
+        Reload();
     }
 
     [RelayCommand]

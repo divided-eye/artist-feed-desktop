@@ -666,4 +666,20 @@ public class UiTests
         Assert.False(Col("year").IsVisible);
         w.Close();
     }
+
+    [AvaloniaFact]
+    public async Task ShowNewPostsWhileARefreshRuns()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        Assert.False(vm.HasNewWaiting);
+        vm.NewWaiting = 24;                                     // as UpdateStatus sets it from the running refresh
+        Dispatcher.UIThread.RunJobs();
+        var btn = Find<Button>(w, b => b.Content as string == "Show 24 new posts");
+        Assert.True(btn.IsVisible);
+        Save(w, "24-show-new-posts");
+        vm.ShowNewCommand.Execute(null);
+        Assert.False(vm.HasNewWaiting);
+        w.Close();
+    }
 }

@@ -55,6 +55,8 @@
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
             <TextBlock Classes="muted" Text="{Binding Status}" ToolTip.Tip="{Binding StatusTip}" TextTrimming="CharacterEllipsis" />
+            <Button Classes="small" Content="{Binding NewWaitingLabel}" IsVisible="{Binding HasNewWaiting}" Command="{Binding ShowNewCommand}"
+                    VerticalAlignment="Center" ToolTip.Tip="Add the posts this refresh has found so far; the refresh carries on" />
             <TextBlock Classes="error" Text="{Binding Error}" />
           </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">

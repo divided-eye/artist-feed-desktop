@@ -28,7 +28,10 @@ dotnet run --project src/ArtistFeed.App
 
 The first start takes a minute while the packages download; later starts take seconds. The app checks your
 tracked pages when it starts and then every hour while it is open, with short catch-up visits in between
-for pages whose older releases are still loading. While it is open it also reads the full track lists of
+for pages whose older releases are still loading. Each site is read in its own queue, so SoundCloud and
+YouTube don't wait behind Bandcamp's spaced-out requests; a Bandcamp page read for the first time opens only
+its two newest releases (the rest follow on the catch-up visits); and while a refresh runs, **Show new posts**
+beside the status line adds what it has found so far. While it is open it also reads the full track lists of
 your Bandcamp purchases in the background (when a Bandcamp username is set in Link Finder) and, with the
 Downloads button on, looks for new purchases and pre-orders that have come out.
 

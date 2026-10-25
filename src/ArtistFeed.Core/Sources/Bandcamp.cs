@@ -21,6 +21,9 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
 
     /// <summary>Release pages opened per page per refresh; a long back catalogue fills in over later refreshes.</summary>
     public int MaxNew { get; set; } = 6;
+    /// <summary>On a page's first read, only its newest releases are opened, so every newly added artist shows up
+    /// quickly; the rest load on the catch-up visits every few minutes (MaxNew at a time).</summary>
+    public int FirstRead { get; set; } = 2;
     /// <summary>A release page that failed this often no longer takes a slot ahead of unread ones.</summary>
     public const int GiveWayAfter = 3;
     public TimeSpan Pause { get; set; } = TimeSpan.Zero;
@@ -513,7 +516,8 @@ public sealed class Bandcamp(Db db, Pace pace) : ISource
             if (stored[it.Url] is JsonNode n && Html.AsNumber(n) is { } count) fails[it.Url] = (int)count;
         fresh = fresh.OrderBy(it => Math.Min(fails.GetValueOrDefault(it.Url), GiveWayAfter)).ToList();   // stable
         int i = 0;
-        foreach (var it in fresh.Take(MaxNew))
+        var limit = knownIds.Count > 0 ? MaxNew : Math.Min(MaxNew, FirstRead);     // a page read for the first time: newest first
+        foreach (var it in fresh.Take(limit))
         {
             if (i++ > 0 && Pause > TimeSpan.Zero) await Task.Delay(Pause, ct);
             Release rel;

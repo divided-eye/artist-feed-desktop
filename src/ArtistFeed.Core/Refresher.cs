@@ -11,10 +11,13 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
     public TimeSpan Every { get; set; } = TimeSpan.FromMinutes(60);
     /// <summary>Pages whose back catalogue is still loading are visited again this often, between full refreshes.</summary>
     public TimeSpan CatchUp { get; set; } = TimeSpan.FromMinutes(10);
+    /// <summary>Pages read at the same time, per site. Each site has its own queue, so the quick sites (SoundCloud,
+    /// YouTube) never wait behind Bandcamp, whose requests are spaced out (see Pace).</summary>
     public int Concurrency { get; set; } = 3;
 
     public sealed record Summary(int Pages, int Checked, int New, int Errors, int Held, bool LookupRunning, string At);
-    public sealed record Progress(int Pages, int Done, int? SecondsLeft);
+    /// <summary>New: posts saved so far by the refreshes running now, which the window offers to show.</summary>
+    public sealed record Progress(int Pages, int Done, int? SecondsLeft, int New = 0);
 
     readonly object _gate = new();
     int _refreshing;
@@ -39,6 +42,7 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
     sealed class Run
     {
         public int Pages, Done;
+        public Tally Tally = new();
         public readonly Stopwatch Started = Stopwatch.StartNew();
         public readonly Dictionary<string, Site> By = new();
     }
@@ -80,7 +84,7 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
                     left = Math.Max(left, remaining * each);
                 }
             }
-            return new Progress(pages, done, known ? (int)Math.Round(left) : null);
+            return new Progress(pages, done, known ? (int)Math.Round(left) : null, _runs.Sum(r => Volatile.Read(ref r.Tally.New)));
         }
     }
 
@@ -159,9 +163,9 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
         if (accounts.Count == 0) return;
         Interlocked.Increment(ref _refreshing);
         Held = 0;
-        var tally = new Tally();
         var lookupRunning = pace.OnHold;
         var run = new Run { Pages = accounts.Count };
+        var tally = run.Tally;
         foreach (var a in accounts)
         {
             if (!run.By.TryGetValue(a.Source, out var s)) run.By[a.Source] = s = new Site();
@@ -171,9 +175,16 @@ public sealed class Refresher(Db db, Sites sites, Pace pace, Func<HttpClient> ma
         Changed?.Invoke();
         try
         {
-            using var sem = new SemaphoreSlim(Concurrency);
+            var sems = run.By.Keys.ToDictionary(k => k, _ => new SemaphoreSlim(Concurrency));     // one queue per site
             using var client = makeClient();
-            await Task.WhenAll(accounts.Select(a => ReadOneAsync(client, sem, a, tally, run, ct)));
+            try
+            {
+                await Task.WhenAll(accounts.Select(a => ReadOneAsync(client, sems[a.Source], a, tally, run, ct)));
+            }
+            finally
+            {
+                foreach (var sem in sems.Values) sem.Dispose();
+            }
             if (accountIds == null)
             {
                 var now = SavedPace();                           // each site's pace, remembered for the next estimate
