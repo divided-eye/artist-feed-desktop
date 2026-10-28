@@ -468,6 +468,81 @@ public class UiTests
     }
 
     [AvaloniaFact]
+    public async Task FindMissingLinksForOneSiteAndOnlyRowsNotSearchedBefore()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        var bc = new List<string>();
+        var sc = new List<string>();
+        app.Web.Extra = r =>
+        {
+            var q = StandIn.QueryOf(r.RequestUri!);
+            if (r.RequestUri!.Host == "bandcamp.com" && r.RequestUri.AbsolutePath == "/search")
+            {
+                lock (bc) bc.Add(q["q"]);
+                var slug = q["q"].ToLowerInvariant().Replace(" ", "");
+                return StandIn.Text($"<ul><li class=\"searchresult\"><div class=\"result-info\"><div class=\"itemtype\">ARTIST</div>" +
+                    $"<div class=\"heading\"><a href=\"https://{slug}.bandcamp.com\">{q["q"]}</a></div>" +
+                    $"<div class=\"itemurl\"><a href=\"https://{slug}.bandcamp.com\">https://{slug}.bandcamp.com</a></div></div></li></ul>");
+            }
+            if (r.RequestUri.Host == "api-v2.soundcloud.com" && r.RequestUri.AbsolutePath == "/search/users")
+            {
+                lock (sc) sc.Add(q["q"]);
+                return StandIn.Json(new JsonObject { ["collection"] = new JsonArray() });
+            }
+            return null;
+        };
+        var ta = new TrackedArtistsViewModel(vm);
+        var win = new TrackedArtistsWindow { DataContext = ta, Width = 1240, Height = 800 };
+        win.Show();
+        Assert.Equal("", ta.FillSite!.Value);                 // both sites, skipping rows searched before: the defaults
+        Assert.True(ta.SkipSearched);
+        ta.PasteText = "Gamma Act\nDelta Act";
+        ta.AddPastedCommand.Execute(null);
+        var gamma = ta.Rows.Single(r => r.Name == "Gamma Act");
+        Assert.Empty(gamma.Searched);
+        ta.FilterText = "act";                                // just these two rows
+
+        // Bandcamp only
+        ta.FillSite = ta.FillSiteOptions.Single(o => o.Value == "bandcamp");
+        await ta.FindMissingCommand.ExecuteAsync(null);
+        Assert.Equal(new[] { "Delta Act", "Gamma Act" }, bc.Order());
+        Assert.Empty(sc);
+        Assert.Equal("gammaact", gamma.Bandcamp);
+        Assert.Equal(new[] { "bandcamp" }, gamma.Searched);
+
+        // both sites: only SoundCloud is left to look for
+        ta.FillSite = ta.FillSiteOptions[0];
+        await ta.FindMissingCommand.ExecuteAsync(null);
+        Assert.Equal(2, bc.Count);
+        Assert.Equal(new[] { "Delta Act", "Gamma Act" }, sc.Order());
+        Assert.Equal(new[] { "bandcamp", "soundcloud" }, gamma.Searched.Order());
+
+        // nothing searched twice while Skip rows already searched is ticked
+        await ta.FindMissingCommand.ExecuteAsync(null);
+        Assert.Equal(2, sc.Count);
+        Assert.Contains("searched before", ta.FillStatus);
+        Dispatcher.UIThread.RunJobs();
+        Save(win, "17b-find-missing-options");
+
+        // a row's own Find links, Rescan, or unticking the box searches again
+        await ta.FindRowCommand.ExecuteAsync(gamma);
+        Assert.Equal(3, sc.Count);
+        ta.SkipSearched = false;
+        await ta.FindMissingCommand.ExecuteAsync(null);
+        Assert.Equal(5, sc.Count);
+
+        // remembered by name in the shared "suggest_searched" entry, and the choices kept
+        var saved = app.Engine.Table.Searched();
+        Assert.Equal(new[] { "bandcamp", "soundcloud" }, saved[ArtistTable.SearchKey("Gamma Act", new Dictionary<string, string>())].Keys.Order());
+        var again = new TrackedArtistsViewModel(vm);
+        Assert.False(again.SkipSearched);
+        Assert.Equal("", again.FillSite!.Value);
+        win.Close();
+        w.Close();
+    }
+
+    [AvaloniaFact]
     public async Task LinkFinderLooksUpEditsAndSaves()
     {
         using var t = new LinkFinderTests.Lookups();
@@ -710,7 +785,7 @@ public class UiTests
         Save(w, "25-refresh-details");
         info.Flyout.Hide();
         vm.CheckQuietCommand.Execute(null);
-        for (int i = 0; i < 200 && app.Engine.Refresher.Refreshing; i++) await Task.Delay(20);
+        for (int i = 0; i < 400 && (app.Engine.Refresher.Refreshing || app.Engine.Refresher.LastResult?.Resting != 0); i++) await Task.Delay(20);   // started, and finished
         await Task.Delay(100);
         vm.UpdateStatus();
         Assert.Equal(0, app.Engine.Refresher.LastResult!.Resting);

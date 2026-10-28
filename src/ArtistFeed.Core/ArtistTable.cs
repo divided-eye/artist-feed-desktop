@@ -22,6 +22,7 @@ public sealed class TableRow
     public List<string> Problems { get; set; } = new();
     public List<string> Skip { get; set; } = new();   // cells cleared on purpose (kept for Find missing links)
     public Dictionary<string, List<string>> Rejected { get; set; } = new();
+    public List<string> Searched { get; set; } = new(); // sites Find missing links has already searched for this artist
 }
 
 public sealed record RowError(int Row, string Message, string Kind = "");
@@ -47,6 +48,56 @@ public sealed class ArtistTable(Db db, Sites sites)
 
     HashSet<string> SameNameOk() => db.KvList("same_name_ok").ToHashSet();
 
+    // Find missing links remembers which sites it has already searched for each artist, so later runs can
+    // leave those rows alone ("Skip rows already searched"). Kept by tidied name: {name: {site: when}}
+    // (the same "suggest_searched" entry as the web version).
+    public Dictionary<string, Dictionary<string, string>> Searched()
+    {
+        var all = new Dictionary<string, Dictionary<string, string>>();
+        try
+        {
+            if (JsonNode.Parse(db.KvGet("suggest_searched") ?? "{}") is JsonObject saved)
+                foreach (var (name, sitesDone) in saved)
+                    if (sitesDone is JsonObject o)
+                        all[name] = o.Where(kv => kv.Value != null).ToDictionary(kv => kv.Key, kv => Html.AsString(kv.Value) ?? "");
+        }
+        catch (System.Text.Json.JsonException) { }
+        return all;
+    }
+
+    /// <summary>The key a row is remembered by: its first name tidied, or its links when it has no name yet.</summary>
+    public static string SearchKey(string name, IReadOnlyDictionary<string, string> cells)
+    {
+        var first = Names.SplitNames(name ?? "").FirstOrDefault() ?? "";
+        if (first.Trim().Length > 0) return Names.Norm(first);
+        return "~" + string.Join("|", cells.Where(kv => (kv.Value ?? "").Trim().Length > 0)
+            .Select(kv => $"{kv.Key}={kv.Value.Trim()}").OrderBy(x => x, StringComparer.Ordinal));
+    }
+
+    /// <summary>Note that these sites were searched for this row (under the name typed, and the name a page gave).</summary>
+    public void RememberSearched(string name, IReadOnlyDictionary<string, string> cells, string foundName, IReadOnlyCollection<string> looked)
+    {
+        if (looked.Count == 0) return;
+        var all = Searched();
+        var now = Db.Now();
+        var keys = new HashSet<string> { SearchKey(name, cells) };
+        if (foundName.Trim().Length > 0) keys.Add(SearchKey(foundName, new Dictionary<string, string>()));
+        keys.Remove("~");
+        foreach (var key in keys)
+        {
+            if (!all.TryGetValue(key, out var done)) all[key] = done = new();
+            foreach (var site in looked) done[site] = now;
+        }
+        var json = new JsonObject();
+        foreach (var (k, v) in all)
+        {
+            var o = new JsonObject();
+            foreach (var (site, when) in v) o[site] = when;
+            json[k] = o;
+        }
+        db.KvSet("suggest_searched", json.ToJsonString());
+    }
+
     public List<TableRow> Rows()
     {
         var rows = new List<TableRow>();
@@ -55,6 +106,7 @@ public sealed class ArtistTable(Db db, Sites sites)
         var youtube = sites.YoutubeNames();
         var same = SameNameOk();
         var groups = sites.Workspaces();
+        var searched = Searched();
         foreach (var a in db.ListArtists())
         {
             var cells = on.ToDictionary(k => k, _ => new List<string>());
@@ -89,6 +141,7 @@ public sealed class ArtistTable(Db db, Sites sites)
                 Problems = problems,
                 Skip = skip,
                 Rejected = rejected,
+                Searched = searched.TryGetValue(key, out var done) ? done.Keys.OrderBy(k => k, StringComparer.Ordinal).ToList() : new(),
             });
         }
         return rows;

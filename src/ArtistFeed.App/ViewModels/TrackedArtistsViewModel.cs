@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Text.Json.Nodes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Text.RegularExpressions;
@@ -47,6 +48,7 @@ public partial class ArtistRowViewModel : ObservableObject
     public long PostCount { get; init; }
     public List<string> Skip { get; init; } = new();
     public Dictionary<string, List<string>> Rejected { get; init; } = new();
+    public List<string> Searched { get; set; } = new();   // sites Find missing links already searched for this row
     public List<string> Problems { get; init; } = new();
     public int Order { get; set; }
 
@@ -99,6 +101,7 @@ public partial class ArtistRowViewModel : ObservableObject
     partial void OnBandcampChanged(string? oldValue, string newValue) => Edited("bandcamp", oldValue, newValue);
     partial void OnSoundCloudChanged(string? oldValue, string newValue) => Edited("soundcloud", oldValue, newValue);
     partial void OnRescanChanged(bool value) => OnPropertyChanged(nameof(HasOpen));
+    internal void OpenChanged() => OnPropertyChanged(nameof(HasOpen));
     partial void OnSearchingChanged(bool value) => OnPropertyChanged(nameof(StatusShort));
 
     /// <summary>A tick for each workspace; ticking one marks the row changed (as "Groups").</summary>
@@ -179,7 +182,7 @@ public partial class ArtistRowViewModel : ObservableObject
 
     static ArtistRowViewModel From(TableRow r) => new()
     {
-        Id = r.Id, PostCount = r.PostCount, Skip = r.Skip, Rejected = r.Rejected, Problems = r.Problems,
+        Id = r.Id, PostCount = r.PostCount, Skip = r.Skip, Rejected = r.Rejected, Searched = r.Searched, Problems = r.Problems,
         Name = r.Name, Bandcamp = r.Cells.GetValueOrDefault("bandcamp") ?? "", SoundCloud = r.Cells.GetValueOrDefault("soundcloud") ?? "",
         YouTube = r.Cells.GetValueOrDefault("youtube") ?? "", YoutubeLookup = r.YoutubeLookup == true, SameName = r.SameName,
         KeepSeparate = r.SameName,
@@ -216,6 +219,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
     public TrackedArtistsViewModel(MainViewModel main)
     {
         _main = main;
+        LoadFillPrefs();
         Load();
     }
 
@@ -250,7 +254,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
 
     void Add(ArtistRowViewModel r)
     {
-        r.OpenCells = Open;
+        r.OpenCells = x => Wanted(x, true);
         r.Order = Rows.Count;
         r.PropertyChanged += RowChanged;
         Rows.Add(r);
@@ -284,24 +288,65 @@ public partial class TrackedArtistsViewModel : ObservableObject
 
     partial void OnFillingChanged(bool value) => OnPropertyChanged(nameof(FillLabel));
 
+    /// <summary>What Find missing links looks for: both sites, or one.</summary>
+    public List<Option> FillSiteOptions { get; } = new()
+    {
+        new("", "Bandcamp and SoundCloud"), new("bandcamp", "Bandcamp only"), new("soundcloud", "SoundCloud only"),
+    };
+    [ObservableProperty] private Option? _fillSite;
+    /// <summary>Leave out the sites a row has already been searched for (unless its Rescan is ticked).</summary>
+    [ObservableProperty] private bool _skipSearched = true;
+    bool _fillPrefsLoaded;
+
+    void LoadFillPrefs()
+    {
+        var p = Html.ParseJson(Engine.Db.KvGet("desktop_find")) as JsonObject;
+        var site = Html.AsString(p?["sites"]) ?? "";
+        FillSite = FillSiteOptions.FirstOrDefault(o => o.Value == site) ?? FillSiteOptions[0];
+        SkipSearched = p?["skipSearched"] is JsonValue v && v.TryGetValue<bool>(out var b) ? b : true;
+        _fillPrefsLoaded = true;
+    }
+
+    void SaveFillPrefs()
+    {
+        if (!_fillPrefsLoaded) return;
+        Engine.Db.KvSet("desktop_find", new JsonObject { ["sites"] = FillSite?.Value ?? "", ["skipSearched"] = SkipSearched }.ToJsonString());
+    }
+
+    partial void OnFillSiteChanged(Option? value) { SaveFillPrefs(); foreach (var r in Rows) r.OpenChanged(); }
+    partial void OnSkipSearchedChanged(bool value) => SaveFillPrefs();
+
+    /// <summary>The cells this run looks for in a row: its open cells, on the chosen site, and (unless it's
+    /// a single row's Find links, Rescan is ticked or Skip rows already searched is off) not searched before.</summary>
+    List<string> Wanted(ArtistRowViewModel r, bool single)
+    {
+        var site = FillSite?.Value ?? "";
+        return Open(r).Where(c => c == "name" || site.Length == 0 || c == site)
+            .Where(c => c == "name" || single || r.Rescan || !SkipSearched || !r.Searched.Contains(c)).ToList();
+    }
+
     /// <summary>Every row with something missing; while the table is filtered, only the rows shown.</summary>
     [RelayCommand]
     Task FindMissing()
     {
         if (Filling) { _fillStop?.Cancel(); return Task.CompletedTask; }
-        return FillAsync((Filtered ? Visible.ToList() : Rows.ToList()), Filtered ? "in the rows shown" : "");
+        return FillAsync((Filtered ? Visible.ToList() : Rows.ToList()), Filtered ? "in the rows shown" : "", false);
     }
 
     /// <summary>One row's own Find links.</summary>
     [RelayCommand]
-    Task FindRow(ArtistRowViewModel row) => Filling ? Task.CompletedTask : FillAsync(new() { row }, "in that row");
+    Task FindRow(ArtistRowViewModel row) => Filling ? Task.CompletedTask : FillAsync(new() { row }, "in that row", true);
 
-    async Task FillAsync(List<ArtistRowViewModel> pool, string where)
+    async Task FillAsync(List<ArtistRowViewModel> pool, string where, bool single)
     {
-        var todo = pool.Where(r => !r.IsBlank && !r.Remove && Open(r).Count > 0).ToList();
+        var live = pool.Where(r => !r.IsBlank && !r.Remove).ToList();
+        var todo = live.Where(r => Wanted(r, single).Count > 0).ToList();
         if (todo.Count == 0)
         {
-            FillStatus = $"Nothing to look for{(where.Length > 0 ? " " + where : "")}. Cells you cleared are left alone; tick Rescan on a row to search it again.";
+            var allSearched = !single && SkipSearched && live.Any(r => Wanted(r, true).Count > 0);
+            FillStatus = $"Nothing to look for{(where.Length > 0 ? " " + where : "")}. " + (allSearched
+                ? "Every row with a missing link has been searched before: untick Skip rows already searched, or tick Rescan on a row, to search again."
+                : "Cells you cleared are left alone; tick Rescan on a row to search it again.");
             return;
         }
         Filling = true;
@@ -318,7 +363,9 @@ public partial class TrackedArtistsViewModel : ObservableObject
                 FillStatus = $"Looking for missing links: {++n} of {todo.Count} ({(row.Name.Trim().Length > 0 ? row.Name : row.Bandcamp + row.SoundCloud)})…";
                 row.Searching = true;
                 var cells = new Dictionary<string, string> { ["bandcamp"] = row.Bandcamp, ["soundcloud"] = row.SoundCloud };
-                var skip = row.Rescan ? new List<string>() : row.Skip.ToList();
+                var wanted = Wanted(row, single);
+                var skip = (row.Rescan ? new List<string>() : row.Skip.ToList())
+                    .Concat(new[] { "bandcamp", "soundcloud" }.Where(c => !wanted.Contains(c))).Distinct().ToList();
                 var avoid = row.Rejected.ToDictionary(kv => kv.Key, kv => kv.Value.ToList());
                 var name = row.Name;
                 Suggestion found;
@@ -330,7 +377,8 @@ public partial class TrackedArtistsViewModel : ObservableObject
                 catch (BlockedException e) { Error = e.Message; break; }
                 catch (Exception e) { Error = $"Couldn't look that up ({e.Message})."; break; }
                 finally { row.Searching = false; }
-                var open = Open(row);                    // never over something typed meanwhile, or a cleared cell
+                row.Searched = row.Searched.Union(found.Searched).ToList();
+                var open = Open(row).Where(wanted.Contains).ToList();   // never over something typed meanwhile, or a cleared cell
                 row.Filling = true;
                 if (found.Name.Length > 0 && open.Contains("name")) { row.Name = found.Name; row.AutoName = true; filled++; }
                 foreach (var (col, value) in found.Cells)

@@ -5,7 +5,11 @@ using System.Text.RegularExpressions;
 namespace ArtistFeed.Core;
 
 /// <summary>What could fill a Tracked Artists row's empty cells: guesses, to be reviewed before saving.</summary>
-public sealed record Suggestion(string Name, Dictionary<string, string> Cells, string Note);
+public sealed record Suggestion(string Name, Dictionary<string, string> Cells, string Note)
+{
+    /// <summary>The sites this search looked on (remembered for "Skip rows already searched").</summary>
+    public List<string> Searched { get; init; } = new();
+}
 
 public sealed class BlockedException(string message) : Exception(message);
 
@@ -143,6 +147,17 @@ public sealed class Suggester(Engine engine)
     /// <param name="avoid">Pages already offered and turned down, per site: never offered again.</param>
     public async Task<Suggestion> SuggestAsync(string name, IReadOnlyDictionary<string, string> cells, IEnumerable<string> skip,
                                                IReadOnlyDictionary<string, List<string>> avoid, CancellationToken ct = default)
+    {
+        var skipped = skip.ToList();
+        var looked = new[] { "bandcamp", "soundcloud" }
+            .Where(k => (cells.GetValueOrDefault(k) ?? "").Trim().Length == 0 && !skipped.Contains(k) && engine.Sites.IsOn(k)).ToList();
+        var found = await GuessAsync(name, cells, skipped, avoid, ct);
+        engine.Table.RememberSearched(name, cells, name.Trim().Length > 0 ? "" : found.Name, looked);
+        return found with { Searched = looked };
+    }
+
+    async Task<Suggestion> GuessAsync(string name, IReadOnlyDictionary<string, string> cells, IEnumerable<string> skip,
+                                      IReadOnlyDictionary<string, List<string>> avoid, CancellationToken ct)
     {
         name = (Names.SplitNames(name).FirstOrDefault() ?? "").Trim();       // other names in the cell are aliases
         var typed = name;
