@@ -219,8 +219,8 @@ public partial class MainWindow : Window, IUi
 
     // ---------- dialogs and other windows ----------
 
-    public Task<bool> ConfirmAsync(string title, string message, string yes = "OK", string no = "Cancel") =>
-        ConfirmDialog.AskAsync(Front, title, message, yes, no);
+    public Task<bool> ConfirmAsync(string title, string message, string yes = "OK", string no = "Cancel", bool danger = false) =>
+        ConfirmDialog.AskAsync(Front, title, message, yes, no, danger);
 
     public async Task<string?> SaveFileAsync(string title, string suggestedName, string text)
     {

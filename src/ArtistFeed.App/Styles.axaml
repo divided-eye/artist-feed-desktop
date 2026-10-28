@@ -60,6 +60,43 @@
   <Style Selector="Button.primary">
     <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
+  <!-- Clear all, and "yes" in a warning that can't be undone -->
+  <Style Selector="Button.danger">
+    <Setter Property="Foreground" Value="{DynamicResource Danger}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Danger}" />
+  </Style>
+  <Style Selector="Button.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Danger}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Danger}" />
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+  <!-- the labels over the Tracked Artists button groups -->
+  <Style Selector="TextBlock.tlabel">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+  </Style>
+  <!-- Look on: Both / Bandcamp / SoundCloud as joined buttons -->
+  <Style Selector="ListBox.segpick">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="ClipToBounds" Value="True" />
+  </Style>
+  <Style Selector="ListBox.segpick ListBoxItem">
+    <Setter Property="Padding" Value="12,6" />
+    <Setter Property="Foreground" Value="{DynamicResource Muted}" />
+    <Setter Property="MinHeight" Value="0" />
+  </Style>
+  <Style Selector="ListBox.segpick ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Panel2}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+    <Setter Property="BorderThickness" Value="0,0,0,2" />
+  </Style>
+  <Style Selector="ListBox.segpick ListBoxItem:selected">
+    <Setter Property="Foreground" Value="{DynamicResource Text}" />
+  </Style>
   <!-- A Save button with nothing to save looks quiet. -->
   <Style Selector="Button.primary.clean">
     <Setter Property="Background" Value="Transparent" />

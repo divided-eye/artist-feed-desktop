@@ -291,7 +291,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
     /// <summary>What Find missing links looks for: both sites, or one.</summary>
     public List<Option> FillSiteOptions { get; } = new()
     {
-        new("", "Bandcamp and SoundCloud"), new("bandcamp", "Bandcamp only"), new("soundcloud", "SoundCloud only"),
+        new("", "Both"), new("bandcamp", "Bandcamp"), new("soundcloud", "SoundCloud"),
     };
     [ObservableProperty] private Option? _fillSite;
     /// <summary>Leave out the sites a row has already been searched for (unless its Rescan is ticked).</summary>
@@ -505,7 +505,15 @@ public partial class TrackedArtistsViewModel : ObservableObject
             }
             Visible.Add(r);
         }
+        OnPropertyChanged(nameof(ClearLabel));
+        OnPropertyChanged(nameof(ClearTip));
     }
+
+    // Clear all works like Find missing links: while the table is filtered it empties only the rows shown, and says so.
+    int ShownCount => Visible.Count(r => !r.IsBlank);
+    public string ClearLabel => Filtered ? $"Clear {ShownCount} shown row{(ShownCount == 1 ? "" : "s")}" : "Clear all";
+    public string ClearTip => Filtered ? "Remove only the rows shown by the filter (nothing is removed until you save)"
+                                       : "Empty the whole table (nothing is removed until you save)";
 
     partial void OnFilterTextChanged(string value)
     {
@@ -564,12 +572,22 @@ public partial class TrackedArtistsViewModel : ObservableObject
     [RelayCommand]
     async Task ClearAll()
     {
-        var n = Rows.Count(r => !r.IsBlank);
+        var some = Filtered;                                  // filtered: only the rows shown
+        var going = (some ? Visible : Rows).Where(r => !r.IsBlank).ToList();
+        var n = going.Count;
+        var left = Rows.Count(r => !r.IsBlank) - n;
         if (n == 0 || Ui == null) return;
-        if (!await Ui.ConfirmAsync("Clear All", $"Are you sure? This empties all {n} row{(n > 1 ? "s" : "")} of the table. Nothing is removed " +
-                                                "from the feed until you press Save changes, and Discard brings the rows back.", "Empty the table")) return;
-        foreach (var r in Rows) r.PropertyChanged -= RowChanged;
-        Rows.Clear();
+        var ask = some
+            ? $"Remove the {n} row{(n > 1 ? "s" : "")} shown by the filter? The other {left} row{(left == 1 ? " stays" : "s stay")}. "
+            : $"Are you sure? This empties all {n} row{(n > 1 ? "s" : "")} of the table. ";
+        if (!await Ui.ConfirmAsync(some ? "Clear shown rows" : "Clear all", ask + "Nothing is removed from the feed until you press Save changes, " +
+                                   "and Discard brings the rows back.", some ? "Remove them" : "Empty the table")) return;
+        foreach (var r in some ? going : Rows.ToList())
+        {
+            r.PropertyChanged -= RowChanged;
+            Rows.Remove(r);
+        }
+        FillStatus = "";
         Dirty = true;
         RefreshView();
     }
@@ -596,6 +614,12 @@ public partial class TrackedArtistsViewModel : ObservableObject
         var removed = _savedIds.Count(id => !staying.Contains(id));
         if (removed > 0 && Ui != null && !await Ui.ConfirmAsync("Stop tracking",
                 $"This stops tracking {removed} artist{(removed > 1 ? "s" : "")} and removes their posts from the feed. Continue?", "Continue"))
+            return;
+        // Saving an empty list (Clear all, then Save) asks once more, since it can't be undone.
+        if (removed > 0 && removed == _savedIds.Count && Ui != null && !await Ui.ConfirmAsync("Clear your whole Tracked Artists list?",
+                $"All {removed} artist{(removed > 1 ? "s" : "")} will stop being tracked and their posts will be removed from the feed. " +
+                "This can't be undone: to get the list back you'd have to add the artists again (Export CSV first to keep a copy).",
+                "Yes, clear everything", "Keep my list", danger: true))
             return;
         Error = "";
         foreach (var r in Rows)

@@ -87,8 +87,10 @@ versions shouldn't share one file while both are running.
 - **Import follows** (Tracked Artists): add the profiles a SoundCloud account follows, or the artists and labels a public Bandcamp fan page follows.
 - **Find missing links** (Tracked Artists): fills empty Bandcamp, SoundCloud and name cells with highlighted guesses
   to check; only the rows shown while the table is filtered, or one row with its own Find links; Rescan and
-  remembered cleared cells; a menu to look for both sites or just one; Skip rows already searched (ticked by
+  remembered cleared cells; Look on (Both, Bandcamp or SoundCloud); Only rows not searched yet (ticked by
   default) leaves out rows already searched for that site. All as in the web version.
+- **Clear all** (Tracked Artists): while the table is filtered it removes only the rows shown (the button says how
+  many); saving a completely empty list asks once more, with Keep my list as the default.
 - **Link Finder**: paste a tracklist or choose an Excel or CSV file, and each track's link is looked for in
   your feed, your Bandcamp purchases, Bandcamp search and the artist's own pages, then on the other sites
   ticked in Settings. Skip a row while it runs, set a link yourself (Add link / Edit), keep a link marked for

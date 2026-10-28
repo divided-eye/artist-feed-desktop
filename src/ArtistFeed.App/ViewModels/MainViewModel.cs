@@ -13,7 +13,7 @@ namespace ArtistFeed.App.ViewModels;
 /// <summary>What the window can do for a view model: ask, pick files, open other windows.</summary>
 public interface IUi
 {
-    Task<bool> ConfirmAsync(string title, string message, string yes = "OK", string no = "Cancel");
+    Task<bool> ConfirmAsync(string title, string message, string yes = "OK", string no = "Cancel", bool danger = false);
     Task<string?> SaveFileAsync(string title, string suggestedName, string text);
     Task<string?> OpenTextFileAsync(string title);
     Task<string?> OpenDatabaseFileAsync();

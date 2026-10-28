@@ -18,26 +18,31 @@
           <Button Content="Close" Click="CloseClicked" />
         </StackPanel>
       </Grid>
-      <WrapPanel Orientation="Horizontal" ItemSpacing="8" LineSpacing="8">
-        <Button Content="Add row" Command="{Binding AddRowCommand}" />
-        <Button Content="Import CSV" Command="{Binding ImportCsvCommand}" />
-        <Button Content="{Binding FillLabel}" Command="{Binding FindMissingCommand}"
-                ToolTip.Tip="Look for the Bandcamp pages and SoundCloud profiles rows are missing. While the table is filtered, only the rows shown are searched; each row also has its own Find links." />
-        <ComboBox ItemsSource="{Binding FillSiteOptions}" SelectedItem="{Binding FillSite}" IsEnabled="{Binding !Filling}"
-                  ToolTip.Tip="Which links Find missing links looks for. A missing name is filled in either way." />
-        <CheckBox Content="Skip rows already searched" IsChecked="{Binding SkipSearched}" IsEnabled="{Binding !Filling}" VerticalAlignment="Center"
-                  ToolTip.Tip="Search a row only for the sites it hasn't been searched for before. Untick to search every row again, or tick Rescan on one row." />
-        <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" />
-        <ToggleButton Content="Import follows" IsChecked="{Binding ShowFollows, Mode=OneWay}" Command="{Binding ToggleFollowsCommand}"
-                      ToolTip.Tip="Add the artists and labels a SoundCloud account or Bandcamp fan follows" />
-        <ToggleButton Content="Workspaces" IsChecked="{Binding ShowSpaces, Mode=OneWay}" Command="{Binding ToggleSpacesCommand}"
-                      ToolTip.Tip="Name the groups of artists you can show on their own (Focus is the first)" />
-        <Button Content="Clear All" Command="{Binding ClearAllCommand}" ToolTip.Tip="Empty the whole table (nothing is removed until you save)" />
-        <TextBox Text="{Binding FilterText}" PlaceholderText="Filter rows" Width="200" ToolTip.Tip="Show only rows containing these words" />
-        <ComboBox ItemsSource="{Binding ShowOptions}" SelectedItem="{Binding Show}" ToolTip.Tip="Which rows to show" />
+      <WrapPanel Orientation="Horizontal" ItemSpacing="6" LineSpacing="8">
+        <StackPanel Spacing="4">
+          <TextBlock Classes="tlabel" Text="Add artists" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="Add row" Command="{Binding AddRowCommand}" />
+            <Button Content="Import CSV" Command="{Binding ImportCsvCommand}" />
+            <ToggleButton Content="Import follows ▾" IsChecked="{Binding ShowFollows, Mode=OneWay}" Command="{Binding ToggleFollowsCommand}"
+                          ToolTip.Tip="Add the artists and labels a SoundCloud account or Bandcamp fan follows" />
+          </StackPanel>
+        </StackPanel>
+        <Border Width="1" Background="{DynamicResource Line}" Margin="8,0" />
+        <StackPanel Spacing="4">
+          <TextBlock Classes="tlabel" Text="Organize" />
+          <ToggleButton Content="Workspaces ▾" IsChecked="{Binding ShowSpaces, Mode=OneWay}" Command="{Binding ToggleSpacesCommand}"
+                        ToolTip.Tip="Name the groups of artists you can show on their own (Focus is the first)" />
+        </StackPanel>
+        <Border Width="1" Background="{DynamicResource Line}" Margin="8,0" />
+        <StackPanel Spacing="4">
+          <TextBlock Classes="tlabel" Text="Table" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" />
+            <Button x:Name="ClearButton" Classes="danger" Content="{Binding ClearLabel}" Command="{Binding ClearAllCommand}" ToolTip.Tip="{Binding ClearTip}" />
+          </StackPanel>
+        </StackPanel>
       </WrapPanel>
-      <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="13"
-                 Text="One row per artist. Type in the cells, or import or paste a list. Leave a cell empty if the artist isn't on that site; separate several pages in one cell with commas. The Artist cell can hold other names the artist goes by, after commas: the first is shown in the feed (put a name that contains a comma in &quot;double quotes&quot;). Find missing links fills empty Bandcamp, SoundCloud and name cells with its best guess, highlighted: check them, then Save changes. The menu beside it picks one site or both, and Skip rows already searched leaves out rows already searched for that site. A cell you clear stays empty on later runs unless you tick that row's Rescan box. Changes take effect when you press Save changes. Click a heading (Artist, a site, Status) to sort by it; again to reverse; a third time to go back to name order." />
       <Border Classes="subpanel" IsVisible="{Binding ShowFollows}">
         <StackPanel Spacing="8">
           <StackPanel Orientation="Horizontal" Spacing="8">
@@ -97,9 +102,41 @@
           <Button Content="Add workspace" Command="{Binding AddSpaceCommand}" HorizontalAlignment="Left" />
         </StackPanel>
       </Border>
+      <Border BorderBrush="{DynamicResource Line}" BorderThickness="1" CornerRadius="10" Padding="12,10">
+        <StackPanel Spacing="8">
+          <WrapPanel ItemSpacing="10">
+            <TextBlock Text="Find missing links" FontWeight="SemiBold" />
+            <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap" VerticalAlignment="Center"
+                       Text="Fills empty Bandcamp, SoundCloud and name cells with its best guess, highlighted: check them, then Save changes." />
+          </WrapPanel>
+          <DockPanel>
+            <Button DockPanel.Dock="Right" Content="{Binding FillLabel}" Command="{Binding FindMissingCommand}"
+                    ToolTip.Tip="Look for the Bandcamp pages and SoundCloud profiles rows are missing. While the table is filtered, only the rows shown are searched; each row also has its own Find links." />
+            <StackPanel Orientation="Horizontal" Spacing="16">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Classes="muted" Text="Look on" VerticalAlignment="Center" />
+                <ListBox Classes="segpick" ItemsSource="{Binding FillSiteOptions}" SelectedItem="{Binding FillSite}" IsEnabled="{Binding !Filling}"
+                         ToolTip.Tip="Which links Find missing links looks for. A missing name is filled in either way.">
+                  <ListBox.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate></ListBox.ItemsPanel>
+                  <ListBox.ItemTemplate><DataTemplate x:DataType="vm:Option"><TextBlock Text="{Binding Text}" /></DataTemplate></ListBox.ItemTemplate>
+                </ListBox>
+              </StackPanel>
+              <CheckBox Content="Only rows not searched yet" IsChecked="{Binding SkipSearched}" IsEnabled="{Binding !Filling}" VerticalAlignment="Center"
+                        ToolTip.Tip="Search a row only for the sites it hasn't been searched for before. Untick to search every row again, or tick Rescan on one row." />
+            </StackPanel>
+          </DockPanel>
+          <TextBlock Text="{Binding FillStatus}" Classes="muted" FontSize="13" TextWrapping="Wrap" IsVisible="{Binding FillStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+      </Border>
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <TextBlock Classes="tlabel" Text="Show" VerticalAlignment="Center" />
+        <TextBox Text="{Binding FilterText}" PlaceholderText="Filter rows" Width="200" ToolTip.Tip="Show only rows containing these words" />
+        <ComboBox ItemsSource="{Binding ShowOptions}" SelectedItem="{Binding Show}" ToolTip.Tip="Which rows to show" />
+      </StackPanel>
+      <TextBlock Classes="muted" TextWrapping="Wrap" FontSize="13"
+                 Text="One row per artist. Type in the cells, or import or paste a list. Leave a cell empty if the artist isn't on that site; separate several pages in one cell with commas. The Artist cell can hold other names the artist goes by, after commas: the first is shown in the feed (put a name that contains a comma in &quot;double quotes&quot;). Find missing links fills empty Bandcamp, SoundCloud and name cells with its best guess, highlighted: check them, then Save changes. While the table is filtered, Find missing links and Clear work on the rows shown only. A cell you clear stays empty on later runs unless you tick that row's Rescan box. Changes take effect when you press Save changes. Click a heading (Artist, a site, Status) to sort by it; again to reverse; a third time to go back to name order." />
       <WrapPanel Orientation="Horizontal" ItemSpacing="12">   <!-- a long message wraps instead of running off the edge -->
         <TextBlock Text="{Binding Note}" Foreground="{DynamicResource AccentInk}" TextWrapping="Wrap" />
-        <TextBlock Text="{Binding FillStatus}" Classes="muted" TextWrapping="Wrap" />
         <TextBlock Classes="error" Text="{Binding Error}" TextWrapping="Wrap" />
       </WrapPanel>
     </StackPanel>

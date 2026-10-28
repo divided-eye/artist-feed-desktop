@@ -467,6 +467,67 @@ public class UiTests
         w.Close();
     }
 
+    /// <summary>Answers "are you sure?" questions and remembers them; nothing else is needed here.</summary>
+    sealed class AskingUi(Func<string, bool> answer) : IUi
+    {
+        public List<(string Title, bool Danger)> Asked { get; } = new();
+        public Task<bool> ConfirmAsync(string title, string message, string yes = "OK", string no = "Cancel", bool danger = false)
+        {
+            Asked.Add((title, danger));
+            return Task.FromResult(answer(title));
+        }
+        public Task<string?> SaveFileAsync(string title, string suggestedName, string text) => throw new NotSupportedException();
+        public Task<string?> OpenTextFileAsync(string title) => throw new NotSupportedException();
+        public Task<string?> OpenDatabaseFileAsync() => throw new NotSupportedException();
+        public Task<byte[]?> OpenTableFileAsync(string title) => throw new NotSupportedException();
+        public Task ShowTrackedArtistsAsync() => throw new NotSupportedException();
+        public Task ShowLinkFinderAsync() => throw new NotSupportedException();
+        public Task ShowSettingsAsync() => throw new NotSupportedException();
+        public void ShowPlayer(PlayItem item, PlayerPage page) => throw new NotSupportedException();
+        public void HidePlayer() => throw new NotSupportedException();
+    }
+
+    [AvaloniaFact]
+    public async Task ClearFollowsTheFilterAndSavingAnEmptyListWarnsOnceMore()
+    {
+        var (app, vm, w) = await OpenAsync();
+        using var _ = app;
+        var keepList = true;
+        var ui = new AskingUi(title => !(title.StartsWith("Clear your whole") && keepList));
+        var ta = new TrackedArtistsViewModel(vm) { Ui = ui };
+        var win = new TrackedArtistsWindow { DataContext = ta, Width = 1240, Height = 800 };
+        win.Show();
+        var all = ta.Rows.Count(r => !r.IsBlank);
+        Assert.True(all >= 2);
+        Assert.Equal("Clear all", ta.ClearLabel);
+
+        // filtered: only the rows shown go
+        var first = ta.Rows.First(r => !r.IsBlank).Name;
+        ta.FilterText = first;
+        var shown = ta.Visible.Count(r => !r.IsBlank);
+        Assert.Equal($"Clear {shown} shown row{(shown == 1 ? "" : "s")}", ta.ClearLabel);
+        Dispatcher.UIThread.RunJobs();
+        Save(win, "26-clear-shown-rows");
+        await ta.ClearAllCommand.ExecuteAsync(null);
+        Assert.Equal("Clear shown rows", ui.Asked[^1].Title);
+        Assert.Equal(all - shown, ta.Rows.Count(r => !r.IsBlank));
+        ta.FilterText = "";
+        Assert.Equal("Clear all", ta.ClearLabel);
+
+        // everything cleared, then Save: one more warning, with "Keep my list" as the safe default
+        await ta.ClearAllCommand.ExecuteAsync(null);
+        Assert.Equal(0, ta.Rows.Count(r => !r.IsBlank));
+        await ta.SaveCommand.ExecuteAsync(null);
+        Assert.Equal(("Clear your whole Tracked Artists list?", true), ui.Asked[^1]);
+        Assert.Equal(all, app.Engine.Db.ListArtists().Count);        // kept
+        Assert.True(ta.Dirty);
+        keepList = false;
+        await ta.SaveCommand.ExecuteAsync(null);
+        Assert.Empty(app.Engine.Db.ListArtists());
+        win.Close();
+        w.Close();
+    }
+
     [AvaloniaFact]
     public async Task FindMissingLinksForOneSiteAndOnlyRowsNotSearchedBefore()
     {
