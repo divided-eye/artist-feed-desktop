@@ -22,24 +22,24 @@
         <StackPanel Spacing="4">
           <TextBlock Classes="tlabel" Text="Add artists" />
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <Button Content="Add row" Command="{Binding AddRowCommand}" />
-            <Button Content="Import CSV" Command="{Binding ImportCsvCommand}" />
-            <ToggleButton Content="Import follows ▾" IsChecked="{Binding ShowFollows, Mode=OneWay}" Command="{Binding ToggleFollowsCommand}"
-                          ToolTip.Tip="Add the artists and labels a SoundCloud account or Bandcamp fan follows" />
+            <Button Command="{Binding AddRowCommand}"><StackPanel Orientation="Horizontal" Spacing="6"><Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M12 5l0 14 M5 12l14 0" /></Canvas></Viewbox><TextBlock Text="Add row" /></StackPanel></Button>
+            <Button Command="{Binding ImportCsvCommand}"><StackPanel Orientation="Horizontal" Spacing="6"><Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M14 3v4a1 1 0 0 0 1 1h4 M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z M12 11v6 M9.5 13.5l2.5 -2.5l2.5 2.5" /></Canvas></Viewbox><TextBlock Text="Import CSV" /></StackPanel></Button>
+            <ToggleButton Classes="panel" IsChecked="{Binding ShowFollows, Mode=OneWay}" Command="{Binding ToggleFollowsCommand}"
+                          ToolTip.Tip="Add the artists and labels a SoundCloud account or Bandcamp fan follows"><StackPanel Orientation="Horizontal" Spacing="6"><Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0 M16 19h6 M19 16v6 M6 21v-2a4 4 0 0 1 4 -4h4" /></Canvas></Viewbox><TextBlock Text="Import follows" /><Viewbox Width="16" Height="16" IsVisible="{Binding !$parent[ToggleButton].IsChecked}"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M6 9l6 6l6 -6" /></Canvas></Viewbox><Viewbox Width="16" Height="16" IsVisible="{Binding $parent[ToggleButton].IsChecked}"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M6 15l6 -6l6 6" /></Canvas></Viewbox></StackPanel></ToggleButton>
           </StackPanel>
         </StackPanel>
         <Border Width="1" Background="{DynamicResource Line}" Margin="8,0" />
         <StackPanel Spacing="4">
           <TextBlock Classes="tlabel" Text="Organize" />
-          <ToggleButton Content="Workspaces ▾" IsChecked="{Binding ShowSpaces, Mode=OneWay}" Command="{Binding ToggleSpacesCommand}"
-                        ToolTip.Tip="Name the groups of artists you can show on their own (Focus is the first)" />
+          <ToggleButton Classes="panel" IsChecked="{Binding ShowSpaces, Mode=OneWay}" Command="{Binding ToggleSpacesCommand}"
+                        ToolTip.Tip="Name the groups of artists you can show on their own (Focus is the first)"><StackPanel Orientation="Horizontal" Spacing="6"><Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M9 4h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2 M17 17v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2" /></Canvas></Viewbox><TextBlock Text="Workspaces" /><Viewbox Width="16" Height="16" IsVisible="{Binding !$parent[ToggleButton].IsChecked}"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M6 9l6 6l6 -6" /></Canvas></Viewbox><Viewbox Width="16" Height="16" IsVisible="{Binding $parent[ToggleButton].IsChecked}"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M6 15l6 -6l6 6" /></Canvas></Viewbox></StackPanel></ToggleButton>
         </StackPanel>
         <Border Width="1" Background="{DynamicResource Line}" Margin="8,0" />
         <StackPanel Spacing="4">
           <TextBlock Classes="tlabel" Text="Table" />
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <Button Content="Export CSV" Command="{Binding ExportCsvCommand}" />
-            <Button x:Name="ClearButton" Classes="danger" Content="{Binding ClearLabel}" Command="{Binding ClearAllCommand}" ToolTip.Tip="{Binding ClearTip}" />
+            <Button Command="{Binding ExportCsvCommand}"><StackPanel Orientation="Horizontal" Spacing="6"><Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M14 3v4a1 1 0 0 0 1 1h4 M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z M12 17v-6 M9.5 14.5l2.5 2.5l2.5 -2.5" /></Canvas></Viewbox><TextBlock Text="Export CSV" /></StackPanel></Button>
+            <Button x:Name="ClearButton" Classes="danger" Command="{Binding ClearAllCommand}" ToolTip.Tip="{Binding ClearTip}"><StackPanel Orientation="Horizontal" Spacing="6"><Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Classes="ico" Data="M4 7l16 0 M10 11l0 6 M14 11l0 6 M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12 M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></Canvas></Viewbox><TextBlock Text="{Binding ClearLabel}" /></StackPanel></Button>
           </StackPanel>
         </StackPanel>
       </WrapPanel>
@@ -105,12 +105,12 @@
       <Border BorderBrush="{DynamicResource Line}" BorderThickness="1" CornerRadius="10" Padding="12,10">
         <StackPanel Spacing="8">
           <WrapPanel ItemSpacing="10">
-            <TextBlock Text="Find missing links" FontWeight="SemiBold" />
+            <StackPanel Orientation="Horizontal" Spacing="6"><Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Classes="ico" Stroke="{DynamicResource Text}" Data="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0 M21 21l-6 -6" /></Canvas></Viewbox><TextBlock Text="Find missing links" FontWeight="SemiBold" /></StackPanel>
             <TextBlock Classes="muted" FontSize="13" TextWrapping="Wrap" VerticalAlignment="Center"
                        Text="Fills empty Bandcamp, SoundCloud and name cells with its best guess, highlighted: check them, then Save changes." />
           </WrapPanel>
           <DockPanel>
-            <Button DockPanel.Dock="Right" Content="{Binding FillLabel}" Command="{Binding FindMissingCommand}"
+            <Button DockPanel.Dock="Right" Classes="find" Content="{Binding FillLabel}" Command="{Binding FindMissingCommand}"
                     ToolTip.Tip="Look for the Bandcamp pages and SoundCloud profiles rows are missing. While the table is filtered, only the rows shown are searched; each row also has its own Find links." />
             <StackPanel Orientation="Horizontal" Spacing="16">
               <StackPanel Orientation="Horizontal" Spacing="8">

@@ -506,8 +506,10 @@ public class UiTests
         ta.FilterText = first;
         var shown = ta.Visible.Count(r => !r.IsBlank);
         Assert.Equal($"Clear {shown} shown row{(shown == 1 ? "" : "s")}", ta.ClearLabel);
+        ta.ToggleFollowsCommand.Execute(null);               // a panel open: its button shows it
         Dispatcher.UIThread.RunJobs();
         Save(win, "26-clear-shown-rows");
+        ta.ToggleFollowsCommand.Execute(null);
         await ta.ClearAllCommand.ExecuteAsync(null);
         Assert.Equal("Clear shown rows", ui.Asked[^1].Title);
         Assert.Equal(all - shown, ta.Rows.Count(r => !r.IsBlank));

@@ -89,13 +89,42 @@
     <Setter Property="Foreground" Value="{DynamicResource Muted}" />
     <Setter Property="MinHeight" Value="0" />
   </Style>
-  <Style Selector="ListBox.segpick ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource Panel2}" />
-    <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
-    <Setter Property="BorderThickness" Value="0,0,0,2" />
+  <Style Selector="ListBox.segpick ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter, ListBox.segpick ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BlueTint}" />
+    <Setter Property="Foreground" Value="{DynamicResource BlueInk}" />
   </Style>
-  <Style Selector="ListBox.segpick ListBoxItem:selected">
-    <Setter Property="Foreground" Value="{DynamicResource Text}" />
+  <Style Selector="ListBox.segpick ListBoxItem:nth-child(n+2)">
+    <Setter Property="BorderBrush" Value="{DynamicResource Line}" />
+    <Setter Property="BorderThickness" Value="1,0,0,0" />
+  </Style>
+  <!-- the outline icons on the Tracked Artists buttons (shapes from Tabler Icons, MIT licence) -->
+  <Style Selector="Path.ico">
+    <Setter Property="Stroke" Value="{Binding $self.(TextElement.Foreground)}" />   <!-- the same colour as the button text -->
+    <Setter Property="StrokeThickness" Value="2" />
+    <Setter Property="StrokeLineCap" Value="Round" />
+    <Setter Property="StrokeJoin" Value="Round" />
+  </Style>
+  <!-- Find missing links: the blue button -->
+  <Style Selector="Button.find">
+    <Setter Property="Background" Value="{DynamicResource Blue}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Blue}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnBlue}" />
+  </Style>
+  <Style Selector="Button.find:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Blue}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BlueInk}" />
+    <Setter Property="Foreground" Value="{DynamicResource OnBlue}" />
+  </Style>
+  <!-- Import follows and Workspaces while their panel is open: blue, not the accent fill other toggles use -->
+  <Style Selector="ToggleButton.panel:checked">
+    <Setter Property="Background" Value="{DynamicResource BlueTint}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Blue}" />
+    <Setter Property="Foreground" Value="{DynamicResource BlueInk}" />
+  </Style>
+  <Style Selector="ToggleButton.panel:checked /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.panel:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BlueTint}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Blue}" />
+    <Setter Property="Foreground" Value="{DynamicResource BlueInk}" />
   </Style>
   <!-- A Save button with nothing to save looks quiet. -->
   <Style Selector="Button.primary.clean">

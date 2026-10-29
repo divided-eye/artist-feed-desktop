@@ -3,3 +3,5 @@ https://github.com/googlefonts/noto-emoji (2D/svg/emoji_u1f3a7.svg), Copyright 2
 Noto Emoji's image resources are licensed under the Apache License, Version 2.0:
 https://www.apache.org/licenses/LICENSE-2.0
 Changes: rendered from the SVG to PNG and ICO sizes.
+
+The small outline icons on the Tracked Artists buttons are drawn from Tabler Icons (https://tabler.io/icons), MIT licence.

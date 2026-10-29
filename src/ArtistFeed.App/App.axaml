@@ -14,6 +14,11 @@
       <SolidColorBrush x:Key="Accent" Color="#d9f25c" />
       <SolidColorBrush x:Key="AccentInk" Color="#d9f25c" />
       <SolidColorBrush x:Key="Danger" Color="#ff6b6b" />
+      <!-- Find missing links, and what is chosen or open beside it -->
+      <SolidColorBrush x:Key="Blue" Color="#3b82f6" />
+      <SolidColorBrush x:Key="OnBlue" Color="#ffffff" />
+      <SolidColorBrush x:Key="BlueTint" Color="#2e3b82f6" />
+      <SolidColorBrush x:Key="BlueInk" Color="#8ab4ff" />
       <SolidColorBrush x:Key="OnAccent" Color="#14160a" />
       <SolidColorBrush x:Key="Hover" Color="#444a55" />
       <SolidColorBrush x:Key="Letter" Color="#3a3f48" />
