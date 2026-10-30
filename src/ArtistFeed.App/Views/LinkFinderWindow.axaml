@@ -49,7 +49,7 @@
                         ToolTip.Tip="Normally a track you've looked up before is answered from the saved result" />
               <CheckBox Content="Search again for not-found rows only" IsChecked="{Binding RetryMissing}"
                         ToolTip.Tip="Keep saved answers for tracks that were found, and search again only for the ones saved as not found (those that got an artist page or nothing)" />
-              <Button Content="Export results" Command="{Binding ExportResultsCommand}" IsVisible="{Binding CanExport}"
+              <Button Classes="find" Content="Export results" Command="{Binding ExportResultsCommand}" IsVisible="{Binding CanExport}"
                       ToolTip.Tip="Save these results as a spreadsheet (CSV)" />
             </WrapPanel>
             <TextBlock Text="{Binding LookupStatus}" Classes="muted" TextWrapping="Wrap" />
