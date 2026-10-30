@@ -50,6 +50,16 @@ public sealed partial class LinkFinderTests
         Assert.Equal("bandcamp", Verdict("Sean Paul", edit, "Sean Paul - Temperature [River Dub edit]", "Some Label"));
         Assert.Equal("bandcamp_check", Verdict("Dayzero", "Blur", "Blur (Someone Remix)", "Dayzero"));
         Assert.Equal("bandcamp", Verdict("Dayzero", "Blur", "Blur (Original Mix)", "Dayzero"));
+        // The page words it differently: "bootleg" outside the brackets, and the original artist restated in them
+        var oblivion = "Oblivion bootleg (by Astor Piazzolla as performed by Miguel Fajardo)";
+        string OnPage(string title)
+        {
+            var (s, a) = m.Score("Astor Piazzolla", title, new Cand { Name = oblivion, Artists = new() { "Sentient" }, Context = new() { oblivion } });
+            return Matcher.Judge(s, a);
+        }
+        Assert.Equal("bandcamp", OnPage("Oblivion (as performed by Miguel Fajardo) (sentient bootleg)"));
+        Assert.Equal("bandcamp_check", OnPage("Oblivion (as performed by Miguel Fajardo)"));              // someone's version
+        Assert.Equal("", OnPage("Oblivion (as performed by Miguel Fajardo) (Other Guy bootleg)"));
 
         await ReadPurchasesAsync(t);                                           // as in the web test: you own the original "02"
         var rows = new[] { ("Sean Paul", "Temperature (River Dub Edit)"), ("Nas", "You Owe Me (Nightmare & Oni 140 Bootleg)"),

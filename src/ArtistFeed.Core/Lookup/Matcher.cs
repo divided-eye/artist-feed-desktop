@@ -190,6 +190,23 @@ public sealed class Matcher(Db db)
         rel.S("title"), rel.S("release"), SlugWords(rel.S("url")), SlugWords(rel.S("asked")), SlugWords(rel.S("release_url")),
     };
 
+    static readonly Regex BareVersionWord = new(@"\b(?:remix|rmx|bootleg|boot|edit|re ?edit|flip|refix|rework|re ?rub|mash ?up)\b", Opt);
+
+    /// <summary>A candidate's tidied title without what it repeats about the request: "by &lt;the artist asked
+    /// for&gt;" ("Oblivion bootleg (by Astor Piazzolla as performed by ...)"), and, when a version was asked
+    /// for, a bare "bootleg"/"remix"/"edit" word written outside brackets.</summary>
+    static string Restated(string have, List<string> wanted, bool version)
+    {
+        var text = $" {have} ";
+        foreach (var w in wanted.OrderByDescending(w => w.Length))
+            if (w.Length >= 2) text = text.Replace($" by {w} ", " ");
+        if (version) text = BareVersionWord.Replace(text, " ");
+        return string.Join(" ", text.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    static HashSet<string> VersionWords(string normalised) =>
+        BareVersionWord.Matches(normalised).Select(m => m.Value).ToHashSet();
+
     /// <summary>(title score, artist score) for a candidate.</summary>
     public (double T, double A) Score(string artist, string title, Cand cand)
     {
@@ -200,6 +217,12 @@ public sealed class Matcher(Db db)
         var prefix = dash >= 0 ? name[..dash] : name;
         var rest = dash >= 0 ? name[(dash + 3)..] : "";
         var t = Math.Max(TitleSim(wantTitle, Norm(name)), rest.Length > 0 ? TitleSim(wantTitle, Norm(rest)) : 0.0);
+        var askedVersion = RemixerNames(title).Count > 0;
+        foreach (var text in rest.Length > 0 ? new[] { name, rest } : new[] { name })   // the same title, worded around what was asked
+        {
+            var cleaned = Restated(Norm(text), wanted, askedVersion);
+            if (cleaned.Length > 0) t = Math.Max(t, TitleSim(wantTitle, cleaned));
+        }
         var have = cand.Artists.SelectMany(n => ArtistParts(n ?? "")).ToList();
         if (rest.Length > 0) have.AddRange(ArtistParts(prefix));
         double a = 0;
@@ -221,6 +244,8 @@ public sealed class Matcher(Db db)
             else t = Math.Min(t, 0.7);
         }
         else if (RemixerNames(name).Count > 0) t = Math.Min(t, 0.8);
+        else if (VersionWords(Norm(name)).Except(VersionWords(wantTitle)).Any())
+            t = Math.Min(t, 0.8);                           // "Oblivion bootleg (...)": someone's version, not the track
         if (!SameVip(title, name)) t = Math.Min(t, 0.7);
         else if (VipWords(title) == null && VipWords(name) != null) t = Math.Min(t, 0.8);
         return (t, a);
