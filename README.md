@@ -80,7 +80,7 @@ versions shouldn't share one file while both are running.
 - **Listening**: each site's own player opens at the bottom of the window (Bandcamp, SoundCloud, YouTube),
   and **Open on …** opens the page in your browser. Played items are dimmed, as in the web version.
 - **Tracked Artists**: the table of artists and their pages, in name order and sortable by clicking a heading, other names in the Artist cell, workspace and
-  YouTube search ticks, Check now, removing rows, Import and Export CSV, pasting a list, filtering rows,
+  YouTube search ticks, Check now, removing rows, Export CSV, pasting a list, filtering rows,
   and Save changes / Discard with each problem shown on its row. Same rules as the web version, including
   "two rows for one artist" and keeping both when they are different artists.
 - **Workspaces**: named groups of artists (Focus is the first), ticked in Tracked Artists and chosen from the menu beside Search to show only them.
