@@ -95,11 +95,13 @@ public partial class ArtistRowViewModel : ObservableObject
             else if (now.Trim().Length > 0) Skip.Remove(col);
         }
         OnPropertyChanged(nameof(HasOpen));
+        OnPropertyChanged(nameof(StatusShort));             // the empty row says "new" once something is typed
     }
 
     partial void OnNameChanged(string? oldValue, string newValue) => Edited("name", oldValue, newValue);
     partial void OnBandcampChanged(string? oldValue, string newValue) => Edited("bandcamp", oldValue, newValue);
     partial void OnSoundCloudChanged(string? oldValue, string newValue) => Edited("soundcloud", oldValue, newValue);
+    partial void OnYouTubeChanged(string value) => OnPropertyChanged(nameof(StatusShort));
     partial void OnRescanChanged(bool value) => OnPropertyChanged(nameof(HasOpen));
     internal void OpenChanged() => OnPropertyChanged(nameof(HasOpen));
     partial void OnSearchingChanged(bool value) => OnPropertyChanged(nameof(StatusShort));
@@ -137,7 +139,7 @@ public partial class ArtistRowViewModel : ObservableObject
         : Problems.Count > 0 ? string.Join("\n", Problems)
         : PostCount == 1 ? "1 post" : $"{PostCount} posts";
 
-    public string StatusShort => Searching ? "searching…" : IsNew ? "new"
+    public string StatusShort => Searching ? "searching…" : IsBlank ? "" : IsNew ? "new"
         : HasIssue ? "⚠ " + (Problems.FirstOrDefault(p => !p.EndsWith("checking…")) ?? "")
         : IsChecking ? "checking…"
         : PostCount == 1 ? "1 post" : $"{PostCount} posts";
@@ -246,6 +248,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
         FillStatus = "";
         _loading = false;
         Dirty = false;
+        EnsureBlankRow(refresh: false);
         RefreshView();
         OnPropertyChanged(nameof(BandcampOn));
         OnPropertyChanged(nameof(SoundCloudOn));
@@ -408,6 +411,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
     {
         if (_loading || !Edits.Contains(e.PropertyName ?? "")) return;
         Dirty = true;
+        if (sender is ArtistRowViewModel row && Rows.Count > 0 && row == Rows[^1] && !row.IsBlank) EnsureBlankRow(refresh: false);
         if (e.PropertyName is nameof(ArtistRowViewModel.Remove) or nameof(ArtistRowViewModel.Groups)) RefreshShowCounts();
     }
 
@@ -526,14 +530,16 @@ public partial class TrackedArtistsViewModel : ObservableObject
         OnPropertyChanged(nameof(FillLabel));
     }
 
-    [RelayCommand]
-    void AddRow()
+    /// <summary>The table always ends in an empty row to type a new artist into, as in the web version;
+    /// typing in it adds the next one.</summary>
+    void EnsureBlankRow(bool refresh = true)
     {
         if (Rows.Count > 0 && Rows[^1].IsBlank && Rows[^1].IsNew) return;
         var row = new ArtistRowViewModel();
         row.SetSpaces(Spaces);
         Add(row);
-        RefreshView();
+        if (refresh) RefreshView();
+        else Visible.Add(row);                              // while typing: no rebuild, so the cell keeps its focus
     }
 
     [RelayCommand]
@@ -589,6 +595,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
         }
         FillStatus = "";
         Dirty = true;
+        EnsureBlankRow(refresh: false);
         RefreshView();
     }
 
@@ -684,18 +691,6 @@ public partial class TrackedArtistsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    async Task ImportCsv()
-    {
-        if (Ui == null) return;
-        var text = await Ui.OpenTextFileAsync("Import a CSV of artists");
-        if (text == null) return;
-        var rows = TableImport.FromCsv(text, Engine.Sites.All.Where(s => Engine.Sites.IsOn(s.Key)).ToList());
-        if (rows.Count == 0) { Note = "Nothing to import."; return; }
-        AppendRows(rows);
-        Note = $"Imported {rows.Count} row{(rows.Count > 1 ? "s" : "")}. Check them, then Save changes.";
-    }
-
-    [RelayCommand]
     async Task ExportCsv()
     {
         if (Ui == null) return;
@@ -720,6 +715,7 @@ public partial class TrackedArtistsViewModel : ObservableObject
         }
         foreach (var r in rows) Add(ArtistRowViewModel.From(r, Spaces));
         if (rows.Count > 0) Dirty = true;
+        EnsureBlankRow(refresh: false);
         RefreshView();
     }
 

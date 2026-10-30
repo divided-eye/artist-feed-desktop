@@ -452,12 +452,7 @@ public class CoreTests
     {
         using var app = new TestApp();
         var cols = app.Engine.Sites.All;
-        var rows = TableImport.FromCsv("﻿name,soundcloud,bandcamp\r\nNight Ferry,nightferry,\"a, b\"\r\n,,\r\n", cols);
-        Assert.Single(rows);
-        Assert.Equal(("Night Ferry", "a, b", "nightferry"), (rows[0].Name, rows[0].Cells["bandcamp"], rows[0].Cells["soundcloud"]));
-        rows = TableImport.FromCsv("Solo,solo,soloist", cols);
-        Assert.Equal(("Solo", "solo", "soloist"), (rows[0].Name, rows[0].Cells["bandcamp"], rows[0].Cells["soundcloud"]));
-        rows = TableImport.FromPaste("Name\tBandcamp\nNight Ferry\nhttps://somelabel.bandcamp.com\nAnother, https://soundcloud.com/another, anotherbc", cols);
+        var rows = TableImport.FromPaste("Name\tBandcamp\nNight Ferry\nhttps://somelabel.bandcamp.com\nAnother, https://soundcloud.com/another, anotherbc", cols);
         Assert.Equal(3, rows.Count);
         Assert.Equal("Night Ferry", rows[0].Name);
         Assert.Equal(("", "https://somelabel.bandcamp.com"), (rows[1].Name, rows[1].Cells["bandcamp"]));

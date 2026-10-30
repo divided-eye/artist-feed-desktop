@@ -165,7 +165,8 @@ public class UiTests
         var win = new TrackedArtistsWindow { DataContext = ta, Width = 1240, Height = 800 };
         win.Show();
         Dispatcher.UIThread.RunJobs();
-        Assert.Equal(2, ta.Rows.Count);
+        Assert.Equal(3, ta.Rows.Count);                   // two artists, then the empty row for a new one
+        Assert.True(ta.Rows[^1].IsBlank);
         Assert.False(ta.Dirty);
         Save(win, "4-tracked-artists");
 
@@ -181,9 +182,10 @@ public class UiTests
         Assert.Equal("NF", app.Engine.Db.ListArtists().Single(a => a.Name == "Night Ferry").Aliases);
 
         // a bad page and a page already on another row: nothing is saved, the rows say why
-        ta.AddRowCommand.Execute(null);
-        var row = ta.Rows[^1];
+        var row = ta.Rows[^1];                            // typing in the empty row at the bottom
+        Assert.True(row.IsBlank);
         row.Name = "Someone";
+        Assert.True(ta.Rows[^1].IsBlank && ta.Rows[^1] != row);                   // a new empty row appears
         row.SoundCloud = "not a profile!";
         row.Bandcamp = "nightferry";
         Assert.True(ta.Dirty);
@@ -214,14 +216,14 @@ public class UiTests
 
         // filter rows; mark one for removal
         ta.FilterText = "tube";
-        Assert.Single(ta.Visible);
+        Assert.Single(ta.Visible, r => !r.IsBlank);       // plus the empty row, which always shows
         ta.FilterText = "";
         var tube = ta.Rows.Single(r => r.Name == "Tube Band");
         ta.ToggleRemoveCommand.Execute(tube);
         Assert.True(tube.Remove);
         Assert.True(ta.Dirty);
         ta.Show = ta.ShowOptions.Single(o => o.Value == "removed");
-        Assert.Single(ta.Visible);
+        Assert.Single(ta.Visible, r => !r.IsBlank);
         win.Close();
         w.Close();
     }

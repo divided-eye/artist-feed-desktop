@@ -12,67 +12,11 @@ public static class Csv
         f ??= "";
         return f.IndexOfAny(new[] { ',', '"', '\r', '\n' }) >= 0 ? "\"" + f.Replace("\"", "\"\"") + "\"" : f;
     }));
-
-    /// <summary>Rows of a CSV text; rows with nothing in them are left out.</summary>
-    public static List<List<string>> Parse(string text)
-    {
-        var rows = new List<List<string>>();
-        var row = new List<string>();
-        var cell = new StringBuilder();
-        bool quoted = false;
-        for (int i = 0; i < text.Length; i++)
-        {
-            var ch = text[i];
-            if (quoted)
-            {
-                if (ch == '"' && i + 1 < text.Length && text[i + 1] == '"') { cell.Append('"'); i++; }
-                else if (ch == '"') quoted = false;
-                else cell.Append(ch);
-            }
-            else if (ch == '"') quoted = true;
-            else if (ch == ',') { row.Add(cell.ToString()); cell.Clear(); }
-            else if (ch == '\n') { row.Add(cell.ToString()); rows.Add(row); row = new(); cell.Clear(); }
-            else if (ch != '\r') cell.Append(ch);
-        }
-        if (cell.Length > 0 || row.Count > 0) { row.Add(cell.ToString()); rows.Add(row); }
-        return rows.Where(r => r.Any(c => c.Trim().Length > 0)).ToList();
-    }
 }
 
-/// <summary>Filling Tracked Artists from a CSV file or a pasted list.</summary>
+/// <summary>Filling Tracked Artists from a pasted list.</summary>
 public static class TableImport
 {
-    /// <summary>Rows from a CSV file. With a header row, columns are matched by name ("name"/"artist", the
-    /// site's key or label); otherwise they are taken in table order (name, then each site).</summary>
-    public static List<TableRow> FromCsv(string text, IReadOnlyList<ISource> columnsOn)
-    {
-        var rows = Csv.Parse(text.TrimStart('﻿'));
-        var result = new List<TableRow>();
-        if (rows.Count == 0) return result;
-        var cols = new List<string> { "name" };
-        cols.AddRange(columnsOn.Select(s => s.Key));
-        var header = rows[0].Select(h => h.Trim().ToLowerInvariant()).ToList();
-        var map = cols.Select((_, i) => i).ToList();
-        if (header.Contains("name") || header.Contains("artist"))
-        {
-            map = cols.Select(c => header.FindIndex(h => c == "name"
-                ? h is "name" or "artist"
-                : h == c || h == columnsOn.First(s => s.Key == c).Label.ToLowerInvariant())).ToList();
-            rows = rows.Skip(1).ToList();
-        }
-        foreach (var r in rows)
-        {
-            var row = new TableRow();
-            for (int i = 0; i < cols.Count; i++)
-            {
-                if (map[i] < 0 || map[i] >= r.Count) continue;
-                Set(row, cols[i], r[map[i]].Trim());
-            }
-            result.Add(row);
-        }
-        return result;
-    }
-
     static void Set(TableRow row, string col, string value)
     {
         if (col == "name") row.Name = value; else row.Cells[col] = value;
